@@ -1,6 +1,6 @@
 [Unit]
 Description=宿主级容器健康告警：一轮 docker inspect 判定与群告警
-# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/373（D5；deploy/监控告警.md「已知限制」记录的 stage 实际安装形态）；验证：stage 两次真实注入
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/373（D5；安装步骤与本单元逐项对应 deploy/监控告警.md「三、安装」）；验证：stage 两次真实注入
 After=docker.service
 Wants=docker.service
 
