@@ -8,7 +8,7 @@
 
 ```bash
 # 1. 用套件做模板新建仓库，再把骨架提升到根目录
-gh repo create <你的仓库> --template Moshuiwang/trace-kit --clone && cd <你的仓库> && ./init.sh
+gh repo create <你的仓库> --public --template Moshuiwang/trace-kit --clone && cd <你的仓库> && ./init.sh
 
 # 2. 安装 Claude Code 插件（kickoff / takeover / handoff / guardian / dispatch-card）
 claude plugin marketplace add Moshuiwang/trace-kit && claude plugin install trace-kit@trace-kit

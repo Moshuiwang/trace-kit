@@ -1,4 +1,4 @@
-# 出处：lingxi .github/ISSUE_TEMPLATE/decision.yml（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/ISSUE_TEMPLATE/decision.yml）；验证：500+ Issue；分档 G2（占位改为本仓库文档路径）。
+# 出处：lingxi .github/ISSUE_TEMPLATE/decision.yml（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/ISSUE_TEMPLATE/decision.yml）；验证：约 220 个 Issue；分档 G2（占位改为本仓库文档路径）。
 name: 决策请求
 description: 请求产品负责人确认会阻塞变更实施的选择
 title: "[decision] "

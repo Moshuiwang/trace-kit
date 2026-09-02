@@ -1,4 +1,4 @@
-# 出处：lingxi .github/ISSUE_TEMPLATE/change.yml（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/ISSUE_TEMPLATE/change.yml，5 次修订）；验证：500+ Issue；分档 G2（TO PM 九项原样，外部依赖一项通用化）。
+# 出处：lingxi .github/ISSUE_TEMPLATE/change.yml（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/ISSUE_TEMPLATE/change.yml，5 次修订）；验证：约 220 个 Issue；分档 G2（TO PM 九项原样，外部依赖一项通用化）。
 name: 功能或工程变更
 description: 创建一个使用 [feature]、[story] 或 [task] 标题、具有明确范围与验收标准的工作单元
 title: ""

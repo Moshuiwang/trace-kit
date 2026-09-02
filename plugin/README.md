@@ -46,7 +46,7 @@ claude plugin install trace-kit@trace-kit
 | `skills/takeover` | 复盘 #330 P0；[#147](https://github.com/Moshuiwang/lingxi/issues/147) v14/v16 §6.8 接管登记 | #203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管 |
 | `skills/handoff` | 复盘 #330 P0 | 同上，六任编排者交接 |
 | `skills/guardian` | #147 v16 §6.8；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
-| `skills/dispatch-card` | #147 §6.4（[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[PR #299](https://github.com/Moshuiwang/lingxi/pull/299)（退出码）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
+| `skills/dispatch-card` | #147 §6.4（[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |

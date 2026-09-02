@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """``app`` 骨架的冒烟用例：包能导入、两个一次性入口的退出码、常驻进程的优雅退出。
 
-出处：本骨架为 trace-kit 新增的最小可运行进程，无上游对应物；用例形状照 lingxi
+出处：本骨架为 trace-kit 新增的最小可运行进程，无上游对应物；用例形状照来源仓库
 https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/tests/test_ci_layering.py
 （标准库 unittest、子进程跑真入口、不 mock 被测命令）。
 

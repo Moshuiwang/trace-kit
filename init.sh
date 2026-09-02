@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # trace-kit init.sh：把 template/ 提升到仓库根目录，删除套件自身文件。
 #
-#   gh repo create <新仓> --template Moshuiwang/trace-kit --clone && cd <新仓> && ./init.sh
+#   gh repo create <新仓> --public --template Moshuiwang/trace-kit --clone && cd <新仓> && ./init.sh
 #
-# 只在「从 trace-kit 模板新建的仓库」根目录运行一次；运行后自己 git add -A 并提交。
+# 只在「从 trace-kit 模板新建的仓库」根目录运行一次；脚本不提交——运行完成后由你执行 git add -A 并提交（末尾会打印步骤）。
 # 出处：套件安装两步由产品负责人 2026-09-02 指定（Trace #1 合同 §1）。
 set -euo pipefail
 

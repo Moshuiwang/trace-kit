@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 无网络、无业务系统副作用的仓库基础质量门禁。
-# 出处：lingxi https://github.com/Moshuiwang/lingxi/pull/12（2026-07-25 CI 基线；PR #48 半开守卫）；验证：298 个 PR。
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/pull/3（2026-07-25 CI 基线，提交 2d34582）；验证：298 个 PR。
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)

@@ -1,6 +1,6 @@
 # <项目名>
 
-> 出处：各文件引言各自标注 lingxi 来源文件（固定提交）与分档；本 README 按套件「是什么 / 怎么用 / 换什么」约定编写，无 lingxi 对应物。骨架版本：[trace-kit v0.1.0](https://github.com/Moshuiwang/trace-kit/tree/v0.1.0)。
+> 出处：各文件引言各自标注来源仓库文件（固定提交）与分档；本 README 按套件「是什么 / 怎么用 / 换什么」约定编写，无 lingxi 对应物。骨架版本：[trace-kit v0.1.0](https://github.com/Moshuiwang/trace-kit/tree/v0.1.0)。
 
 ## 是什么
 

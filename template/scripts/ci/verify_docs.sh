@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 不安装依赖、不启动数据库或 Docker 的文档门禁。
-# 出处：lingxi https://github.com/Moshuiwang/lingxi/pull/12（2026-07-25 CI 基线）；验证：298 个 PR。
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/pull/3（2026-07-25 CI 基线，提交 2d34582）；验证：298 个 PR。
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)

@@ -1,4 +1,4 @@
-<!-- 出处：lingxi .github/PULL_REQUEST_TEMPLATE.md（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/PULL_REQUEST_TEMPLATE.md，11 次修订）；验证：298 个 PR；分档 G2（外部依赖边界一行通用化）。本注释不会显示在 PR 正文里，可删。 -->
+<!-- 出处：lingxi .github/PULL_REQUEST_TEMPLATE.md（https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/PULL_REQUEST_TEMPLATE.md，11 次修订）；验证：301 个合并 PR；分档 G2（外部依赖边界一行通用化）。本注释不会显示在 PR 正文里，可删。 -->
 ## 关联与长期文档
 
 - Plan：# / 不适用
