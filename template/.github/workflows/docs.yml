@@ -1,0 +1,37 @@
+name: Docs
+
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/82（分层 CI 的轻回读层）；验证：每次纯文档合 main。
+#
+# 纯文档推送到 main 的轻量回读。PR 阶段由 Story Fast 或 Epic Full 完成准入，
+# 合并后这里只确认文档树仍自洽，不启动数据库或镜像。
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-gate:
+    name: Docs / gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 运行文档门禁
+        run: scripts/ci/verify_docs.sh

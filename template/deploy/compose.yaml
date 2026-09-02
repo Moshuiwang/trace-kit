@@ -1,0 +1,136 @@
+# 部署编排：共用结构。stage 与生产**用同一份本文件**，只叠加各自的覆盖文件。
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/62（9545cd7，15 次修订）、https://github.com/Moshuiwang/lingxi/issues/153（profile）、https://github.com/Moshuiwang/lingxi/issues/494（资源合同）；验证：stage 20+ 次升级、prod 首发（2026-09-02）
+#
+# 用法：
+#   docker compose --env-file deploy/.env.stage -f deploy/compose.yaml -f deploy/compose.stage.yaml up -d
+#   docker compose --env-file deploy/.env.prod  -f deploy/compose.yaml -f deploy/compose.prod.yaml  up -d
+#
+# 这里加你的服务：常驻服务照 `app` 写，一次性作业照 `migrate` 写。
+#
+# 本文件**没有 `build:` 键，一个都没有**。生产只拉镜像、不构建。这不是纪律而是机制：
+# compose 里没有构建定义，生产机上就不存在「顺手改一行再 build 一下」这条路径，
+# 镜像 tag 因此真的是被冻结的版本。
+#
+# 常驻服务与一次性作业刻意分成两类：
+#   - 常驻服务（app）：restart、stop_grace_period、healthcheck 三样都有。
+#   - 一次性作业（migrate）：放在 `job` profile 里，`docker compose up -d` 不会启动它，
+#     要显式 `docker compose --profile job run --rm migrate`。**不得配 restart 策略**：
+#     作业失败必须停下来让人看见——自动重启会把一次失败的迁移变成一个反复撞墙的循环，
+#     并掩盖真正的失败原因；也会把「作业正常退出」变成无限重启、让人误以为服务已上线。
+
+name: app  # 这里换成你的项目名（容器名会是 <name>-app-1，宿主监控脚本默认按此找容器）
+
+# ---------------------------------------------------------------------------
+# 镜像引用：仓库与 tag 都来自环境变量，且都用 `:?` 形式——**没有默认值**。
+# 漏设变量时 compose 直接报错退出，而不是悄悄拉一个 `latest`。
+# tag 语义见 deploy/README.md：`<YYYYMMDD>-<commit sha 前 12 位>`，不可变、可回溯到源码。
+# `${APP_IMAGE_DIGEST:-}` 是可选的 digest 后缀（形如 `@sha256:…`，含前导 `@`），不设时
+# 渲染结果与没有这一段逐字节一致；生产固定 digest 的做法见 deploy/生产部署runbook.md。
+#
+# 资源限制：`deploy.resources.limits`（cpus/memory/pids），不是顶层 `mem_limit`/`cpus`/
+# `pids_limit`——两者在 `docker compose up`（非 swarm）下都真实生效，选前者是因为三项
+# 归在同一个键下，覆盖文件整块替换不容易漏改某一项。**结构在本文件统一定义、数值分
+# 环境覆盖**：每一项都写成 `${APP_<X>_LIMIT:-<安全默认值>}`。门禁只核对结构（三项键
+# 都在），不核对数值——数值是容量判断，不是机械可判定的对错。
+# ---------------------------------------------------------------------------
+
+services:
+  # 常驻服务。
+  app:
+    image: ${APP_IMAGE_REGISTRY:?必须指定镜像仓库}/app:${APP_IMAGE_TAG:?必须指定不可变镜像 tag}${APP_IMAGE_DIGEST:-}
+    restart: unless-stopped
+
+    # ---- 停止宽限期 -----------------------------------------------------------
+    # Docker 默认 10 秒，往往**不满足**：SIGKILL 落在「外部副作用已发生、尚未写回」的
+    # 窗口里，就会留下不可恢复的中间态。数值不能拍脑袋：把进程收到 SIGTERM 后要完成的
+    # 每一步（出站请求超时 + 重试退避 + 数据库往返预算）相加，乘 1.5 安全系数，再取整。
+    # 这里换成你的推导（写在 deploy/README.md「停止宽限期」一节），并把这个不等式钉进
+    # 门禁——靠注释守不住。
+    stop_grace_period: 30s
+
+    # ---- 容器权限最小化 -------------------------------------------------------
+    # 镜像里已经切了非 root，这里再写一遍是为了让 compose 层面可核对，也防止将来有人
+    # 用覆盖文件把它改回 root 而无人察觉。无 cap_add、无 privileged。
+    # uid/gid 须与 Dockerfile 里 `useradd --uid` 建的用户一致（这里换成你的 uid）。
+    user: "10001:10001"
+    read_only: true
+    # read_only 之后进程仍需要一处可写的临时目录（Python 的 tempfile 默认位置）。给 tmpfs
+    # 而不是放开 rootfs：它随容器消失，天然满足「除持久卷外不写需要持久化的本地状态」。
+    # **tmpfs 是内存盘**：写满即占用等量宿主内存，上限按进程真实写入量定，不要顺手给大。
+    tmpfs:
+      - /tmp:mode=1777,size=16m
+    security_opt:
+      - no-new-privileges:true
+
+    # ---- 资源限制（结构见文件头部说明，数值见 deploy/README.md）--------------
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_CPU_LIMIT:-1.0}"
+          memory: ${APP_MEM_LIMIT:-512M}
+          pids: ${APP_PIDS_LIMIT:-256}
+
+    # ---- 日志 -----------------------------------------------------------------
+    # 进程只往 stdout / stderr 写，不写日志文件、不自行轮转。轮转交给 Docker 的日志驱动；
+    # max-size/max-file 是取证窗口的第一层缓冲（容器被替换即丢失），跨重部署的留存要
+    # 靠宿主侧收集，见 deploy/生产部署runbook.md「监控与日志」。门禁守住上限存在，删掉会红。
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+    # ---- 配置与凭据 -----------------------------------------------------------
+    # 凭据一律走 env_file，且那个文件**不在版本库里**（见各覆盖文件与 .gitignore）。
+    # 这里只放非机密的默认值。需要跨部署持久的路径必须指向下面挂载的持久卷：
+    # 指向容器本地路径会让每次镜像替换都丢失数据——而这个后果往往要过很久才暴露。
+    environment:
+      APP_DATA_DIR: /var/lib/app/data
+    volumes:
+      # 需要跨部署持久的状态放这里；卷的实际名字由覆盖文件指定（stage 与生产各一套）。
+      - app-data:/var/lib/app/data
+
+    # ---- 健康检查：不开放端口，docker exec 语义 -------------------------------
+    # 不监听任何端口：在容器内跑一条受控命令，与主进程共享文件系统与网络命名空间，
+    # 不为健康检查扩大网络攻击面。该命令必须同时探测依赖可达性（如数据库 `SELECT 1`）
+    # 与主循环活性（主循环每轮 touch 的活性文件年龄），任一不满足都如实变红，
+    # 不接受「PID 存活即健康」。`retries` 决定连续几次失败才翻成 unhealthy——
+    # 宿主监控（deploy/监控告警.md）直接信这个判定，不再自己攒计数。
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # 一次性作业：数据库迁移。`docker compose --profile job run --rm migrate`
+  # 与常驻服务同一镜像、同样非 root、同样 read_only；**没有** restart 策略、
+  # 没有 stop_grace_period、没有 healthcheck（理由见文件头）。
+  migrate:
+    image: ${APP_IMAGE_REGISTRY:?必须指定镜像仓库}/app:${APP_IMAGE_TAG:?必须指定不可变镜像 tag}${APP_IMAGE_DIGEST:-}
+    profiles: ["job"]
+    restart: "no"
+    command: ["python", "-m", "app.migrate"]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=16m
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_MIGRATE_CPU_LIMIT:-1.0}"
+          memory: ${APP_MIGRATE_MEM_LIMIT:-512M}
+          pids: ${APP_MIGRATE_PIDS_LIMIT:-256}
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    # 迁移用的连接串与业务进程的连接串是**两个变量**，迁移不回落到后者：迁移要 DDL
+    # 权限、业务进程不要，两者本就该是不同的数据库角色。它只在覆盖文件的 env_file 里出现。
+
+volumes:
+  # 卷的实际名字由覆盖文件指定（stage 与生产各一套），这里只定义结构。
+  app-data:
