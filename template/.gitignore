@@ -1,0 +1,21 @@
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.gitignore；验证：全仓每个 PR。
+# 凭据载体永远不入库；.env.example 是无凭据的样板，允许入库。
+.env
+.env.*
+!.env.example
+
+# 本地临时资料，不进入版本库
+.tmp/
+
+__pycache__/
+*.pyc
+.venv/
+# scripts/dev/check.sh 按需建出的一次性虚拟环境缓存：运行时产物，不是事实源——
+# 事实源是 .github/workflows/{ci,story}.yml 与 pyproject.toml，本目录随时可删重建。
+.dev-check/
+
+# Python 打包与构建产物：在仓库根目录跑 pip install 会生成它们，
+# 一旦提交就会出现两份源码与陈旧的打包元数据。
+build/
+dist/
+*.egg-info/

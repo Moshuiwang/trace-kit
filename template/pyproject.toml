@@ -1,0 +1,28 @@
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/pyproject.toml（显式构建后端、src 布局、extras 分组）；验证：298 个 PR 的门禁装包入口。
+#
+# 显式声明构建后端：不声明时打包行为随环境里碰巧解析到的工具链漂移。
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "app"
+description = "新项目骨架：一个常驻进程 app（这里换成你的产品名与描述）"
+requires-python = ">=3.12"
+# 版本号只在 src/app/__init__.py 写一次，打包时从那里读。
+dynamic = ["version"]
+# 运行依赖为空是刻意的：骨架只用标准库。这里加你的运行依赖，安全边界组件锁精确版本。
+dependencies = []
+
+[project.optional-dependencies]
+# 门禁工具组：CI（.github/workflows）与本机 scripts/dev/check.sh 都通过 `pip install '.[dev]'`
+# 装同一份，shellcheck 的版本因此只在这里锁一次——本机与 CI 装了不同版本的 linter 是一种
+# 不会报错的分歧。这里加你的：按进程分组的运行依赖（例如 `worker = [...]`），
+# 每个组 = 该进程入口追 import 链得到的第三方依赖闭包，镜像只装它那一组。
+dev = ["shellcheck-py==0.11.0.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "app.__version__"}
