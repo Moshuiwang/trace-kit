@@ -1,0 +1,60 @@
+name: kit-selfcheck
+
+# 套件自身的门禁：禁词扫描、链接检查、脚本语法、空项目冒烟（把 template 起成空项目并跑它的全部本机门禁）。
+# 出处：Trace #1 合同 §4「套件自检 CI」。
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kit-selfcheck-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  selfcheck:
+    name: kit-selfcheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 配置 Python 运行时
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: 安装套件自检依赖（锁定版本的 shellcheck、PyYAML）
+        run: python3 -m pip install 'shellcheck-py==0.11.0.1' 'PyYAML==6.0.2'
+
+      - name: 禁词扫描（template / plugin 不含 lingxi 名词、主机名、路径、凭据）
+        run: scripts/kit/check_no_lingxi.sh
+
+      - name: 套件仓库 Markdown 链接检查
+        run: python3 scripts/kit/check_links.py
+
+      - name: 套件脚本语法与 ShellCheck
+        run: |
+          bash -n init.sh scripts/kit/*.sh
+          shellcheck --severity=warning init.sh scripts/kit/*.sh
+
+      - name: 行尾空白
+        run: |
+          files=$(git grep -Il -E '[[:blank:]]+$' -- . || true)
+          if [ -n "${files}" ]; then
+            printf '以下文件包含行尾空白：\n%s\n' "${files}" >&2
+            exit 1
+          fi
+
+      - name: 空项目冒烟（init.sh → verify_docs → check.sh 三层 → 部署契约 → compose 结构 → 工作流 YAML）
+        run: scripts/kit/smoke.sh --strict "${RUNNER_TEMP}/smoke"
