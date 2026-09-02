@@ -70,7 +70,7 @@ pairs=(
 )
 
 # lingxi 侧差异行命中其一即视为 G3（产品名词 / lingxi 内部标识 / 被裁掉的 lingxi 专属机制）。
-g3='lingxi|LINGXI|灵犀|飞书|Bot-|百炼|MCP|Agent SDK|Claude Code \+|银河|花名册|JumpServer|Supabase|biai|biplus|权限|开通|问数|管理员|交付|投递|卡片|会话|scheduler|gateway|worker|reauthorize|oauth|OAuth|alembic|migration|content\.toml|翻译|令牌|凭据|extras|npm|node|Node|四镜像|四个镜像|双构建|Issue #|#[0-9]{2,3}|PR #|V-[^示]|src/lingxi|tests/test_|通报|采集|审计|内测|Epic [A-Z]|S-[A-Z]|Trace #|2026-0[789]-[0-9]{2}|L1 |L3 |permission|galaxy|feishu|docx|tmpfs|LINGXI_|lingxi-|admin|Admin|/admin|记忆|表格|文档交付|高级工作台|旧系统|存量|职位|公司|指标|Story Fast|Epic Full|Main Publish|lark|CardKit|Bridge|百炼|受控|真库|PostgreSQL|postgres|Supabase|shellcheck|Python|python'
+g3='lingxi|Lingxi|LINGXI|代码框架|Codex|codex|灵犀|飞书|Bot-|百炼|MCP|Agent SDK|Claude Code \+|银河|花名册|JumpServer|Supabase|biai|biplus|权限|开通|问数|管理员|交付|投递|卡片|会话|scheduler|gateway|worker|reauthorize|oauth|OAuth|alembic|migration|content\.toml|翻译|令牌|凭据|extras|npm|node|Node|四镜像|四个镜像|双构建|Issue #|#[0-9]{2,3}|PR #|V-[^示]|src/lingxi|tests/test_|通报|采集|审计|内测|Epic [A-Z]|S-[A-Z]|Trace #|2026-0[789]-[0-9]{2}|L1 |L3 |permission|galaxy|feishu|docx|tmpfs|LINGXI_|lingxi-|admin|Admin|/admin|记忆|表格|文档交付|高级工作台|旧系统|存量|职位|公司|指标|Story Fast|Epic Full|Main Publish|lark|CardKit|Bridge|百炼|受控|真库|PostgreSQL|postgres|Supabase|shellcheck|Python|python'
 
 printf '# 自回灌 diff 报告（template ⟷ lingxi %s）\n\n' "${ref}"
 printf '| template 文件 | lingxi 对应 | lingxi 行数 | template 行数 | lingxi 侧差异行 | 命中 G3 | 未命中（人工复核） |\n'
