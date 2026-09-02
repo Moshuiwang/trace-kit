@@ -1,0 +1,45 @@
+# 生产覆盖。与 deploy/compose.stage.yaml **结构完全相同**，只有配置值不同
+# （scripts/ci/verify_compose_structure.sh 每次 CI 都比对这一点）。
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/62；验证：prod 首发（2026-09-02）
+#
+#   docker compose --env-file deploy/.env.prod \
+#     -f deploy/compose.yaml -f deploy/compose.prod.yaml up -d
+#
+# `--env-file` 不能省，理由见 compose.stage.yaml 顶部与 deploy/README.md。
+#
+# **这里没有 `build:` 键，deploy/compose.yaml 里也没有。** 生产只拉镜像、不构建。
+# 回滚 = 改 APP_IMAGE_TAG（与 APP_IMAGE_DIGEST）后 `up -d`，见 deploy/README.md。
+#
+# 凭据**按服务分文件**，理由见 compose.stage.yaml 顶部。本环境两个运行时 env 文件：
+# .env.prod.app / .env.prod.migrate，**都必须 0600**，核对步骤见 deploy/README.md 的 preflight。
+# 生产凭据集与研发/stage 凭据集完全隔离，任何一个值都不得与 .env.stage.* 系列重复。
+#
+# 本文件的存在**不代表已经可以部署生产**：任何一次真实生产执行都先有独立的 [ops] Issue
+# 完成事实确认与授权，固定镜像 digest、备份点、执行窗口、观察期和回滚目标
+# （见 deploy/生产部署runbook.md）。
+
+services:
+  app:
+    env_file:
+      - ./.env.prod.app
+    # 资源限制：生产建议值（推导与加总核对见 deploy/README.md「资源限制」）。
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_CPU_LIMIT:-1.0}"
+          memory: ${APP_MEM_LIMIT:-1G}
+          pids: ${APP_PIDS_LIMIT:-512}
+
+  migrate:
+    env_file:
+      - ./.env.prod.migrate
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_MIGRATE_CPU_LIMIT:-1.0}"
+          memory: ${APP_MIGRATE_MEM_LIMIT:-1G}
+          pids: ${APP_MIGRATE_PIDS_LIMIT:-512}
+
+volumes:
+  app-data:
+    name: app-prod-data

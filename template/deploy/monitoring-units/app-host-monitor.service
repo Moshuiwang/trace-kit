@@ -1,0 +1,17 @@
+[Unit]
+Description=宿主级容器健康告警：一轮 docker inspect 判定与群告警
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/373（D5；deploy/监控告警.md「已知限制」记录的 stage 实际安装形态）；验证：stage 两次真实注入
+After=docker.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+# 这里换成运行监控的宿主账户：需能执行 `docker container inspect`（例如在 docker 组），
+# 且必须是凭据文件的属主（脚本会核对 0600 与属主，不符拒绝执行）。
+User=deploy
+# 这里换成你的安装目录（与 deploy/监控告警.md「安装」一节一致）。
+WorkingDirectory=/opt/app/monitoring
+# 凭据只经 --env-file 指向的 0600 文件读取，不进 ExecStart 命令行（argv 对同机其他账户可见）。
+ExecStart=/usr/bin/python3 /opt/app/scripts/host_health_alert.py --env-file /opt/app/monitoring/host-monitor.env
+# 单轮最坏耗时 = 容器数 × docker inspect 超时 + 至多一次 webhook 调用，默认各 10 秒。
+TimeoutStartSec=60

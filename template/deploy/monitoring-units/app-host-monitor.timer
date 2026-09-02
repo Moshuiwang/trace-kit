@@ -1,0 +1,13 @@
+[Unit]
+Description=每分钟触发一次宿主级容器健康告警
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/373（D5）；验证：stage 两次真实注入
+
+[Timer]
+# 每分钟一轮：脚本支持 1–2 分钟内任意频率，取 1 分钟能让「时延估算」里轮询这一段最短
+# （deploy/监控告警.md「时延估算」）。语义与 crontab `* * * * *` 等效，宿主没有 cron 时用本单元。
+OnCalendar=*-*-* *:*:00
+AccuracySec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
