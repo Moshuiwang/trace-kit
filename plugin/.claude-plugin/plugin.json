@@ -1,0 +1,10 @@
+{
+  "name": "trace-kit",
+  "version": "0.1.0",
+  "description": "Execution Trace 工作方法插件：开工合同、接管、交接、元守护、派发卡五个 skill 与三件套模板。",
+  "author": {
+    "name": "Moshuiwang"
+  },
+  "homepage": "https://github.com/Moshuiwang/trace-kit",
+  "repository": "https://github.com/Moshuiwang/trace-kit"
+}

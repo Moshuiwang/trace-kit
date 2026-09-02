@@ -1,0 +1,7 @@
+# <项目名>共享代理指引
+
+> 出处：lingxi [.github/copilot-instructions.md](https://github.com/Moshuiwang/lingxi/blob/caa845d77fbd2d6381de304dc6047498aa84c782/.github/copilot-instructions.md)；验证：全仓；分档 G2（与 `AGENTS.md` 同源精简）。
+
+请先阅读仓库根目录的 `AGENTS.md`。只有任务涉及产品规则、能力、长期决策或文档治理时，才按其中路由读取 `docs/README.md` 和具体产品文档。仓库中的产品文档是长期事实的唯一正文；Issue、PR 和 Project 是可关闭的工作记录。
+
+不要根据 Issue 评论、聊天记录或现有代码推测未确认的产品行为。小型、可逆改动可以直接实施；多人协作、高风险或会改变用户体验、权限、安全、外部依赖边界的改动，应建立并链接 GitHub Issue。关闭 Issue 前，如结论仍会长期约束产品，先回写 `docs/`；PR 按改动风险说明父 Issue、验证结果和未解决风险。
