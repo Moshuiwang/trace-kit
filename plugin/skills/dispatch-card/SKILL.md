@@ -17,7 +17,7 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 4. 六条款与附加条款原样保留；审查卡另填「审查派发」小节。
 5. 派出后按下节自挂兜底观察，记下预计时长与到点要查的外部证据。
 
-## 六条款（`METHOD.md` §6.4 原文）
+## 六条款（`METHOD.md` §6.4；第 3 条的项目门禁耗时括注已参数化）
 
 1. **一路做到底**：按自己列的顺序做完再报，不逐步向编排者确认；只有需要产品取舍、扩大范围、或不同意编排者裁定时才停下。
 2. **不得派发任何子代理。**
@@ -28,14 +28,13 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 
 ## 实测附加条款（每条一句，带出处）
 
-- 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——三个实施代理因命令转后台而全部未提交（https://github.com/Moshuiwang/lingxi/issues/203）。
+- 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（`METHOD.md` §6.4 第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
 - 预计 >2 分钟的命令一律后台或显式超时；等待用 until 循环，禁 sleep 串联（https://github.com/Moshuiwang/lingxi/issues/330）。
 - 每个代理独立 worktree（Agent 工具 `isolation: worktree`），同一工作树同一时刻只允许一个写入者（https://github.com/Moshuiwang/lingxi/issues/203 事故实证）。
 - 临时文件只放私有 scratchpad 子目录，不与其他代理共用文件名——共用目录使一批变异静默跑空（https://github.com/Moshuiwang/lingxi/issues/521）。
 - Python 项目变异实测全程 `python -B` 或逐次清 `__pycache__`，不以 mtime / size 判断源码已还原（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）。
 - 先确认被测模块的 `__file__` 在源码树——非 editable 安装的 venv 改源码不生效，全绿是假绿（https://github.com/Moshuiwang/lingxi/issues/521）。
 - 改完先 commit 再汇报，工作树上不留未提交改动；进等待必须上报（https://github.com/Moshuiwang/lingxi/issues/330）。
-- 门禁命令退出码显式捕获，禁止 `cmd > log; echo EXIT=$?` 包装与任何管道形式收尾（https://github.com/Moshuiwang/lingxi/pull/299）。
 - 报告逐条「已改 / 未改 + 原因」，与卡面裁定不一致处给证据（https://github.com/Moshuiwang/lingxi/issues/203）。
 
 ## 编排者侧
