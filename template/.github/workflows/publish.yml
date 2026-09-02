@@ -1,0 +1,103 @@
+name: Main Publish
+
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/82（回读候选证明、树一致才发布不可变 tag）；
+# 验证：每次代码合 main。
+#
+# 合入 main 后不重跑门禁：先回读 Epic Full 留下的候选证明，证明里的 Git tree 与 main 当前树
+# 一致才构建一次并发布不可变 tag；没有关联 PR、证明过期或回读失败一律关闭失败。
+# 这里换成你的：多镜像时在 publish job 里循环构建/推送；镜像名的服务后缀按进程命名。
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'pyproject.toml'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'deploy/**'
+      - '.github/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    name: Main Publish / accepted candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - name: 检出合并结果
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 回读 Epic Full 候选证明
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/ci/verify_epic_candidate.py \
+            --repository "${GITHUB_REPOSITORY}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --tree-sha "$(git rev-parse 'HEAD^{tree}')" \
+            --summary "${GITHUB_STEP_SUMMARY}"
+
+  publish:
+    name: Main Publish
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [candidate]
+    timeout-minutes: 30
+    # 只有这一个 job 持有 packages 写权限，且它只在 push + main 上触发：PR 阶段的 job 拿不到
+    # 推送权限，"合并后才发布"这道门不能在 PR 阶段被绕过。
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # 不可变 tag = <UTC 批次日期>-<提交 sha 前 12 位>：同一提交恒定，不同提交必不同名。
+      # GHCR 要求仓库路径全小写，而 GitHub 的 owner 名可能含大写，这里统一转小写。
+      - name: 计算不可变 tag 与镜像名
+        id: tag
+        run: |
+          batch=$(date -u +%Y%m%d)
+          short=$(echo "${GITHUB_SHA}" | cut -c1-12)
+          owner=$(printf '%s' "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          echo "tag=${batch}-${short}" >> "${GITHUB_OUTPUT}"
+          echo "image=ghcr.io/${owner}/app" >> "${GITHUB_OUTPUT}"
+          echo "发布目标：ghcr.io/${owner}/app:${batch}-${short}"
+
+      - name: 构建发布镜像（只构建一次）
+        env:
+          IMAGE: ${{ steps.tag.outputs.image }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: docker build --tag "${IMAGE}:${TAG}" .
+
+      - name: 登录 GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+
+      - name: 推送不可变 tag
+        env:
+          IMAGE: ${{ steps.tag.outputs.image }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          docker push "${IMAGE}:${TAG}"
+          echo "## 已发布镜像" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- ${IMAGE}:${TAG}" >> "${GITHUB_STEP_SUMMARY}"

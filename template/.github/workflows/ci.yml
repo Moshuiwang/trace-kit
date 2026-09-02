@@ -1,0 +1,309 @@
+name: Epic Full
+
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/82（分层 CI 与候选证明）、
+# https://github.com/Moshuiwang/lingxi/issues/43（瘦身）、https://github.com/Moshuiwang/lingxi/issues/278
+# （Image-Candidate 显式触发）；验证：2026-08-07 起约 250 个 PR、每次合 main。
+#
+# 这里加你的：真库（gate job 加 services，并给 scripts/dev/check.sh 的 full 层补同配方容器）/
+# 多镜像（image job 里循环构建）/ 额外 extras（安装步骤的 '.[dev]' 改成 '.[dev,xxx]'，
+# 本机 check.sh 会现读跟上）。
+#
+# required check 只认下面 candidate 那个稳定名称 `Epic Full`。
+
+on:
+  pull_request:
+    branches:
+      - main
+  # Story Fast 遇到部署、依赖或 CI 自身改动时复用同一份完整门禁，
+  # 不在两个工作流里复制一套以后必然漂移的检查。
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 面向 main 的 PR，文档改动都运行文档门禁；纯文档不需要仓库门禁或镜像回归，并产出稳定的
+  # `Epic Full` required check。复用 Story 的路径分类器，避免在两处维护"什么是文档"。
+  # 被 Story Fast 复用（workflow_call）时一律走完整门禁，只有 main PR 才允许此轻量分支。
+  classify:
+    name: Epic / classify
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      mode: ${{ steps.changes.outputs.mode }}
+      docs_changed: ${{ steps.changes.outputs.docs_changed }}
+      image_candidate: ${{ steps.image_candidate.outputs.value }}
+    steps:
+      - name: 检出代码与比较基线
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: 路由改动
+        id: changes
+        run: |
+          python3 scripts/ci/classify_story_changes.py \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --head "${{ github.event.pull_request.head.sha }}" \
+            --github-output "${GITHUB_OUTPUT}"
+
+      # 跟踪 PR（epic/* -> main）冻结候选镜像构建的显式触发信号（出处见文件头）。
+      # `if:` 表达式读不到提交正文，只能读 github 上下文；这一步把它落成一个 job output
+      # 给下面 image job 的 `if:` 用。用 `git log -1 --format=%B <head sha>` 而不是 `HEAD`——
+      # 本步检出的是 pull_request 事件默认的临时 merge 提交，其正文是 GitHub 自动生成的
+      # 合并说明，不是 PR 真正的头提交正文；上面 fetch-depth: 0 已经把头提交对象拉全。
+      #
+      # 标记用 git trailer 形状（独占一行、精确匹配 `Image-Candidate: true`），不用行内的
+      # 方括号写法——描述标记本身的说明文字（这条注释、commit message、部署文档）自然会
+      # 包含方括号写法的字面量，子串匹配会让任何"提到这个标记"的提交都被误判成"触发"。
+      # trailer 要求整行精确匹配，没人会在说明性文字里恰好单独写一行 `Image-Candidate: true`。
+      - name: 检测冻结候选触发标记
+        id: image_candidate
+        run: |
+          message=$(git log -1 --format=%B "${{ github.event.pull_request.head.sha }}")
+          if printf '%s\n' "${message}" | grep -qE '^Image-Candidate: true$'; then
+            echo 'value=true' >> "${GITHUB_OUTPUT}"
+            echo '检测到冻结候选触发标记 Image-Candidate: true'
+          else
+            echo 'value=false' >> "${GITHUB_OUTPUT}"
+          fi
+
+  docs:
+    name: Epic Full / docs
+    needs: [classify]
+    if: >-
+      github.event_name == 'pull_request' && github.base_ref == 'main' &&
+      needs.classify.outputs.docs_changed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 运行文档门禁
+        run: scripts/ci/verify_docs.sh
+
+  gate:
+    name: Epic Full / gate
+    needs: [classify]
+    if: >-
+      github.event_name != 'pull_request' || github.base_ref != 'main' ||
+      needs.classify.outputs.mode != 'docs'
+    runs-on: ubuntu-24.04
+    # runner 的波动系数实测可达 3 倍以上，10 分钟吸收绝大多数波动；接入真库后按实测再调。
+    timeout-minutes: 10
+    # 这里加你的真库：services.postgres（镜像固定小版本、健康检查、端口发布到 runner），
+    # 并把 DSN 以 APP_ 前缀环境变量传给下面的仓库门禁步骤。
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # 不写这一步时门禁跑在 runner 镜像碰巧自带的 python3 上：ubuntu-24.04 恰好是 3.12，
+      # 那是巧合不是声明。固定小版本而不是读 pyproject 的 ">=3.12"：后者是开区间，新 Python
+      # 发布时门禁会自己跳版本；verify_repository.sh 另有一道校验确保这里不低于声明的下限。
+      - name: 配置 Python 运行时
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+
+      # extras 只写在这一行：scripts/dev/gate_spec.py 现读它给本机 check.sh 用，改了 step 名
+      # 或写法本机会响亮失败。shellcheck 用 pip 分发并在 pyproject.toml 的 dev 组锁版本，
+      # 本机装同一个——runner 镜像自带的 shellcheck 既没锁定也没打印，同一个提交可能因为
+      # 镜像更新得到不同结论。
+      - name: 安装测试依赖
+        run: python3 -m pip install '.[dev]'
+
+      - name: 运行基础质量门禁
+        run: scripts/ci/verify_repository.sh
+
+      # 安装与测试都在检出目录里跑。生成物已被 .gitignore 覆盖，但受版本控制的文件若被改写，
+      # 没有这一步不会有任何人发现——CI 仍会全绿。
+      - name: 校验 CI 没有改写受版本控制的文件
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'CI 过程改写了工作树：' >&2
+            git status --porcelain >&2
+            exit 1
+          fi
+          echo '工作树洁净：CI 未改写受版本控制的文件'
+
+  # 镜像构建与部署门禁。**必须等 gate 通过**：一个门禁没过的提交不该获得可部署制品——
+  # 「失败的提交不得获得可部署制品」比「省几分钟」重要。
+  #
+  # 跟踪 PR（epic/* -> main）整个 Epic 期间只开一次，每个 Story 合入 epic 分支都会把它
+  # synchronize 一次，每次都会照原样触发到本 job，而其中绝大多数镜像纯属陪跑（出处见文件头）。
+  # 下面这行只掐掉这一种场景的**首次自动触发**：目标是 main、来源分支是 epic/**、且既没有
+  # 显式重跑也没有冻结候选触发标记。gate 仍然每次都跑。直接 PR 到 main 的普通改动不受影响。
+  #
+  # 编排者准备冻结候选时的主姿势：在跟踪 PR 的 epic 分支上开一个空提交的 Story PR，squash
+  # 合并时把提交信息末尾加一行 `Image-Candidate: true`——上面 classify job 的「检测冻结候选
+  # 触发标记」步骤会把它读出来传给这里。备选：有 Actions 写权限的身份对该 run 执行
+  # `gh run rerun <run-id>`（全量重跑），`github.run_attempt` 变成 '2' 时同样不再匹配跳过条件。
+  # 不管走哪条姿势，产出的 run 都必须仍是 `event=pull_request`：Main Publish 的
+  # verify_epic_candidate.py 只认这个 event 类型的 run 去找候选证明 artifact。
+  image:
+    name: Epic Full / image
+    runs-on: ubuntu-24.04
+    needs: [classify, gate]
+    if: >-
+      github.event_name != 'pull_request' || github.base_ref != 'main' ||
+      (needs.classify.outputs.mode != 'docs' &&
+      (!startsWith(github.head_ref, 'epic/') || github.run_attempt != '1' ||
+      needs.classify.outputs.image_candidate == 'true'))
+    timeout-minutes: 20
+    # **本 job 不要任何写权限**：它在 pull_request 上也会跑，而同仓分支的 PR job 会照样拿到
+    # 这里声明的令牌——于是一个被改造过的 workflow 可以在 PR 阶段就推 / 覆盖 GHCR，把
+    # "合并后才发布"这道门整个绕过去。推送因此只住在 publish.yml，只在 push + main 触发。
+    permissions:
+      contents: read
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 计算不可变 tag
+        id: tag
+        run: |
+          batch=$(date -u +%Y%m%d)
+          short=$(echo "${GITHUB_SHA}" | cut -c1-12)
+          echo "tag=${batch}-${short}" >> "${GITHUB_OUTPUT}"
+          echo "不可变 tag：${batch}-${short}"
+
+      # 只构建一次，证明这棵树装得出镜像；不推送（本 job 没有也不该有写权限）。
+      # 这里加你的：多镜像时循环构建；需要"两次构建内容级等价"时用两个不同长度的绝对路径
+      # 各构建一次再比内容清单（镜像配置里有 created 时间戳，比 digest 只会得到"永远不等价"）。
+      - name: 构建镜像（只构建一次）
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: docker build --tag "app:${TAG}" .
+
+      # 部署编排的 stage 与生产渲染后结构必须相同、只有配置不同（脚本由部署骨架提供）。
+      - name: Compose 结构对照（stage ↔ 生产）
+        run: scripts/ci/verify_compose_structure.sh
+
+  # required check 只认这个稳定名称。main 的纯文档 PR 只要求分类器和文档校验；跟踪 PR
+  # （head 为 epic/**）没有冻结候选触发标记的自动 synchronize 只要求 gate 通过，image 允许是
+  # skipped；除此之外的 PR（含直接 PR 到 main 的普通改动、以及带 `Image-Candidate: true`
+  # 标记或显式重跑之后的那次尝试）要求 gate、image 全部成功，并留下一份带树摘要的候选证明。
+  # Main Publish 只接受与该证明相同的合并树，因此合并后无需再跑一遍完整门禁。
+  candidate:
+    name: Epic Full
+    runs-on: ubuntu-24.04
+    if: always()
+    needs: [classify, docs, gate, image]
+    timeout-minutes: 3
+
+    steps:
+      - name: 确认完整门禁全部通过
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          MODE: ${{ needs.classify.outputs.mode }}
+          DOCS_CHANGED: ${{ needs.classify.outputs.docs_changed }}
+          CLASSIFY_RESULT: ${{ needs.classify.result }}
+          DOCS_RESULT: ${{ needs.docs.result }}
+          GATE_RESULT: ${{ needs.gate.result }}
+          IMAGE_RESULT: ${{ needs.image.result }}
+        run: |
+          if [ "${EVENT_NAME}" = pull_request ] && [ "${CLASSIFY_RESULT}" != success ]; then
+            printf 'Epic 分类器未通过：%s\n' "${CLASSIFY_RESULT}" >&2
+            exit 1
+          fi
+          if [ "${EVENT_NAME}" = pull_request ] && [ "${DOCS_CHANGED}" = true ] \
+             && [ "${DOCS_RESULT}" != success ]; then
+            # main PR 的 Epic Full / docs 应运行；epic/** -> main 的跟踪 PR 由 Story Fast / docs
+            # 覆盖文档，复用进来的 Epic Full / docs 按设计 skipped——只允许恰好是 skipped，
+            # 若 Epic 侧意外失败/取消，仍不能被汇总吞掉。
+            case "${BASE_REF}:${DOCS_RESULT}" in
+              epic/*:skipped) : ;;
+              *)
+                printf '候选文档门禁未通过：base=%s result=%s\n' \
+                  "${BASE_REF}" "${DOCS_RESULT}" >&2
+                exit 1
+                ;;
+            esac
+          fi
+          if [ "${EVENT_NAME}" = pull_request ] && [ "${BASE_REF}" = main ] && [ "${MODE}" = docs ]; then
+            if [ "${CLASSIFY_RESULT}" != success ] || [ "${DOCS_RESULT}" != success ]; then
+              printf '纯文档候选未通过：classify=%s docs=%s\n' \
+                "${CLASSIFY_RESULT}" "${DOCS_RESULT}" >&2
+              exit 1
+            fi
+            echo 'Epic 纯文档候选：文档门禁通过；不运行仓库门禁或镜像构建'
+            exit 0
+          fi
+          # 跟踪 PR（epic/* -> main）首次自动触发的 synchronize，image 被上面的 job 级 if 故意
+          # 跳过——这不是失败，只是还没人显式要一份镜像。只要求 gate 通过；不产出候选证明
+          # （下面两步同样按 image 是否 success 把关，不靠这里的 exit 0 兜底）。
+          case "${HEAD_REF}" in epic/*) is_epic_head=1 ;; *) is_epic_head=0 ;; esac
+          if [ "${EVENT_NAME}" = pull_request ] && [ "${BASE_REF}" = main ] \
+             && [ "${is_epic_head}" = 1 ] && [ "${RUN_ATTEMPT}" = 1 ] && [ "${IMAGE_RESULT}" = skipped ]; then
+            if [ "${GATE_RESULT}" != success ]; then
+              printf 'Epic 分支同步未通过：gate=%s\n' "${GATE_RESULT}" >&2
+              exit 1
+            fi
+            echo 'Epic 分支同步：gate 通过；镜像按需触发，本次未自动构建，不产出候选证明'
+            echo '如需为这次同步产出候选证明：在 epic 分支上开一个空提交的 Story PR，'
+            echo 'squash 合并时把提交信息末尾加一行 Image-Candidate: true；'
+            echo '或者由有 Actions 写权限的身份对本次 run 执行 `gh run rerun <run-id>`（全量重跑）。'
+            exit 0
+          fi
+          if [ "${GATE_RESULT}" != success ] || [ "${IMAGE_RESULT}" != success ]; then
+            printf 'Epic 候选未冻结：gate=%s image=%s\n' "${GATE_RESULT}" "${IMAGE_RESULT}" >&2
+            exit 1
+          fi
+          echo 'Epic 候选完整门禁：全部通过'
+
+      # 三步都额外要求 image 真正 success（不是「非文档」就够）：跟踪 PR 的自动 synchronize 里
+      # image 常态是 skipped，此时绝不能写出候选证明——那会让 Main Publish 误以为一份从没
+      # 构建过镜像的树可以发布。
+      - name: 检出代码
+        if: >-
+          github.event_name == 'pull_request' &&
+          !(github.base_ref == 'main' && needs.classify.outputs.mode == 'docs') &&
+          needs.image.result == 'success'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 写入候选身份
+        if: >-
+          github.event_name == 'pull_request' &&
+          !(github.base_ref == 'main' && needs.classify.outputs.mode == 'docs') &&
+          needs.image.result == 'success'
+        run: |
+          python3 scripts/ci/write_epic_candidate.py \
+            --repository "${GITHUB_REPOSITORY}" \
+            --pr-number "${{ github.event.pull_request.number }}" \
+            --head-sha "${{ github.event.pull_request.head.sha }}" \
+            --tested-sha "${GITHUB_SHA}" \
+            --tree-sha "$(git rev-parse 'HEAD^{tree}')" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --output "${RUNNER_TEMP}/epic-candidate/candidate.json"
+
+      - name: 留存候选证明
+        if: >-
+          github.event_name == 'pull_request' &&
+          !(github.base_ref == 'main' && needs.classify.outputs.mode == 'docs') &&
+          needs.image.result == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: epic-candidate-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/epic-candidate/candidate.json
+          if-no-files-found: error
+          retention-days: 30
