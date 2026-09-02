@@ -14,9 +14,9 @@
 
 首个版本。分级清单（G1 直接搬 / G2 去 lingxi 名词参数化 / G3 只作示例）与逐项出处见 [Trace #1 第 0 步评论](https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5503411104)；下面按目录列出带入的资产。
 
-**证据等级**（产品负责人全局 1–7 级）：套件脚本与文档 = 4（本仓 `kit-selfcheck` 在 GitHub Actions 上跑通空项目冒烟）；`template/.github/workflows/*` = 3（YAML 可解析、与本机 `check.sh` 现读一致，**未在真实 Actions 上运行过**）；插件 = 3 + 本机真实旅程（`--plugin-dir` 加载、kickoff 在空项目生成三件套）；远端 `claude plugin install` 未验证。
+**证据等级**（产品负责人全局 1–7 级）：套件脚本与文档 = 4（本仓 `kit-selfcheck` 在 GitHub Actions 上跑通空项目冒烟）；`template/.github/workflows/*` = 3（YAML 可解析、与本机 `check.sh` 现读一致，**未在真实 Actions 上运行过**）；插件 = 3 + 本机真实旅程（`--plugin-dir` 加载、kickoff 在空项目生成三件套）+ 远端安装已验证（从 GitHub 添加市场并安装、`claude plugin list` 显示 0.1.0 enabled，随后卸载还原）。
 
-**未验证 / 日落候选**：template 工作流的真实 Actions 运行与 `Main Publish` 的 GHCR 推送、插件远端安装，留给第一个真实试穿项目；`check_size_ratchet.py` 若第一个项目用不上，下一版删除。
+**未验证 / 日落候选**：template 工作流的真实 Actions 运行与 `Main Publish` 的 GHCR 推送，留给第一个真实试穿项目；`check_size_ratchet.py` 若第一个项目用不上，下一版删除。
 
 ### Added
 

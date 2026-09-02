@@ -18,6 +18,8 @@
 
 ## 怎么用
 
+什么时候用哪一层：日常改代码直接跑 `scripts/dev/check.sh`（无参数按当前改动自动分层）；**冻结前仍必须跑一次完整的 CI `Epic Full`**（本机 `full` 只覆盖其中的 `gate` 作业，不能替代 `image` 作业，也不能替代 CI 本身），`fast` 通过不代表 `full` 已验收，`full` 通过也不代表 `Epic Full` 已验收。本骨架没有数据库，`fast` 与 `full` 的差别只在配方来源；
+
 ## 换什么
 
-什么时候用哪一层：日常改代码直接跑 `scripts/dev/check.sh`（无参数按当前改动自动分层）；**冻结前仍必须跑一次完整的 CI `Epic Full`**（本机 `full` 只覆盖其中的 `gate` 作业，不能替代 `image` 作业，也不能替代 CI 本身），`fast` 通过不代表 `full` 已验收，`full` 通过也不代表 `Epic Full` 已验收。本骨架没有数据库，`fast` 与 `full` 的差别只在配方来源；这里换成你的：接入真库后在 `check.sh` 的 `run_full` 里按注释加容器配方，镜像与库名同样由 `gate_spec.py` 从 `ci.yml` 现读。本入口对齐的是依赖版本，不对齐操作系统本身——GitHub Actions runner 是 `ubuntu-24.04`，本机操作系统不保证逐位一致。
+这里换成你的：接入真库后在 `check.sh` 的 `run_full` 里按注释加容器配方，镜像与库名同样由 `gate_spec.py` 从 `ci.yml` 现读。本入口对齐的是依赖版本，不对齐操作系统本身——GitHub Actions runner 是 `ubuntu-24.04`，本机操作系统不保证逐位一致。
