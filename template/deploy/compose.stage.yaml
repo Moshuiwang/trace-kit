@@ -1,0 +1,44 @@
+# stage 覆盖。与 deploy/compose.prod.yaml **结构完全相同**，只有配置值不同：
+# env_file 指向哪个文件、卷叫什么名字、资源限制多大。
+# 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/62；验证：stage 20+ 次升级
+#
+#   docker compose --env-file deploy/.env.stage \
+#     -f deploy/compose.yaml -f deploy/compose.stage.yaml up -d
+#
+# `--env-file` 不能省：`env_file:` 只把变量注入**容器**，不参与 compose 文件自身的
+# `${VAR:?}` 插值。省了它，compose 会说 APP_IMAGE_REGISTRY 没设并直接退出。
+# 完整命令见 deploy/README.md。
+#
+# 凭据**按服务分文件**，不是几个服务共用一份：每个进程只拿自己那份，多给的每一个
+# 变量都是它不该有的凭据（进程会把环境继承给子进程时尤其如此）。两个运行时文件都
+# 匹配 .gitignore 的 `.env.*` 规则，不入库；都必须 0600，核对步骤见 deploy/README.md
+# 的 preflight。
+#
+# stage 只连测试依赖，**永不连生产库或生产侧的任何外部通道**。
+
+services:
+  app:
+    env_file:
+      - ./.env.stage.app
+    # 资源限制：stage 建议值。所有服务加总必须留出宿主机与 Docker 守护进程本身的余量。
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_CPU_LIMIT:-0.5}"
+          memory: ${APP_MEM_LIMIT:-512M}
+          pids: ${APP_PIDS_LIMIT:-256}
+
+  migrate:
+    env_file:
+      - ./.env.stage.migrate
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_MIGRATE_CPU_LIMIT:-0.5}"
+          memory: ${APP_MIGRATE_MEM_LIMIT:-512M}
+          pids: ${APP_MIGRATE_PIDS_LIMIT:-256}
+
+volumes:
+  # 具名卷带上环境前缀：同一台机器上万一并存两套编排，卷不会互相覆盖。
+  app-data:
+    name: app-stage-data
