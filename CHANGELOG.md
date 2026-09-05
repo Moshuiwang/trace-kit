@@ -43,6 +43,8 @@
 
 - `.github/CODEOWNERS`（本仓自用）：`docs/traces/**/合同.md @Moshuiwang` — 出处 [#13 第 6 项](https://github.com/Moshuiwang/trace-kit/issues/13)（本仓九个 PR #2–#10 全部由机器人自发自合，含合同 PR #2；Graph Engineering 完全指南「The publishing node should literally be unreachable until approval exists」） — 验证口径：**一次实证（本仓）**，按准入门槛先只进本仓，`template/` 等第一个采用项目再带入（第二次实证）。**未完成**：main 分支规则集（要求这些路径经代码所有者审查）需产品负责人在 Settings 操作（机器人 403）；未建之前「合并即批准」仍只是约定。首个合同 PR 的 `mergedBy` 是否为产品负责人本人，留到下一个 Trace 验证。
 
+- `init.sh` 新增删除 `tests/board/` 与套件根 `.gitignore`（看板夹具与单测是套件自身资产，不进新项目；smoke 实测：不删则新项目的合同归属检查会扫到夹具里的「按合同」字样而红） — 出处 Trace #17 集成实测 — 验证：`smoke.sh --strict` 6/6。
+
 ### 体量核对（日落条款）
 
 - `template/` 受版本控制文件总字节数：410114 → 410114（本批未改）。`plugin/`：85355 → 86836（+1481）。`templates/合同.md`：6336 → **6137（−199）**，满足 [#13](https://github.com/Moshuiwang/trace-kit/issues/13) 关卡 5「小于 6336B」。
