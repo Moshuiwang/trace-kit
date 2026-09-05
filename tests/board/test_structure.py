@@ -181,6 +181,39 @@ class RecordGuardTest(unittest.TestCase):
                 os.unlink(link)
 
 
+class DeadlineTest(unittest.TestCase):
+    """账本 R1-30：build_board 单一绝对 deadline（args.timeout 秒）传给 source.deadline；采集耗尽预算 → 头部「本轮超时」。"""
+
+    def _build(self, timeout, collect_delay):
+        import time
+        import types
+        from unittest import mock
+        import board as cli
+        seen = {}
+
+        def fake_collect(repo_root, trace, branch, conf, now, source):
+            seen["deadline"] = getattr(source, "deadline", None)
+            time.sleep(collect_delay)
+            return object()
+
+        args = types.SimpleNamespace(now=None, timeout=timeout, repo_root=".", trace=None, branch=None)
+        src = types.SimpleNamespace(now=None)
+        t0 = time.monotonic()
+        with mock.patch.object(cli.collect, "collect", fake_collect), mock.patch.object(cli.infer, "infer", lambda snap, conf: sample_boards.board_simple()):
+            b = cli.build_board(args, None, src)
+        return b, seen, t0
+
+    def test_r1_30_deadline_passed_and_timeout_warning(self):
+        b, seen, t0 = self._build(timeout=1, collect_delay=1.3)
+        self.assertIsNotNone(seen["deadline"])
+        self.assertAlmostEqual(seen["deadline"] - t0, 1.0, delta=0.3)
+        self.assertTrue(any("本轮超时" in w for w in b.header.warnings), b.header.warnings)
+
+    def test_r1_30_no_warning_within_budget(self):
+        b, seen, _ = self._build(timeout=5, collect_delay=0.0)
+        self.assertFalse(any("本轮超时" in w for w in b.header.warnings))
+
+
 class GoodValues(unittest.TestCase):
     """合法取值不许被误判为错。"""
 

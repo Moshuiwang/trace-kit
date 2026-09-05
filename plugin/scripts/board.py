@@ -11,6 +11,7 @@ import argparse
 import os
 import shutil
 import sys
+import time
 from datetime import datetime, timezone
 
 sys.dont_write_bytecode = True  # 账本 R1-28：插件代码可能位于目标仓库内，绝不写 __pycache__
@@ -50,11 +51,21 @@ def _now(args):
 
 
 def build_board(args, conf, source):
+    """一轮：采集 → 推断 → 校验。账本 R1-30：单一绝对 deadline（--timeout 秒）交给采集源；采集耗尽预算不再等，头部告警「本轮超时」。"""
+    budget = max(1.0, float(getattr(args, "timeout", 60) or 60))
+    deadline = time.monotonic() + budget
+    try:
+        source.deadline = deadline
+    except AttributeError:
+        pass
     now = _now(args)
     if now is None:
         now = getattr(source, "now", None) or datetime.now(timezone.utc)
     snap = collect.collect(args.repo_root, args.trace, args.branch, conf, now, source)
+    overrun = time.monotonic() - deadline
     board = infer.infer(snap, conf)
+    if overrun > 0:
+        board.header.warnings.append("本轮超时（采集超出预算 %.0f 秒，证据可能不全）" % overrun)
     board.validate()
     return board
 

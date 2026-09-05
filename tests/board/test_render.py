@@ -14,7 +14,8 @@ sys.path.insert(0, HERE)
 
 import sample_boards  # noqa: E402
 from boardlib import render  # noqa: E402
-from boardlib.model import Board, EvidenceType, Header, Status, Tier, Val, Why  # noqa: E402
+from boardlib.model import Board, EvidenceType, Header, StageLevel, Status, Tier, Val, Why  # noqa: E402
+from boardlib.registry import STATUS_LABEL  # noqa: E402
 
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
 SIZES = ((150, 52), (75, 52))
@@ -276,6 +277,40 @@ class FixPackTest(unittest.TestCase):
             text = render.dump(b, "simple", W, H)
             self.assertEqual(len(text.splitlines()), 1)
             self.assertLessEqual(render.dw(text.strip()), W)
+
+
+class R5Test(unittest.TestCase):
+    """r5：A-3 状态词跟随 ModuleView.status；阶段 configured=False 按 key 显示不适用 / 未配置；Val.note 说明。"""
+
+    def test_a3_module_status_word_follows_status(self):
+        self.assertEqual(STATUS_LABEL[Status.UNKNOWN], "未知")
+        b = sample_boards.board_unknown()
+        b.modules[0].what = "Wave 1 —"
+        text = render.dump(b, "simple", 150, 52)
+        self.assertRegex(text, r"Wave 1 · 未知")
+        self.assertRegex(text, r"[│┆] Wave 1 —")                 # 轮数不可得的模块边是 ┆
+        b = sample_boards.board_six()
+        b.modules[0].what, b.modules[0].status = "块 A —", Status.UNKNOWN
+        text = render.dump(b, "simple", 150, 52)
+        self.assertIn("块 A · 未知", text)
+        self.assertNotIn("块 A · 待做", text)
+
+    def test_stage_labels_not_applicable_and_notes(self):
+        b = sample_boards.board_six()
+        na = Val.unknown("gh.prs")
+        none = Val(False, source="config.staging")
+        none.note = "无容器"
+        multi = Val.unknown("config.production")
+        multi.note = "多值不一致：a, b"
+        b.header.stages = [StageLevel("merged", "合入主干", na, configured=False), StageLevel("published", "已发布", Val(True, source="gh.tags")),
+                           StageLevel("staging", "预发已升级", none), StageLevel("production", "已上生产", multi),
+                           StageLevel("closed", "收口", Val.unknown("gh.issue"), configured=False)]
+        row = next(ln for ln in render.dump(b, "simple", 150, 52).splitlines() if ln.startswith("五级阶段"))
+        self.assertIn("合入主干 不适用", row)
+        self.assertIn("已发布 是", row)
+        self.assertIn("预发已升级 无容器", row)
+        self.assertIn("已上生产 未知（多值不一致：a, b）", row)
+        self.assertIn("收口 未配置", row)
 
 
 class ApiContractTest(unittest.TestCase):

@@ -297,12 +297,16 @@ def _review_n(mv) -> str:
 
 
 def stage_text(st):
-    """五级阶段一项：(文字, 颜色, 斜体)。configured=False → 未配置；available=False → 未知。"""
+    """五级阶段一项：(文字, 颜色, 斜体)。configured=False → merged「不适用」（无批次 PR）、其余「未配置」；
+    available=False → 未知（＋note）；value=False 带 note（如「无容器」）→ 显示 note。"""
+    note = clean(getattr(st.value, "note", "") or "")
     if not st.configured:
-        return "未配置", DIM, False
+        return ("不适用" if st.key == "merged" else "未配置"), DIM, False
     if not st.value.available:
-        return "未知", UNKNOWN_COLOR, True
-    return ("是", GREEN, False) if st.value.value else ("否", LABEL, False)
+        return ("未知（%s）" % note if note else "未知"), UNKNOWN_COLOR, True
+    if st.value.value:
+        return "是", GREEN, False
+    return (note or "否"), LABEL, False
 
 
 def budget_text(label, val, cap):

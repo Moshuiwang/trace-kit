@@ -44,7 +44,8 @@
     text            去首尾空白的整段输出（缺省）
     int             整段输出去空白后按十进制整数
     lines           非空行列表（每行 rstrip）
-    regex:<pat>     re.search（可用 (?m) / (?i) 内联标志）；取第一捕获组，无捕获组取整体匹配；不匹配 → 失败
+    regex:<pat>     re.finditer（可用 (?m) / (?i) 内联标志）；每处匹配取第一捕获组（无捕获组取整体）后**取集合**：
+                    全部相同 → 该值（str）；不一致 → 去重列表（保序），比对阶段显示「未知（多值不一致：a, b）」（账本 G-2）；不匹配 → 失败
     json:<a.b.0>    json.loads 后按点路径取值（数字段作列表下标；空路径＝整个文档）；路径不存在 → 失败
     count:<pat>     匹配 re.search(pat) 的行数（int）
 
@@ -318,10 +319,15 @@ def parse_output(rule: str, text: str) -> Any:
     if rule == "lines":
         return [ln.rstrip() for ln in text.splitlines() if ln.strip()]
     if rule.startswith("regex:"):
-        m = re.search(rule[len("regex:"):], text)
-        if not m:
+        pat = re.compile(rule[len("regex:"):])
+        found = []
+        for m in pat.finditer(text):
+            v = (m.group(1) if pat.groups else m.group(0)) or ""
+            if v not in found:
+                found.append(v)
+        if not found:
             raise ParseError("正则无匹配：%r" % _short(text))
-        return m.group(1) if m.re.groups else m.group(0)
+        return found[0] if len(found) == 1 else found
     if rule.startswith("json:"):
         try:
             data = json.loads(text)
@@ -414,24 +420,41 @@ class ShellProvider:
 
 # ---------- 阶段比对 ----------
 
-def _scalar(value: Any) -> Optional[str]:
-    if isinstance(value, list):
-        value = next((v for v in value if str(v).strip()), None)
-    if value is None or isinstance(value, bool):
-        return None
-    text = str(value).strip()
-    return text or None
+def _values(value: Any) -> list[str]:
+    """取值规整成去重、去空的字符串列表（保序）。"""
+    items = value if isinstance(value, list) else [value]
+    out: list[str] = []
+    for v in items:
+        if v is None or isinstance(v, bool):
+            continue
+        t = str(v).strip()
+        if t and t not in out:
+            out.append(t)
+    return out
+
+
+def _noted(val: Val, note: str) -> Val:
+    val.note = note          # 渲染用的一句说明（不进快照；Val 没有该字段，挂在实例上）
+    return val
 
 
 def compare_tag(published: Optional[str], result: Optional[ProviderResult]) -> Val:
-    """预发 / 生产 tag 与已发布 tag 比对：相等 → True；不等 → False；任一不可得 → available=False（渲染「未知」）。"""
+    """预发 / 生产 tag 与已发布 tag 比对：相等 → True；不等 → False；任一不可得 → available=False（渲染「未知」）。
+    账本 G-1：命令成功但输出为空（容器停着）→ False＋note「无容器」；命令失败 → 未知＋note（失败类别）。
+    账本 G-2：多个不一致的取值 → 未知＋note「多值不一致：a, b」。"""
     if result is None:
         return Val.unknown("config.stage")
     src = result.key or result.cmd
     if not result.ok:
-        return Val(None, result.grade, src, result.fetched_at, False)
-    got = _scalar(result.value)
-    want = _scalar(published)
-    if got is None or want is None:
-        return Val(None, result.grade, src, result.fetched_at, False)
-    return Val(got == want, result.grade, src, result.fetched_at, True)
+        if result.error == "无输出":
+            return _noted(Val(False, result.grade, src, result.fetched_at, True), "无容器")
+        return _noted(Val(None, result.grade, src, result.fetched_at, False), (result.error or "").split("（")[0])
+    got = _values(result.value)
+    want = _values(published)
+    if not want:
+        return _noted(Val(None, result.grade, src, result.fetched_at, False), "已发布 tag 未知")
+    if not got:
+        return _noted(Val(False, result.grade, src, result.fetched_at, True), "无容器")
+    if len(got) > 1:
+        return _noted(Val(None, result.grade, src, result.fetched_at, False), "多值不一致：" + ", ".join(got))
+    return Val(got[0] == want[0], result.grade, src, result.fetched_at, True)
