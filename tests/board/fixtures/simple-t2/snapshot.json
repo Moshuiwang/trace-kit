@@ -1,0 +1,353 @@
+{
+ "now": "2026-09-03T06:00:00+00:00",
+ "repo": "example/demo",
+ "trace_no": 7,
+ "trace_dir": "docs/traces/7-simple-demo",
+ "branch": "batch/7-demo",
+ "tasktable_path": "docs/traces/7-simple-demo/任务表.md",
+ "results": {
+  "git.log": {
+   "key": "git.log",
+   "ok": true,
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/7-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T02:50:00+00:00",
+      "committed": "2026-09-03T02:50:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#7): 三件套入库 (#10)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "at": "2026-09-03T03:00:00+00:00",
+      "committed": "2026-09-03T03:00:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#7): S-1 实现取数与解析",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+      "at": "2026-09-03T03:28:00+00:00",
+      "committed": "2026-09-03T03:28:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#7): S-1 实现取数与解析 (#11)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tasktable_history": {
+   "key": "git.tasktable_history",
+   "ok": true,
+   "value": {
+    "path": "docs/traces/7-simple-demo/任务表.md",
+    "commits": [
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [],
+      "quotes": [],
+      "sha": "e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0",
+      "at": "2026-09-03T02:30:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [
+       "S-0"
+      ],
+      "quotes": [],
+      "sha": "e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1",
+      "at": "2026-09-03T02:55:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [
+       "S-0",
+       "S-1"
+      ],
+      "quotes": [],
+      "sha": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+      "at": "2026-09-03T03:20:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [
+       "S-0",
+       "S-1",
+       "S-2"
+      ],
+      "quotes": [],
+      "sha": "e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3",
+      "at": "2026-09-03T05:15:00+00:00"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "inferred"
+  },
+  "git.worktrees": {
+   "key": "git.worktrees",
+   "ok": true,
+   "value": [
+    {
+     "name": "S-2",
+     "head": "3333333333333333333333333333333333333333",
+     "branch": "wt/7-S-2",
+     "main": false,
+     "last_at": "2026-09-03T04:55:00+00:00",
+     "last_subject": "wip(#7): S-2 起草边界用例",
+     "ahead": 0,
+     "dirty": 0,
+     "files": [],
+     "error": ""
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tags": {
+   "key": "git.tags",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.branches": {
+   "key": "git.branches",
+   "ok": true,
+   "value": [
+    {
+     "name": "batch/7-demo",
+     "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+     "at": "2026-09-03T03:28:00+00:00"
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.contract": {
+   "key": "git.contract",
+   "ok": true,
+   "value": {
+    "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+    "at": "2026-09-03T02:50:00+00:00",
+    "subject": "docs(#7): 三件套入库 (#10)",
+    "path": "docs/traces/7-simple-demo/合同.md"
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tasktable.quotes": {
+   "key": "tasktable.quotes",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "reported"
+  },
+  "gh.prs": {
+   "key": "gh.prs",
+   "ok": true,
+   "value": [
+    {
+     "number": 10,
+     "title": "docs(#7): 三件套入库",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-03T02:40:00+00:00",
+     "mergedAt": "2026-09-03T02:50:00+00:00",
+     "closedAt": "2026-09-03T02:50:00+00:00",
+     "mergedBy": "agent-a",
+     "author": "agent-a",
+     "reviews": [],
+     "headRefName": "wt/7-contract",
+     "head_oid": "",
+     "baseRefName": "main",
+     "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+     "url": "https://github.com/example/demo/pull/10",
+     "body": "合同与授权终点；Trace #7。",
+     "checks": []
+    },
+    {
+     "number": 11,
+     "title": "feat(#7): S-1 实现取数与解析",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-03T03:05:00+00:00",
+     "mergedAt": "2026-09-03T03:28:00+00:00",
+     "closedAt": "2026-09-03T03:28:00+00:00",
+     "mergedBy": "owner-x",
+     "author": "agent-a",
+     "reviews": [
+      {
+       "state": "APPROVED",
+       "author": "owner-x",
+       "submittedAt": "2026-09-03T03:26:00+00:00"
+      }
+     ],
+     "headRefName": "wt/7-S-1",
+     "head_oid": "",
+     "baseRefName": "main",
+     "mergeCommit": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+     "url": "https://github.com/example/demo/pull/11",
+     "body": "Trace #7 的第一步。",
+     "checks": [
+      {
+       "name": "selfcheck",
+       "workflowName": "selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "",
+       "completedAt": ""
+      }
+     ]
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.issue": {
+   "key": "gh.issue",
+   "ok": true,
+   "value": {
+    "number": 7,
+    "title": "[tracking] 示例 Trace",
+    "state": "OPEN",
+    "createdAt": "2026-09-03T02:00:00+00:00",
+    "closedAt": "",
+    "url": "https://github.com/example/demo/issues/7",
+    "comments": [
+     {
+      "id": 5001,
+      "createdAt": "2026-09-03T02:45:00+00:00",
+      "author": "agent-a",
+      "first_line": "开工合同已批准，进入 Wave 1。",
+      "url": "https://github.com/example/demo/issues/7#issuecomment-5001"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.runs": {
+   "key": "gh.runs",
+   "ok": true,
+   "value": [
+    {
+     "id": 901,
+     "name": "selfcheck",
+     "workflowName": "selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-03T03:26:00+00:00",
+     "updatedAt": "2026-09-03T03:26:00+00:00",
+     "headSha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "headBranch": "wt/7-S-1",
+     "event": "push",
+     "url": "https://github.com/example/demo/actions/runs/901"
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.tags": {
+   "key": "gh.tags",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.release_runs": {
+   "key": "gh.release_runs",
+   "ok": false,
+   "value": null,
+   "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": false,
+   "value": null,
+   "error": "无已证实的合并点（批次 PR 未合入或未识别）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tmux.windows": {
+   "key": "tmux.windows",
+   "ok": false,
+   "value": null,
+   "error": "未配置编排 session",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  }
+ },
+ "config": {
+  "repo_slug": "example/demo",
+  "trace_branch": "",
+  "tmux_configured": false,
+  "window_pattern": "",
+  "release_workflow": "",
+  "stages": [],
+  "budgets": [],
+  "evidence": []
+ }
+}

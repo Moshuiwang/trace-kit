@@ -7,11 +7,11 @@
 | 件 | 是什么 | 谁用 |
 | --- | --- | --- |
 | `METHOD.md` | 执行方法正文（= lingxi Issue #147 v16 原样搬运，带版本头） | 规划者读它生成 Trace；编排者只执行获批 Trace |
-| `plugin/` | Claude Code 插件：`kickoff` / `takeover` / `handoff` / `guardian` / `dispatch-card` 五个 skill + 三件套与派发卡模板 | 每个 Trace 都要重复做的五件事 |
+| `plugin/` | Claude Code 插件：`kickoff` / `takeover` / `handoff` / `guardian` / `dispatch-card` / `board` 六个 skill + 三件套与派发卡模板 + 看板证据源配置示例 | 每个 Trace 都要重复做的六件事 |
 | `template/` | 新项目骨架：代理约定、产品文档骨架、Issue / PR 模板、分层 CI 与风险分级器、通用检查、本机=CI 同构的 `check.sh`、部署骨架、可运行的最小 `app` | 新仓库开工第一天 |
 | `examples/lingxi/` | G3 档：lingxi 特有实现只作示例（只链接、不复制） | 对照骨架看一个真实项目怎么填 |
 
-当前版本 **v0.1.0**（`0.x` = 尚未稳定）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
+当前版本 **v0.2.0**（`0.x` = 尚未稳定；v0.1.0 → v0.2.0 新增 Trace 看板）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
 
 ---
 
@@ -43,7 +43,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 ### 产品负责人
 
-- 你批准的永远是**某一版具体的 Trace 合同**（`docs/traces/<issue号>-<短名>/合同.md`），不是笼统的方法；批准动作 = 合并那个 PR。
+- 你批准的永远是**某一版具体的 Trace 合同**（`docs/traces/<issue号>-<短名>/合同.md`），不是笼统的方法；批准动作 = **你本人合并那个 PR**（本仓 `.github/CODEOWNERS` 已把 `docs/traces/**/合同.md` 指给你；配套的 main 分支规则集需你在 Settings → Rules 建，未建时「合并即批准」只是约定，机器人技术上仍能自合）。
 - 中途只在两处参与：实施最前（合同末尾「批准时需一并裁定」清单，一次给齐、可单字回复）与 Trace 最后（收口验收）。中途不需要你试错。
 - 看进度只看两处：任务表（`任务表.md`，状态即文件当前值）与 `[tracking]` Issue 的最新收口 / 交接评论。
 - 授权原则：未写进合同的授权不存在；临时授权带失效时点；提交 / 推送 / 合并 / 发布 / 生产 / 删除各自单独授权。
@@ -81,6 +81,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 输入 Issue ──► 规划者 /kickoff ──► 三件套 PR（合并=批准）──► 编排者 /takeover
    ──► 派发（/dispatch-card，独立 worktree）──► 攒批 ──► 批终：完整门禁 + 独立审查 + 修复包 + 复核
    ──► 合 main / 发布 / 部署（各自单独授权）──► 收口评论 ──► /handoff ──► 继任 或 Closed
+   看板：随时 /trace-kit:board，收口 --dump 归档到 docs/traces/<n>/看板.txt
 ```
 
 - **三件套**（`docs/traces/<issue号>-<短名>/`）：`合同.md`（修订走 PR，合并即批准）、`任务表.md`（`- [x] S-X-N 一句话（关键指针）`，随执行 commit 更新，第一恢复点）、`验收.md`（逐 Epic 可观察完成标准 + 证据等级目标 / 现值）。
@@ -90,14 +91,24 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 ---
 
-## 四、目录导览
+## 四、看板：随时看见做到哪、堵在哪、费在哪
+
+**得到什么**：装了插件的仓库，在 tmux 里单开一个 window 跑 `/trace-kit:board`，就看到当前 Trace 的进度图——简易版按任务表的 `##` 章节画大模块，每个模块三行（干什么 / 轮了几轮：审核 · 外审 · 修复包 · CI 红绿 / 证据在哪），标题行右侧是「已跑或实际 / 预估」分钟，**颜色即状态**（九色 + 未知）、**边框即审核轮数**（未审 `┌─┐` / 1 轮 `╔═╗` / 2 轮 `┏━┓` / 3 轮 `┏╍┓` / 3 轮以上加 `⟲N`）；按 `v` 切到复杂版看每个 Step 的卡片与证据小节点。头部六项固定给出阶段（含合入主干 / 已发布 / 预发 / 生产 / 收口五级）、阻塞、下一步、预算、存疑、最后外部证据。**只显示、不阻断**：它不挡合并、不判活（判活是元守护的事），红了只是让人去看。
+
+**怎么跑**：`/trace-kit:board`（内部执行 `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/board.py --repo-root . [--config docs/traces/board.toml]`）。尺寸建议 150×52；`r` 立即刷新、`↑↓` / `PgUp` / `PgDn` / `Home` / `End` 滚动、`a` 关动效、`q` 退出。默认每 5 分钟后台拉一次，只重写有差异的格子（其他 pane 的光标不跳）。收口时 `--dump > docs/traces/<n>/看板.txt` 归档一帧纯文本；`--dump --why` 追加证据链（只打印证据键、不打印命令原文，可直接贴公开 Issue）。用法与登记表全文见 `plugin/skills/board/SKILL.md`。
+
+**数据从哪来**：只有两处——任务表提供结构（Step 行、章节、行尾可选标签 `[t:… needs:… own:… est:45m]`），GitHub / git 提供全部时间与事实（含 Step ID 的 commit、PR 状态与 mergedBy、CI run、Issue 评论、tag、worktree）。**任务表是界面，GitHub 是事件日志，看板是派生视图**；状态只认结构化证据（对照表见 skill 的「状态与证据登记表」节，或跑 `board.py --registry`），**证据拿不到就显示「未知」，不回落、不猜**。项目专属证据（镜像 tag、编排窗口名模式、预算计数命令）由项目仓库一份 `docs/traces/board.toml` 声明只读命令与解析规则，引擎本身不含任何项目知识（模板见 `plugin/templates/board.toml`）。引擎对目标仓库只读，无新增依赖（Python 3 标准库 + 已有的 `git` / `gh`）。
+
+---
+
+## 五、目录导览
 
 | 路径 | 是什么 | 何时读 / 能改什么 |
 | --- | --- | --- |
 | `METHOD.md` | 方法正文 v16（源 lingxi #147） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
-| `plugin/README.md` | 五个 skill 何时用、怎么装、换什么、出处表 | 用插件前 |
+| `plugin/README.md` | 六个 skill 何时用、怎么装、换什么、出处表 | 用插件前 |
 | `plugin/skills/*/SKILL.md` | 各 skill 正文 | 改 skill 行为时；每文件头带出处 |
-| `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` 空白模板 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |
+| `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` 空白模板 + `board.toml` 看板证据源配置示例 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |
 | `template/README.md` | 骨架的「是什么 / 怎么用 / 换什么」表 | init 后即新仓库根 README |
 | `template/AGENTS.md`、`CLAUDE.md` | 代理工作约定：按需读取路由表 + 工作底线 + Code Review Rules | 每次任务开头 |
 | `template/docs/` | `README.md`（内容归属表）、`产品合同.md`、`当前能力.md`、`协作约定.md`、`协作/执行方法.md`（方法入口，pin 套件版本）、`决策记录/`、`参考证据/`、`技术设计/验证与门禁.md`、`技术设计/验收矩阵.md`、`traces/README.md` | 按 `AGENTS.md` 路由表按需读 |
@@ -107,13 +118,14 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 | `template/deploy/` | compose（常驻 `app` + job `migrate`）、stage / prod 覆盖、`.env.example`、README、生产 runbook、验收前配置清单、监控告警、systemd 单元 | 有部署面时 |
 | `template/src/app/`、`tests/` | 可运行的最小进程（常驻 / healthcheck / migrate）与 79 条测试 | 换成你的服务后保留测试形状 |
 | `examples/lingxi/README.md` | lingxi 特有实现清单、一个项目的实际取值、三件套真实样本、方法沿革 | 不知道某处「怎么填」时 |
-| `scripts/kit/`、`init.sh`、`.github/workflows/kit-selfcheck.yml` | 套件自检与安装脚本 | 改套件时（见第七节） |
+| `plugin/scripts/board.py`、`plugin/scripts/boardlib/` | 看板引擎（任务表解析 / 证据采集 / 状态推断 / 渲染 / TUI；只用标准库） | 改看板行为时；接口约定见第四节与 skill |
+| `scripts/kit/`、`init.sh`、`.github/workflows/kit-selfcheck.yml` | 套件自检与安装脚本 | 改套件时（见第八节） |
 | `docs/traces/1-trace-kit-v0.1.0/` | 本套件自己的 Trace 三件套 + 自回灌报告（dogfood） | 想看一个完整 Trace 长什么样 |
 | `.claude-plugin/marketplace.json` | 让本仓可作为 Claude Code 插件市场 | 改插件版本时同步 `plugin/.claude-plugin/plugin.json` |
 
 ---
 
-## 五、本机门禁与 CI（新项目里）
+## 六、本机门禁与 CI（新项目里）
 
 - **本机**：`scripts/dev/check.sh`（无参数按改动自动分层；`docs` / `fast` / `full` 可强制；`--print-mode` 只看分层结论；`--reuse-venv` 跳过默认重建）。`docs` = 只跑 `verify_docs.sh`；`fast` = 干净虚拟环境跑 `verify_repository.sh`；`full` = 按 `ci.yml` gate 作业配方重建后跑同一套。骨架没有数据库，「这里加你的真库容器配方」在脚本内标出。
 - **CI 三层**（required check 名字固定）：`Story Fast`（PR → `epic/**`：纯文档只跑文档门禁，代码跑无真库快检，高风险路径自动升级完整门禁）；`Epic Full`（PR → `main`：完整门禁 + 镜像构建 + 输出候选证明）；`Main Publish`（合入 main 后回读候选证明，树一致才构建并发布不可变 tag `YYYYMMDD-<sha12>`）；`Docs`（纯文档合入 main 的轻回读）。
@@ -123,17 +135,17 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 ---
 
-## 六、部署骨架怎么用
+## 七、部署骨架怎么用
 
 `deploy/README.md` 起步：两服务示例（`app` 常驻带 healthcheck 与资源限制、`migrate` 一次性作业不配 restart），镜像引用 `${APP_IMAGE_REGISTRY:?}/app:${APP_IMAGE_TAG:?}${APP_IMAGE_DIGEST:-}`（不可变 tag + 可选 digest 固定），凭据按服务分 `.env.*` 文件且不入库，stage / prod 覆盖文件**结构相同只有配置不同**（`verify_compose_structure.sh` 渲染后比对；`check_deploy_contract.py` 文本级契约）。生产步骤看 `生产部署runbook.md`（digest 固定、单实例、首发不灰度、回滚判据、观察期）；上线前看 `验收前部署配置清单.md`（闸清单 + 五层自检法）；告警看 `监控告警.md`（`scripts/ops/host_health_alert.py` 只有 `send_alert()` 一个扩展点）。
 
 ---
 
-## 七、修改本套件（给以后的代理）
+## 八、修改本套件（给以后的代理）
 
 用套件自己的方法改套件：开 `[tracking]` Issue，三件套放 `docs/traces/`，PR 留痕，收口评论。硬规则：
 
-1. **准入门槛**：只收验证 ≥2 次且有出处链接（lingxi 或采用本套件的项目的 Issue / 复盘 / 事故）的资产；没有出处的不进。文件头一行 `出处：<链接>；验证：<口径>`，`CHANGELOG.md` 逐条登记。
+1. **准入门槛**：只收验证 ≥2 次且有出处链接（lingxi 或采用本套件的项目的 Issue / 复盘 / 事故）的资产；没有出处的不进。**一次实证只进本仓**（本仓自用，先攒第二次），**两次实证才进 `template/` 与 `plugin/`**。文件头一行 `出处：<链接>；验证：<口径>`，`CHANGELOG.md` 逐条登记。
 2. **分档**：G1 通用直接搬；G2 通用模式参数化——去产品名词，扩展点只写一句「这里换成你的 ×××」，**不写抽象层、不写配置 DSL**；G3 项目特有只进 `examples/`。宁少勿多。
 3. **禁词**：`template/` 与 `plugin/` 不得出现 lingxi 产品名词（只允许「出处」行里的 lingxi 链接与 `examples/lingxi/` 路径引用）；全仓不得出现本机路径、主机名、用户名、凭据形态。`scripts/kit/check_no_lingxi.sh` 兜底，CI 必跑。
 4. **日落条款**：采用本套件的项目在一个 Trace 里一次都没用到的机制，列为下一版删除候选；修订默认净减法，新增须同时提名删除候选。
@@ -144,13 +156,13 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 ---
 
-## 八、已知边界与未验证
+## 九、已知边界与未验证
 
 - `template/.github/workflows/*` 从未在真实 GitHub Actions 上运行过（本仓 `kit-selfcheck` 只验证脚本、YAML 可解析与本机同构），`Main Publish` 的 GHCR 推送同样未真跑——留给第一个真实试穿项目，跑通后回写 CHANGELOG。
 - 仓库「Template repository」开关由产品负责人在 Settings 勾选（机器人身份无仓库管理权限）；未勾选时用第一节的 `git clone` 兜底法。
 - 下版候选：派发卡「门禁命令退出码显式捕获、禁止管道收尾」条款（本机两次实证但 lingxi 无留痕，按准入门槛未带入）；`refill_diff.sh` 去弱关键词重跑。
 
-## 九、常见坑
+## 十、常见坑
 
 - `init.sh` 要求工作树洁净：先提交再跑；它会删掉 `plugin/`、`examples/`、`METHOD.md`、本 README 等套件文件并自删，这是设计。
 - `gh repo create --template` 必须带 `--public` / `--private`，否则非交互报错。
@@ -159,6 +171,6 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 - 归属核对会扫「合同要求」「产品合同明令」这类短语：要么登记到 `check_contract_attribution.py` 的登记表，要么换措辞。
 - 并行子代理共用一个 scratchpad 会互相覆盖同名临时文件；派发卡固定要求各用私有子目录。
 
-## 十、出处
+## 十一、出处
 
 方法与全部资产来自公开仓库 [Moshuiwang/lingxi](https://github.com/Moshuiwang/lingxi)（方法正文 [Issue #147](https://github.com/Moshuiwang/lingxi/issues/147)）；分级清单与逐项出处见 [Trace #1](https://github.com/Moshuiwang/trace-kit/issues/1) 与 `CHANGELOG.md`。

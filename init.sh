@@ -28,8 +28,8 @@ main() {
 
   # 套件自身的文件：新项目不需要，先删再复制，避免同名目录叠合。
   rm -rf plugin examples METHOD.md CHANGELOG.md README.md docs .claude-plugin scripts/kit \
-    .github/workflows/kit-selfcheck.yml
-  rmdir scripts .github/workflows .github 2>/dev/null || true
+    .github/workflows/kit-selfcheck.yml tests/board .gitignore
+  rmdir scripts .github/workflows .github tests 2>/dev/null || true
 
   # 含点文件一起复制（.github / .gitignore / .dockerignore）。
   cp -a template/. .
