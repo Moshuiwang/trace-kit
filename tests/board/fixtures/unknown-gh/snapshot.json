@@ -1,0 +1,231 @@
+{
+ "now": "2026-09-03T06:00:00+00:00",
+ "repo": "example/demo",
+ "trace_no": 7,
+ "trace_dir": "docs/traces/7-simple-demo",
+ "branch": "batch/7-demo",
+ "tasktable_path": "docs/traces/7-simple-demo/任务表.md",
+ "results": {
+  "git.log": {
+   "key": "git.log",
+   "ok": true,
+   "value": [
+    {
+     "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+     "at": "2026-09-03T02:50:00+00:00",
+     "authored": "2026-09-03T02:50:00+00:00",
+     "author": "agent-a",
+     "subject": "docs(#7): 三件套入库 (#10)",
+     "refs": ""
+    },
+    {
+     "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "at": "2026-09-03T03:00:00+00:00",
+     "authored": "2026-09-03T03:00:00+00:00",
+     "author": "agent-a",
+     "subject": "feat(#7): S-1 实现取数与解析",
+     "refs": ""
+    },
+    {
+     "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+     "at": "2026-09-03T03:28:00+00:00",
+     "authored": "2026-09-03T03:28:00+00:00",
+     "author": "agent-a",
+     "subject": "feat(#7): S-1 实现取数与解析 (#11)",
+     "refs": ""
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tasktable_history": {
+   "key": "git.tasktable_history",
+   "ok": true,
+   "value": {
+    "path": "docs/traces/7-simple-demo/任务表.md",
+    "commits": [
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [],
+      "quotes": [],
+      "sha": "e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0",
+      "at": "2026-09-03T02:30:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [
+       "S-0"
+      ],
+      "quotes": [],
+      "sha": "e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1",
+      "at": "2026-09-03T02:55:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1",
+       "S-2",
+       "S-3"
+      ],
+      "checked": [
+       "S-0",
+       "S-1"
+      ],
+      "quotes": [],
+      "sha": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+      "at": "2026-09-03T03:20:00+00:00"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "inferred"
+  },
+  "git.worktrees": {
+   "key": "git.worktrees",
+   "ok": true,
+   "value": [
+    {
+     "name": "S-2",
+     "head": "3333333333333333333333333333333333333333",
+     "branch": "wt/7-S-2",
+     "main": false,
+     "last_at": "2026-09-03T04:55:00+00:00",
+     "last_subject": "wip(#7): S-2 起草边界用例",
+     "ahead": 0,
+     "dirty": 0,
+     "files": [],
+     "error": ""
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tags": {
+   "key": "git.tags",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.branches": {
+   "key": "git.branches",
+   "ok": true,
+   "value": [
+    {
+     "name": "batch/7-demo",
+     "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+     "at": "2026-09-03T03:28:00+00:00"
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.contract": {
+   "key": "git.contract",
+   "ok": true,
+   "value": {
+    "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+    "at": "2026-09-03T02:50:00+00:00",
+    "subject": "docs(#7): 三件套入库 (#10)",
+    "path": "docs/traces/7-simple-demo/合同.md"
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tasktable.quotes": {
+   "key": "tasktable.quotes",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "reported"
+  },
+  "gh.prs": {
+   "key": "gh.prs",
+   "ok": false,
+   "value": null,
+   "error": "命令不可用：gh（FileNotFoundError）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.issue": {
+   "key": "gh.issue",
+   "ok": false,
+   "value": null,
+   "error": "命令不可用：gh（FileNotFoundError）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.runs": {
+   "key": "gh.runs",
+   "ok": false,
+   "value": null,
+   "error": "命令不可用：gh（FileNotFoundError）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.tags": {
+   "key": "gh.tags",
+   "ok": false,
+   "value": null,
+   "error": "命令不可用：gh（FileNotFoundError）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.release_runs": {
+   "key": "gh.release_runs",
+   "ok": false,
+   "value": null,
+   "error": "命令不可用：gh（FileNotFoundError）",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tmux.windows": {
+   "key": "tmux.windows",
+   "ok": false,
+   "value": null,
+   "error": "未配置编排 session",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  }
+ },
+ "config": {
+  "repo_slug": "example/demo",
+  "trace_branch": "",
+  "tmux_configured": false,
+  "window_pattern": "",
+  "release_workflow": "",
+  "stages": [],
+  "budgets": [],
+  "evidence": []
+ }
+}

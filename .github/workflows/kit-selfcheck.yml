@@ -56,5 +56,10 @@ jobs:
             exit 1
           fi
 
+      - name: 看板夹具与单测（零网络回放；plugin/scripts/boardlib 的解析 / 推断 / 渲染 / 键盘 / 登记表 / 结构断言）
+        run: |
+          python3 -B -m unittest discover -s tests/board -p 'test_*.py'
+          python3 -B tests/board/run_fixtures.py
+
       - name: 空项目冒烟（init.sh → verify_docs → check.sh 三层 → 部署契约 → compose 结构 → 工作流 YAML）
         run: scripts/kit/smoke.sh --strict "${RUNNER_TEMP}/smoke"
