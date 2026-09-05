@@ -55,11 +55,11 @@ command = "gh pr list -R owner/repo --head batch/123-<short> --state all --json 
 parse = "int"
 timeout = 25
 
-# 附加证据行（头部「最后外部证据」）：key 全局唯一；parse 决定显示值的形态（count:<正则> = 匹配行数）。
+# 附加证据行（头部「最后外部证据」）：key 全局唯一；parse 决定显示值的形态（count:<正则> = 匹配行数；写 \\(healthy\\) 以免把 unhealthy 也计入）。
 [[evidence]]
 key = "prod_healthy"
 label = "生产 healthy 容器数"
 command = "ssh -n <production-host> 'docker ps --format \"{{.Status}}\"'"
-parse = "count:healthy"
+parse = "count:\\(healthy\\)"
 timeout = 25
 grade = "measured"

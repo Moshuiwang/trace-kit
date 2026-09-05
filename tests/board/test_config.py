@@ -134,6 +134,7 @@ class LoadTests(_TmpMixin, unittest.TestCase):
         self.assertEqual(sorted(c.stages), ["production", "staging"])
         self.assertTrue(c.budgets and c.evidence)
         self.assertEqual(c.budgets[0].cap, 5)
+        self.assertEqual(c.evidence[0].parse, r"count:\(healthy\)")
 
     def test_unknown_top_level_key(self):
         msg = self.load_err("[foo]\nbar = 1\n")
@@ -247,6 +248,8 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual((r.ok, r.value), (True, 2))
         r = self.run_cmd("printf ''", "count:healthy")
         self.assertEqual((r.ok, r.value), (True, 0))
+        r = self.run_cmd("printf 'Up 2h (healthy)\\nUp 1h (unhealthy)\\nUp 1m (health: starting)\\n'", r"count:\(healthy\)")
+        self.assertEqual((r.ok, r.value), (True, 1), "unhealthy 不得计入 healthy")
 
     def test_parse_int_failure(self):
         r = self.run_cmd("printf 'abc\\n'", "int")
