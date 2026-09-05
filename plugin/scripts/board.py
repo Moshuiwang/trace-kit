@@ -13,6 +13,7 @@ import shutil
 import sys
 from datetime import datetime, timezone
 
+sys.dont_write_bytecode = True  # 账本 R1-28：插件代码可能位于目标仓库内，绝不写 __pycache__
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from boardlib import collect, config as cfg, infer, model, registry, render, tui  # noqa: E402
