@@ -77,6 +77,7 @@ def snap(table=BASE_TABLE, results=None, branch="batch/7-x", now=NOW, config=Non
         "gh.issue": ok("gh.issue", issue()),
         "gh.runs": ok("gh.runs", []),
         "gh.release_runs": bad("gh.release_runs", "未配置发布工作流"),
+        "gh.tags": ok("gh.tags", []),
         "tmux.windows": bad("tmux.windows", "未配置编排 session"),
     }
     res.update(results or {})
@@ -126,7 +127,7 @@ class StepStatusTest(unittest.TestCase):
         self.assertEqual(v.status, Status.DONEQ)
         self.assertEqual(v.chip, "无 commit · 无 PR")
         self.assertEqual(v.chip_status, Status.DONEQ)
-        self.assertIn("自述未证 1（S-1）", b.header.doubt)
+        self.assertIn("自述未证 1实（S-1）", b.header.doubt)
         self.assertIsNone(v.started)
 
     def test_human(self):
@@ -140,7 +141,7 @@ class StepStatusTest(unittest.TestCase):
             self.assertEqual(v.status, want, minutes)
             self.assertEqual(v.elapsed_min, minutes)
         b = board_of(table="## W1\n- [ ] S-1 实现\n", results={"git.log": ok("git.log", [commit("d" * 40, ago(120), "S-1 wip")])})
-        self.assertIn("S-1 120 分钟无证据", b.header.block)
+        self.assertIn("S-1 120实 分钟无证据", b.header.block)
 
     def test_worktree_evidence(self):
         wt = [{"name": "S-1", "head": "e" * 40, "branch": "wt/7-S-1", "main": False, "last_at": iso(ago(5)), "last_subject": "x", "ahead": 2, "dirty": 0, "files": [], "error": ""}]
@@ -153,7 +154,7 @@ class StepStatusTest(unittest.TestCase):
         b = board_of()
         self.assertEqual(view(b, "S-1").status, Status.READY)  # S-0 已勾选
         self.assertEqual(view(b, "S-2").status, Status.TODO)
-        self.assertTrue(b.header.nxt.startswith("S-1 实现（ready）"))
+        self.assertEqual(b.header.nxt, "S-1 实现（下一步） · worktree 0实")
 
     def test_stale_review_candidate_changed(self):
         table = "## W1\n- [ ] S-3 审核 候选 `abc1234` [t:review]\n"
@@ -186,7 +187,8 @@ class UnknownTest(unittest.TestCase):
         stages = {s.key: s for s in b.header.stages}
         self.assertFalse(stages["merged"].value.available)
         self.assertFalse(stages["closed"].value.available)
-        self.assertEqual(stages["published"].value.value, False)  # git.tags 可得，按自身证据判定
+        self.assertEqual(stages["published"].value.value, False)  # gh.tags 可得（空），按自身证据判定
+        self.assertIn("阶段未知：合入主干 / 收口", b.header.block)
         m = b.modules[1]
         self.assertEqual(m.status, Status.UNKNOWN)
         self.assertFalse(m.rounds.review.available)
@@ -194,7 +196,8 @@ class UnknownTest(unittest.TestCase):
         self.assertIn("PR 未知", m.evidence_line)
         self.assertIn("PR 存疑未知", b.header.doubt)
         self.assertTrue(any(w.startswith("gh.prs 不可得") for w in b.header.warnings))
-        self.assertTrue(all(not w.available for w in b.why if w.subject == "S-1" and w.status == "unknown"))
+        self.assertTrue(all(not w.available for w in view(b, "S-1").why if w.status == "未知"))
+        self.assertEqual(view(b, "S-1").why[0].status, "未知")
 
     def test_fresh_git_evidence_still_running_when_gh_down(self):
         res = dict(self.GH_DOWN)
@@ -204,7 +207,7 @@ class UnknownTest(unittest.TestCase):
         self.assertEqual(view(b, "S-2").status, Status.UNKNOWN)  # 旧证据 + 键不可得，不能断言卡住
 
     def test_git_unavailable_too(self):
-        res = {k: bad(k, "命令不可用") for k in ("git.log", "git.tasktable_history", "git.worktrees", "git.tags", "git.branches", "git.contract", "gh.prs", "gh.issue", "gh.runs")}
+        res = {k: bad(k, "命令不可用") for k in ("git.log", "git.tasktable_history", "git.worktrees", "git.tags", "git.branches", "git.contract", "gh.prs", "gh.issue", "gh.runs", "gh.tags")}
         b = board_of(results=res)
         self.assertTrue(all(v.status in (Status.UNKNOWN, Status.HUMAN) for v in b.steps))
         self.assertTrue(all(not s.value.available for s in b.header.stages))
@@ -245,13 +248,15 @@ class ModuleTest(unittest.TestCase):
         ]
         b = board_of(table="## W1\n- [ ] S-1 a\n- [ ] S-2 b\n", results={"gh.issue": ok("gh.issue", issue(comments))})
         m = b.modules[0]
-        self.assertEqual(m.rounds.review.value, 2)
-        self.assertEqual(m.rounds.external.value, 1)
-        self.assertEqual(m.rounds.fixpack.value, 1)
-        self.assertEqual(m.tier, Tier.TWO)
-        self.assertEqual(m.rounds_line, "审 2实 · 外 1实 · 修 1实 · CI 红0推 绿0推")
-        self.assertIn("评论 5", m.evidence_line)
-        self.assertIn("Trace 级 审 1实", b.header.stage)
+        # 审核① / 定向复核② 首行点名 S-1（实）；审核③ 首行无 Step，但时刻落在 W1 活动窗口 → 回落归属（推）
+        self.assertEqual(m.rounds.review.value, 3)
+        self.assertEqual(m.rounds.review.grade, Grade.INFERRED)
+        self.assertEqual((m.rounds.external.value, m.rounds.external.grade), (1, Grade.MEASURED))
+        self.assertEqual((m.rounds.fixpack.value, m.rounds.fixpack.grade), (1, Grade.MEASURED))
+        self.assertEqual(m.tier, Tier.THREE)
+        self.assertEqual(m.rounds_line, "审 3推 · 外 1实 · 修 1实 · CI 红0推 绿0推")
+        self.assertIn("评论 6实", m.evidence_line)
+        self.assertNotIn("Trace 级", b.header.stage)
         for n, want in ((0, Tier.NONE), (1, Tier.ONE), (3, Tier.THREE), (4, Tier.MORE), (9, Tier.MORE)):
             self.assertEqual(infer._tier(n), want)
 
@@ -271,11 +276,94 @@ class ModuleTest(unittest.TestCase):
         self.assertEqual([m.needs for m in mods], [[], [0], [0]])
 
 
+class CommentWindowTest(unittest.TestCase):
+    """§7.2 归属：首行含 Step ID → 该模块（实）；否则落在哪个模块活动窗口（推，重叠取最晚开始）；都不命中 → Trace 级。"""
+
+    TABLE = "## W1\n- [x] S-1 a — PR #1 合入\n## W2\n- [x] S-2 b\n- [ ] S-3 c\n"
+
+    def _res(self, comments):
+        return {"gh.prs": ok("gh.prs", [pr(1, "S-1", ago(300), ago(280), merged_by="a")]),
+                "git.log": ok("git.log", [commit("2" * 40, ago(200), "S-2 done"), commit("3" * 40, ago(30), "S-3 wip")]),
+                "gh.issue": ok("gh.issue", issue(comments))}
+
+    def test_window_fallback_inferred(self):
+        comments = [(ago(290), "## 审核①结论（首行无 Step）"), (ago(100), "## 修复包合入"), (ago(20), "## 定向复核②结论"), (ago(350), "## 审核③结论（W1 窗口之前）")]
+        b = board_of(table=self.TABLE, results=self._res(comments))
+        w1, w2 = b.modules
+        self.assertEqual((w1.rounds.review.value, w1.rounds.review.grade), (1, Grade.INFERRED))   # 290 分钟前落在 W1 窗口 [300, 280]
+        self.assertEqual(w1.tier, Tier.ONE)
+        self.assertEqual((w2.rounds.review.value, w2.rounds.fixpack.value), (1, 1))                # W2 运行中，窗口到 now
+        self.assertEqual(w2.rounds.review.grade, Grade.INFERRED)
+        self.assertEqual(w2.tier, Tier.ONE)
+        self.assertIn("推（落在窗口", next(w for w in w2.why if w.status == "轮数").value)
+        self.assertIn("Trace 级 审 1实", b.header.stage)  # 350 分钟前在 Trace 窗口内但不在任何模块窗口 → Trace 级
+
+    def test_explicit_beats_window_and_overlap_picks_latest_start(self):
+        comments = [(ago(100), "## 审核①结论 S-1")]  # 时刻落在 W2 窗口，但首行点名 S-1 → W1（实）
+        b = board_of(table=self.TABLE, results=self._res(comments))
+        self.assertEqual((b.modules[0].rounds.review.value, b.modules[0].rounds.review.grade), (1, Grade.MEASURED))
+        self.assertEqual(b.modules[1].rounds.review.value, 0)
+        table = "## W1\n- [ ] S-1 a\n## W2\n- [ ] S-2 b\n"
+        res = {"git.log": ok("git.log", [commit("1" * 40, ago(200), "S-1 wip"), commit("2" * 40, ago(150), "S-2 wip")]),
+               "gh.issue": ok("gh.issue", issue([(ago(100), "## 审核①结论")]))}
+        b2 = board_of(table=table, results=res)  # 两模块都运行中、窗口重叠 → 取最晚开始的 W2
+        self.assertEqual((b2.modules[0].rounds.review.value, b2.modules[1].rounds.review.value), (0, 1))
+
+
+class PublishedTagTest(unittest.TestCase):
+    """§7.4 已发布：gh.tags 为权威；git.tags 只作参考。"""
+
+    def _prs(self):
+        return [pr(9, "batch", ago(120), ago(60), head="batch/7-x", merged_by="a", merge_commit="m" * 40)]
+
+    def test_gh_tags_unavailable_is_unknown_even_with_local_tag(self):
+        res = {"gh.prs": ok("gh.prs", self._prs()), "gh.tags": bad("gh.tags", "命令不可用：gh"),
+               "git.tags": ok("git.tags", [{"name": "v1.0.0", "at": iso(ago(50)), "object": "t" * 40, "commit": "m" * 40}])}
+        st = {s.key: s for s in board_of(results=res).header.stages}["published"]
+        self.assertFalse(st.value.available)
+
+    def test_tag_pointing_at_merge_commit_or_after(self):
+        res = {"gh.prs": ok("gh.prs", self._prs()), "gh.tags": ok("gh.tags", [{"name": "v1.0.0", "sha": "m" * 40, "at": ""}])}
+        b = board_of(results=res)
+        self.assertIs({s.key: s for s in b.header.stages}["published"].value.value, True)
+        res2 = {"gh.prs": ok("gh.prs", self._prs()), "gh.tags": ok("gh.tags", [{"name": "v0.9.0", "sha": "o" * 40, "at": iso(ago(500))}])}
+        self.assertIs({s.key: s for s in board_of(results=res2).header.stages}["published"].value.value, False)
+        res3 = {"gh.prs": ok("gh.prs", self._prs()), "gh.tags": ok("gh.tags", [{"name": "v1.0.1", "sha": "x" * 40, "at": iso(ago(30))}])}
+        self.assertIs({s.key: s for s in board_of(results=res3).header.stages}["published"].value.value, True)  # 晚于合并时刻
+
+    def test_release_run_head_must_be_merge_commit_or_descendant(self):
+        cfg = {"release_workflow": "Publish"}
+        base = {"gh.prs": ok("gh.prs", self._prs()), "gh.tags": ok("gh.tags", [{"name": "v1.0.0", "sha": "m" * 40, "at": ""}])}
+        good = dict(base, **{"gh.release_runs": ok("gh.release_runs", [run(ago(55), "success", "main", "m" * 40, "Publish")])})
+        self.assertIs({s.key: s for s in board_of(results=good, config=cfg).header.stages}["published"].value.value, True)
+        stray = dict(base, **{"gh.release_runs": ok("gh.release_runs", [run(ago(55), "success", "main", "z" * 40, "Publish")])})
+        self.assertIs({s.key: s for s in board_of(results=stray, config=cfg).header.stages}["published"].value.value, False)
+        no_tag = dict(good, **{"gh.tags": ok("gh.tags", [])})
+        b = board_of(results=no_tag, config=cfg)
+        self.assertIs({s.key: s for s in b.header.stages}["published"].value.value, False)
+        self.assertIn("无合并后的 tag", next(w for w in b.why if w.subject == "阶段·已发布").value)
+
+
+class BlockTest(unittest.TestCase):
+    def test_block_only_current_items(self):
+        table = "## W1\n- [x] S-1 a — PR #1 合入\n- [ ] S-2 b\n- [ ] S-3 r `abc1234` [t:review]\n"
+        res = {"gh.prs": ok("gh.prs", [pr(1, "S-1", ago(300), ago(280), head="feat/x", merged_by="a")]),
+               "git.log": ok("git.log", [commit("2" * 40, ago(200), "S-2 wip")]),
+               "gh.runs": ok("gh.runs", [run(ago(250), "success"), run(ago(10), "failure", name="Epic Full")])}
+        b = board_of(table=table, results=res)
+        self.assertIn("S-2 200实 分钟无证据", b.header.block)
+        self.assertIn("CI 红：Epic Full", b.header.block)
+        self.assertIn("审核结论失效 S-3", b.header.block)
+        self.assertNotIn("最大空档", b.header.block)
+        self.assertIn("最大空档", b.header.doubt)
+        self.assertEqual(b.unparsed, [])
+
+
 class StageAndHeaderTest(unittest.TestCase):
     def test_five_levels_merged_published_closed(self):
         prs = [pr(9, "batch", ago(120), ago(60), head="batch/7-x", merged_by="a")]
-        tags = [{"name": "v1.0.0", "at": iso(ago(50)), "object": "t" * 40, "commit": "c" * 40}]
-        res = {"gh.prs": ok("gh.prs", prs), "git.tags": ok("git.tags", tags), "gh.issue": ok("gh.issue", issue(state="CLOSED", closed=ago(10)))}
+        tags = [{"name": "v1.0.0", "sha": "c" * 40, "at": iso(ago(50))}]
+        res = {"gh.prs": ok("gh.prs", prs), "gh.tags": ok("gh.tags", tags), "gh.issue": ok("gh.issue", issue(state="CLOSED", closed=ago(10)))}
         b = board_of(results=res)
         st = {s.key: s for s in b.header.stages}
         self.assertTrue(st["merged"].value.value)
@@ -293,12 +381,12 @@ class StageAndHeaderTest(unittest.TestCase):
         self.assertEqual(st["merged"].value.grade, Grade.INFERRED)
         b2 = board_of(branch="", results={"gh.prs": ok("gh.prs", [pr(1, "S-1 kickoff", ago(300), ago(290), head="trace/7-kickoff", merged_by="a")])})
         self.assertIs({s.key: s for s in b2.header.stages}["merged"].value.value, True)  # 分支未知 → 全部 PR 合入
-        self.assertTrue(b2.header.stage.startswith("已合入主干 · 1/5 勾选"))
+        self.assertTrue(b2.header.stage.startswith("已合入主干 · 1/5实 勾选"))
 
     def test_published_needs_release_run_when_configured(self):
         prs = [pr(9, "batch", ago(120), ago(60), head="batch/7-x", merged_by="a")]
-        tags = [{"name": "v1.0.0", "at": iso(ago(50)), "object": "t" * 40, "commit": "c" * 40}]
-        base = {"gh.prs": ok("gh.prs", prs), "git.tags": ok("git.tags", tags), "git.log": ok("git.log", [commit("c" * 40, ago(60), "release")])}
+        tags = [{"name": "v1.0.0", "sha": "c" * 40, "at": iso(ago(50))}]
+        base = {"gh.prs": ok("gh.prs", prs), "gh.tags": ok("gh.tags", tags), "git.log": ok("git.log", [commit("c" * 40, ago(60), "release")])}
         cfg = {"release_workflow": "Publish"}
         b = board_of(results=dict(base, **{"gh.release_runs": bad("gh.release_runs", "超时")}), config=cfg)
         self.assertFalse({s.key: s for s in b.header.stages}["published"].value.available)
@@ -309,19 +397,19 @@ class StageAndHeaderTest(unittest.TestCase):
 
     def test_staging_production_compare(self):
         prs = [pr(9, "batch", ago(120), ago(60), head="batch/7-x", merged_by="a")]
-        tags = [{"name": "v1.0.0", "at": iso(ago(50)), "object": "t" * 40, "commit": "c" * 40}]
-        cfg = {"stages": [{"key": "staging", "label": "", "grade": "measured"}, {"key": "production", "label": "", "grade": "measured"}]}
-        res = {"gh.prs": ok("gh.prs", prs), "git.tags": ok("git.tags", tags),
-               "config.stages.staging": ok("config.stages.staging", "v1.0.0\n"), "config.stages.production": bad("config.stages.production", "ssh 超时")}
+        tags = [{"name": "v1.0.0", "sha": "c" * 40, "at": iso(ago(50))}]
+        cfg = {"stages": [{"key": "staging", "result_key": "config.staging", "label": ""}, {"key": "production", "result_key": "config.production", "label": ""}]}
+        res = {"gh.prs": ok("gh.prs", prs), "gh.tags": ok("gh.tags", tags),
+               "config.staging": ok("config.staging", "v1.0.0\n"), "config.production": bad("config.production", "远端命令超时")}
         st = {s.key: s for s in board_of(results=res, config=cfg).header.stages}
         self.assertTrue(st["staging"].configured and st["staging"].value.value is True)
         self.assertTrue(st["production"].configured and not st["production"].value.available)
-        res["config.stages.production"] = ok("config.stages.production", "v0.9.0")
+        res["config.production"] = ok("config.production", "v0.9.0")
         b = board_of(results=res, config=cfg)
         st = {s.key: s for s in b.header.stages}
         self.assertIs(st["production"].value.value, False)
         self.assertTrue(b.header.stage.startswith("预发已升级"))
-        res["config.stages.production"] = ok("config.stages.production", "v1.0.0")
+        res["config.production"] = ok("config.production", "v1.0.0")
         b = board_of(results=res, config=cfg)
         self.assertTrue(b.header.stage.startswith("已上生产"))
         self.assertTrue(b.header.nxt.startswith("观察与收口"))
@@ -336,7 +424,7 @@ class StageAndHeaderTest(unittest.TestCase):
         self.assertEqual(v.chip, "PR #2 ✓合入 · 自合 · 零批准")
         self.assertEqual(v.chip_status, Status.DONEQ)
         self.assertIn("合同 PR #2 自合 / 零批准", b.header.doubt)
-        self.assertIn("1/1 PR 自合 · 零批准", b.header.doubt)
+        self.assertIn("PR 自合 1/1实 · 零批准", b.header.doubt)
         prs2 = [pr(2, "合同", ago(300), ago(290), head="trace/7-kickoff", author="bot", merged_by="pm", reviews=("APPROVED",), merge_commit="a" * 40)]
         b2 = board_of(table=table, results=dict(res, **{"gh.prs": ok("gh.prs", prs2)}))
         self.assertEqual(view(b2, "S-0").chip, "PR #2 ✓合入 · 批准")
@@ -363,13 +451,14 @@ class StageAndHeaderTest(unittest.TestCase):
                "git.log": ok("git.log", [commit("1" * 40, ago(320), "S-1 done"), commit("2" * 40, ago(40), "S-2 done")]),
                "tasktable.quotes": ok("tasktable.quotes", [quote], Grade.REPORTED)}
         b = board_of(table=table, results=res)
-        self.assertIn("最大空档 280 分钟", b.header.block)
-        self.assertIn("其中暂停 200 分钟报", b.header.block)
+        self.assertIn("最大空档 280推 分钟", b.header.doubt)
+        self.assertIn("其中暂停 200报 分钟", b.header.doubt)
+        self.assertEqual(b.header.block, "无")
         pause = next(w for w in b.why if w.subject == "暂停")
-        self.assertEqual(pause.status, "200 分钟（报）")
+        self.assertEqual(pause.status, "200报 分钟")
         self.assertTrue(pause.source.startswith("git.tasktable_history ccccccc"))
         gap = next(w for w in b.why if w.subject == "空档")
-        self.assertIn("归因暂停 200 分钟", gap.value)
+        self.assertIn("归因暂停 200报 分钟", gap.value)
         # 无历史时退回行内时刻（自报级）：06:1x → 06:10
         res2 = dict(res, **{"git.tasktable_history": bad("git.tasktable_history", "git 不可用")})
         b2 = board_of(table=table, results=res2)
@@ -379,15 +468,18 @@ class StageAndHeaderTest(unittest.TestCase):
     def test_window_note_and_warnings(self):
         b = board_of(table="## W1\n- [ ] S-1 a\n- [ ] 无编号\n- [ ] S-2 " + "字" * 20 + "\n")
         self.assertIn(infer.WINDOW_NOTE, b.header.warnings)
-        self.assertIn("任务表未解析 1 行", b.header.warnings)
-        self.assertIn("任务表超限 1 行", b.header.warnings)
+        self.assertIn("任务表未解析 1实 行", b.header.warnings)
+        self.assertIn("任务表超限 1实 行", b.header.warnings)
+        self.assertEqual(b.unparsed, [(3, "- [ ] 无编号")])
         cfg = {"tmux_configured": True, "window_pattern": "^hb-b[0-9]+$"}
         b2 = board_of(results={"tmux.windows": ok("tmux.windows", ["guardian", "hb-b1"])}, config=cfg)
         self.assertNotIn(infer.WINDOW_NOTE, b2.header.warnings)
-        self.assertIn("窗口 hb-b1 存活", b2.header.nxt)
+        self.assertNotIn("编排窗口不在", b2.header.block)
+        self.assertTrue(any(w.subject == "编排窗口" and w.status == "存活" for w in b2.why))
         b3 = board_of(results={"tmux.windows": bad("tmux.windows", "tmux 不可用")}, config=cfg)
         self.assertIn(infer.WINDOW_NOTE, b3.header.warnings)
-        self.assertIn("窗口 未知", b3.header.nxt)
+        b4 = board_of(results={"tmux.windows": ok("tmux.windows", ["guardian"])}, config=cfg)
+        self.assertIn("编排窗口不在", b4.header.block)
 
     def test_conf_none_and_missing_attrs(self):
         for conf in (None, types.SimpleNamespace(), object()):
@@ -402,10 +494,14 @@ class StageAndHeaderTest(unittest.TestCase):
         b = board_of(table=table, results=res)
         for v in b.steps:
             self.assertIn(v.why[0].evidence, registry.EVIDENCE_REGISTRY[v.status], v.step.id)
-            self.assertEqual(v.why[0].status, v.status.value)
+            self.assertEqual(v.why[0].status, registry.STATUS_LABEL[v.status])
         subjects = {w.subject for w in b.why}
-        for s in ("S-1", "W1", "阶段·合入主干", "阶段·已发布", "阶段·收口", "PR 合并方式"):
+        for s in ("阶段·合入主干", "阶段·已发布", "阶段·收口", "PR 合并方式"):
             self.assertIn(s, subjects)
+        self.assertFalse({"S-1", "W1"} & subjects)  # Step / 模块行只在各自 view 里，Board.why 不重复
+        self.assertEqual(b.modules[0].why[0].status, registry.STATUS_LABEL[b.modules[0].status])
+        for w in b.why + [x for v in b.steps for x in v.why] + [x for m in b.modules for x in m.why]:
+            self.assertNotIn("gh ", w.source)  # 来源列只写证据键，不写命令原文
         self.assertEqual(registry.check_complete(), [])
         md = registry.render_markdown()
         for s in Status:

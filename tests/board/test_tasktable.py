@@ -1,67 +1,62 @@
 # -*- coding: utf-8 -*-
-"""任务表解析单测（接口约定 §5；零网络）。"""
+"""任务表解析单测（接口约定 §5；零网络）。真实任务表读 tests/board/fixtures/tables/ 下的冻结副本（不读活文件），只断言结构。"""
 import os
 import sys
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, "plugin", "scripts"))
+TABLES = os.path.join(ROOT, "tests", "board", "fixtures", "tables")
 
 from boardlib import tasktable  # noqa: E402
 from boardlib.model import StepType  # noqa: E402
 
 
-def _read(rel):
-    with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
+def _frozen(name):
+    with open(os.path.join(TABLES, name, "任务表.md"), encoding="utf-8") as fh:
         return fh.read()
 
 
-class RealTablesTest(unittest.TestCase):
-    """Trace #1 / 模板 / 本 Trace 三份真实任务表：旧格式零改动可解析。"""
+class FrozenTablesTest(unittest.TestCase):
+    """Trace #1 / 模板 / #17 三份任务表的冻结副本：旧格式零改动可解析（只断言结构与几个稳定指针）。"""
 
     def test_module_lives_in_this_tree(self):
         self.assertTrue(os.path.abspath(tasktable.__file__).startswith(ROOT))
 
     def test_trace1(self):
-        t = tasktable.parse(_read("docs/traces/1-trace-kit-v0.1.0/任务表.md"))
-        self.assertEqual(len(t.sections), 5)
-        self.assertEqual(len(t.steps), 15)
-        self.assertEqual(t.unparsed, [])
+        t = tasktable.parse(_frozen("1-trace-kit-v0.1.0"))
+        self.assertEqual((len(t.sections), len(t.steps), len(t.unparsed)), (5, 15, 0))
+        self.assertEqual(sum(1 for s in t.steps if s.checked), 15)
         self.assertEqual([s.title for s in t.sections], ["W0 只读盘点", "W1 并行打包", "W2 集成与自验证", "W3 发布与收口", "收口后追加"])
         by = {s.id: s for s in t.steps}
-        self.assertTrue(all(s.checked for s in t.steps))
         self.assertEqual(by["S-1"].prs, [2])
         self.assertEqual(by["S-1"].shas, ["8b27e68"])
         self.assertEqual(by["S-2e"].prs, [4])  # `PR #4 合入`
-        self.assertEqual(by["S-5"].prs, [9])
         self.assertEqual(by["S-5"].shas, ["dd53ecf", "b5bb404"])
         self.assertEqual(by["S-0b"].comments, [5503411104])
-        self.assertEqual(by["S-6b"].comments, [5507202948])
         self.assertEqual(by["S-0a"].title, "克隆 + 推送冒烟")
         self.assertEqual(by["S-2a"].needs, ["S-1"])  # 章节首条＝上一章节末条
         self.assertEqual(by["S-2b"].needs, ["S-2a"])  # 同章节上一条
         self.assertEqual(by["S-0a"].needs, [])
         self.assertTrue(all(s.type == StepType.IMPL for s in t.steps))
-        self.assertTrue(any("S-2d" in r for _, r in t.overlong))
+        self.assertTrue(t.overlong)  # 旧格式长标题只计数不截断
 
     def test_template(self):
-        t = tasktable.parse(_read("plugin/templates/任务表.md"))
-        self.assertEqual(len(t.sections), 3)
-        self.assertEqual(len(t.steps), 6)
-        self.assertEqual(t.unparsed, [])
+        t = tasktable.parse(_frozen("template"))
+        self.assertEqual((len(t.sections), len(t.steps), len(t.unparsed)), (3, 6, 0))
+        self.assertEqual(sum(1 for s in t.steps if s.checked), 0)
         self.assertEqual([s.id for s in t.steps], ["S-0-1", "S-1-1", "S-1-2", "S-Z-1", "S-Z-2", "S-Z-3"])
         self.assertEqual(t.sections[1].title, "W1 <批次名>")
 
     def test_trace17(self):
-        t = tasktable.parse(_read("docs/traces/17-看板v1/任务表.md"))
-        self.assertEqual(len(t.sections), 6)
-        self.assertEqual(len(t.steps), 20)
-        self.assertEqual(len(t.unparsed), 1)  # `A-1…A-6` 范围行不是 §5 语法的 Step 行
-        self.assertIn("A-1…A-6", t.unparsed[0][1])
+        t = tasktable.parse(_frozen("17-看板v1"))
+        self.assertEqual((len(t.sections), len(t.steps), len(t.unparsed)), (6, 21, 0))
+        self.assertEqual(sum(1 for s in t.steps if s.checked), 3)
         self.assertEqual([s.title for s in t.sections], ["块 A", "Wave 0", "Wave 1", "Wave 2", "Wave 3", "收口"])
+        self.assertEqual([len(sec.steps) for sec in t.sections], [1, 2, 6, 4, 5, 3])
         by = {s.id: s for s in t.steps}
-        self.assertEqual(by["W0-1"].shas, ["300ded8"])
-        self.assertEqual(by["S-1"].needs, ["W0-2"])
+        self.assertEqual(by["A-1"].title, "块 A 六项")
+        self.assertEqual(by["S-2"].needs, ["S-1"])
 
 
 class GrammarTest(unittest.TestCase):

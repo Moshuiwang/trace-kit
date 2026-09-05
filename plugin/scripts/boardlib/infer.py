@@ -8,7 +8,9 @@
 「有证据」的归属：提交信息 / 分支名 / worktree 目录名 / PR 标题正文 / 评论首行含 Step ID（词边界：前后不接字母数字，
 后面不接 `-字母数字`，故 `S-2` 不命中 `S-2a` / `S-2-1`，但命中 `17-S-2`）。PR 归属优先级：任务表指针 > 标题 > 正文
 （正文常罗列多个 Step，只在指针与标题都为空时用）。证据只取 Trace 窗口内的（Issue 创建 / 任务表首次提交 → Issue 关闭 / now），
-避免同仓前后 Trace 的同名 Step 串线。
+避免同仓前后 Trace 的同名 Step 串线。评论轮数归属（§7.2）：首行含 Step ID → 该模块（实）；否则按评论时刻落在哪个模块的
+活动窗口 [首证据, 末证据或 now]（推，重叠取最晚开始的）；都不命中记 Trace 级。
+Why 的来源列只写证据键 / 结构名，不写命令原文（§7.6）；Board.why 只放 Trace 级行（阶段 / 头部 / 合同 PR），Step / 模块行在各自 view 里。
 """
 from __future__ import annotations
 
@@ -17,6 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Optional
 
+from . import registry
 from .model import (
     Board, EvidenceType as E, Grade, Header, ModuleView, Rounds, Snapshot, StageLevel, Status, Step, StepType, StepView,
     Tier, Val, Why, beijing, parse_ts, utc,
@@ -24,7 +27,7 @@ from .model import (
 
 RUNNING_MIN = 60
 WATCH_MIN = 90
-GAP_MIN = 60  # 头部登记「最大空档」的下限（分钟）
+GAP_MIN = 60  # 存疑行登记「历史最大空档」的下限（分钟）
 WAIT_MIN = 5  # 步骤内「等待」Why 行的下限（分钟）
 CORE_KEYS = ("git.log", "gh.prs", "gh.issue")
 LIVE_KEYS = ("git.log", "gh.prs", "gh.issue", "gh.runs", "git.worktrees")
@@ -43,7 +46,9 @@ PAUSE_RE = re.compile(r"暂停")
 QUOTE_TIME_RE = re.compile(r"(\d{4}-\d{2}-\d{2})\D{0,3}(\d{1,2}):(\d)([0-9xX])\s*(UTC|北京)?")
 PR_SUFFIX_RE = re.compile(r"\(#(\d+)\)\s*$|Merge pull request #(\d+)")
 STAGE_LABEL = {"merged": "合入主干", "published": "已发布", "staging": "预发已升级", "production": "已上生产", "closed": "收口"}
+PR_STATE_TEXT = {"MERGED": "✓合入", "OPEN": "打开", "CLOSED": "关闭"}
 WINDOW_NOTE = "窗口状态未知，需元守护核"
+LABEL = registry.STATUS_LABEL
 
 
 @dataclass
@@ -70,6 +75,11 @@ def _hms(delta: timedelta) -> str:
     return ("%dh%02dm%02ds" % (h, m, sec)) if h else ("%dm%02ds" % (m, sec))
 
 
+def _n(value: int, grade: Grade = Grade.MEASURED) -> str:
+    """数字＋角标（实 / 报 / 推）。"""
+    return Val(value, grade).text()
+
+
 def _build_attr_re(ids) -> Optional["re.Pattern[str]"]:
     ids = sorted(set(i for i in ids if i), key=len, reverse=True)
     if not ids:
@@ -79,6 +89,10 @@ def _build_attr_re(ids) -> Optional["re.Pattern[str]"]:
 
 def _why(subject: str, status: str, etype: E, source: str, value: str, at: Optional[datetime] = None, available: bool = True) -> Why:
     return Why(subject, status, etype, source, value, at, available)
+
+
+def _sha_eq(a: str, b: str) -> bool:
+    return bool(a) and bool(b) and (a.startswith(b) or b.startswith(a))
 
 
 class _Ctx:
@@ -95,7 +109,8 @@ class _Ctx:
         self.attr_re = _build_attr_re(s.id for s in self.steps)
         self.trace_re = re.compile(r"(?<![0-9A-Za-z#])#%d(?![0-9])" % snap.trace_no) if snap.trace_no else None
         self.warnings: list[str] = list(self.cfg.get("warnings") or [])
-        self.why: list[Why] = []
+        self.checked_map: dict[str, bool] = {}
+        self.module_windows: dict[int, tuple[Optional[datetime], Optional[datetime]]] = {}
         self._load()
         self._build_events()
 
@@ -117,7 +132,6 @@ class _Ctx:
 
     def _load(self) -> None:
         now = self.now
-        # 提交
         self.commits: list[dict] = []
         for c in self.val("git.log", []):
             at = parse_ts(c.get("at") or "")
@@ -127,7 +141,6 @@ class _Ctx:
             row["_at"] = at
             self.commits.append(row)
         self.commit_by_sha = {c["sha"]: c for c in self.commits}
-        # Issue
         issue = self.val("gh.issue", {}) or {}
         self.issue = issue
         self.issue_created = parse_ts(issue.get("createdAt") or "")
@@ -140,8 +153,10 @@ class _Ctx:
                 continue
             row = dict(c)
             row["_at"] = at
+            row["_modules"] = set()
+            row["_grade"] = Grade.MEASURED
+            row["_window"] = None
             self.comments.append(row)
-        # 任务表历史
         hist = self.val("git.tasktable_history", {}) or {}
         self.history: list[dict] = []
         for h in hist.get("commits") or []:
@@ -159,11 +174,9 @@ class _Ctx:
                 self.first_checked.setdefault(sid, (h["_at"], h.get("sha", "")))
             for q in h.get("quotes") or []:
                 self.quote_first.setdefault(q, (h["_at"], h.get("sha", "")))
-        # 窗口
         starts = [t for t in (self.issue_created, self.history[0]["_at"] if self.history else None) if t]
         self.window_start = min(starts) if starts else None
         self.window_end = min(now, self.issue_closed_at) if self.issue_closed_at else now
-        # PR
         self.prs_all: list[dict] = []
         for p in self.val("gh.prs", []):
             row = dict(p)
@@ -183,7 +196,6 @@ class _Ctx:
             self.prs_all.append(row)
         self.prs = [p for p in self.prs_all if self._is_trace_pr(p)]
         self.pr_by_number = {p["number"]: p for p in self.prs}
-        # runs
         self.runs: list[dict] = []
         heads = {p.get("headRefName") for p in self.prs if p.get("headRefName")}
         for r in self.val("gh.runs", []):
@@ -204,7 +216,7 @@ class _Ctx:
                 continue
             row["_steps"] = steps
             self.runs.append(row)
-        # tags / branches / worktrees
+        self.runs.sort(key=lambda r: r["_at"])
         self.tags: list[dict] = []
         for t in self.val("git.tags", []):
             at = parse_ts(t.get("at") or "")
@@ -213,6 +225,16 @@ class _Ctx:
             row = dict(t)
             row["_at"] = at
             self.tags.append(row)
+        self.gh_tags: list[dict] = []
+        for t in self.val("gh.tags", []):
+            row = dict(t)
+            row["_at"] = parse_ts(t.get("at") or "")
+            if row["_at"] is None:
+                c = self._commit_by_prefix(t.get("sha") or "")
+                row["_at"] = c["_at"] if c is not None else None
+            if row["_at"] is not None and row["_at"] > now:
+                continue
+            self.gh_tags.append(row)
         self.branches: list[dict] = list(self.val("git.branches", []))
         self.worktrees: list[dict] = []
         for w in self.val("git.worktrees", []):
@@ -226,13 +248,12 @@ class _Ctx:
                     self.branch_tip = b.get("sha", "")
                     if b.get("name") == self.snap.branch:
                         break
-        # 合同 PR
         self.contract = self.val("git.contract", None)
         self.contract_pr: Optional[dict] = None
         if self.contract:
             sha = self.contract.get("sha", "")
             for p in self.prs_all:
-                if sha and p.get("mergeCommit") and (sha.startswith(p["mergeCommit"]) or p["mergeCommit"].startswith(sha)):
+                if sha and p.get("mergeCommit") and _sha_eq(sha, p["mergeCommit"]):
                     self.contract_pr = p
                     break
             if self.contract_pr is None:
@@ -242,8 +263,7 @@ class _Ctx:
                     self.contract_pr = next((p for p in self.prs_all if p.get("number") == n), None)
 
     def _is_trace_pr(self, p: dict) -> bool:
-        ptr = any(p.get("number") in s.prs for s in self.steps)
-        if ptr:
+        if any(p.get("number") in s.prs for s in self.steps):
             return True
         if self.snap.branch and p.get("headRefName") == self.snap.branch:
             return True
@@ -263,7 +283,7 @@ class _Ctx:
         if c is not None:
             return c
         for full, row in self.commit_by_sha.items():
-            if full.startswith(sha) or sha.startswith(full):
+            if _sha_eq(full, sha):
                 return row
         return None
 
@@ -329,7 +349,7 @@ class _Ctx:
         self.pauses: list[dict] = []
         quotes = list(self.quote_first.keys())
         for q in self.val("tasktable.quotes", []) or []:
-            if q not in self.quote_first and q not in quotes:
+            if q not in quotes:
                 quotes.append(q)
         for q in quotes:
             if not PAUSE_RE.search(q):
@@ -351,6 +371,21 @@ class _Ctx:
             end = next((e.at for e in self.step_work_events if e.at > start), None)
             self.pauses.append({"start": start, "end": end, "line": q, "source": src, "grade": grade})
         self.pauses.sort(key=lambda p: p["start"])
+
+    # ---------- 评论归属（§7.2：Step ID → 时间窗回落 → Trace 级） ----------
+    def assign_comments(self, windows: dict[int, tuple[Optional[datetime], Optional[datetime]]]) -> None:
+        self.module_windows = windows
+        for c in self.comments:
+            if not self.in_window(c["_at"]):
+                continue
+            explicit = {self.step_by_id[s].section for s in (c.get("_steps") or set()) if s in self.step_by_id}
+            if explicit:
+                c["_modules"], c["_grade"], c["_window"] = explicit, Grade.MEASURED, None
+                continue
+            cands = [(start, idx) for idx, (start, end) in windows.items() if start is not None and start <= c["_at"] <= (end or self.now)]
+            if cands:
+                start, idx = max(cands)
+                c["_modules"], c["_grade"], c["_window"] = {idx}, Grade.INFERRED, windows[idx]
 
 
 # ---------------------------------------------------------------- 步骤
@@ -388,10 +423,8 @@ def _step_view(ctx: _Ctx, step: Step, checked_map: dict[str, bool]) -> StepView:
     status = Status.TODO
     etype, source, value, at, available = E.CHECKBOX, "任务表", "", None, True
 
-    if checked and step.checked != checked:
-        pass
     if step.checked and not checked:
-        why.append(_why(step.id, "todo", E.CHECKBOX, "git.tasktable_history", "勾选提交晚于 --now，按未勾选处理", ctx.first_checked[step.id][0]))
+        why.append(_why(step.id, LABEL[Status.TODO], E.CHECKBOX, "git.tasktable_history", "勾选提交晚于 --now，按未勾选处理", ctx.first_checked[step.id][0]))
 
     if checked:
         if artifacts:
@@ -410,7 +443,7 @@ def _step_view(ctx: _Ctx, step: Step, checked_map: dict[str, bool]) -> StepView:
     else:
         stale = False
         if step.type == StepType.REVIEW and step.shas and ctx.branch_tip:
-            if not any(ctx.branch_tip.startswith(x) or x.startswith(ctx.branch_tip) for x in step.shas):
+            if not any(_sha_eq(ctx.branch_tip, x) for x in step.shas):
                 stale = True
         if stale:
             status = Status.STALE
@@ -421,17 +454,17 @@ def _step_view(ctx: _Ctx, step: Step, checked_map: dict[str, bool]) -> StepView:
             etype, source, at = last.etype, last.source, last.at
             if age <= RUNNING_MIN:
                 status = Status.RUNNING
-                value = "%d 分钟前有证据 %s" % (age, last.label)
+                value = "%s 分钟前有证据 %s" % (_n(age), last.label)
             elif missing_live:
                 status = Status.UNKNOWN
                 etype, source, available = E.CONFIG_COMMAND, " / ".join(missing_live), False
-                value = "最近证据 %d 分钟前，但 %s 不可得，无法排除更新证据" % (age, " / ".join(missing_live))
+                value = "最近证据 %s 分钟前，但 %s 不可得，无法排除更新证据" % (_n(age), " / ".join(missing_live))
             elif age <= WATCH_MIN:
                 status = Status.WATCH
-                value = "%d 分钟无新证据（最近 %s）" % (age, last.label)
+                value = "%s 分钟无新证据（最近 %s）" % (_n(age), last.label)
             else:
                 status = Status.STALLED
-                value = "%d 分钟无新证据（最近 %s）" % (age, last.label)
+                value = "%s 分钟无新证据（最近 %s）" % (_n(age), last.label)
         elif missing_live:
             status = Status.UNKNOWN
             etype, source, available = E.CONFIG_COMMAND, " / ".join(missing_live), False
@@ -444,7 +477,7 @@ def _step_view(ctx: _Ctx, step: Step, checked_map: dict[str, bool]) -> StepView:
             else:
                 status = Status.TODO
                 value = "无证据，依赖未完成：%s" % ", ".join(d for d in deps if not checked_map[d])
-    why.insert(0, _why(step.id, status.value, etype, source, value, at, available))
+    why.insert(0, _why(step.id, LABEL[status], etype, source, value, at, available))
 
     started = min((e.at for e in work), default=None)
     last_any = max((e.at for e in evs), default=None)
@@ -456,15 +489,13 @@ def _step_view(ctx: _Ctx, step: Step, checked_map: dict[str, bool]) -> StepView:
             elapsed_min = _mins(now - started)
     if evs:
         why.append(_why(step.id, "证据", evs[-1].etype, " / ".join(sorted({e.source for e in evs})),
-                        "%d 条：%s" % (len(evs), "、".join(e.label for e in evs[:6]) + ("…" if len(evs) > 6 else "")), evs[-1].at))
+                        "%s 条：%s" % (_n(len(evs)), "、".join(e.label for e in evs[:6]) + ("…" if len(evs) > 6 else "")), evs[-1].at))
     if len(evs) >= 2:
         i = max(range(len(evs) - 1), key=lambda k: evs[k + 1].at - evs[k].at)
         gap, (a, b) = evs[i + 1].at - evs[i].at, (evs[i], evs[i + 1])
         if gap >= timedelta(minutes=WAIT_MIN):
             why.append(_why(step.id, "等待", b.etype, "%s → %s" % (a.source, b.source),
                             "%s（%s %s → %s %s）" % (_hms(gap), a.label, beijing(a.at, "%m-%d %H:%M:%S"), b.label, beijing(b.at, "%m-%d %H:%M:%S")), b.at))
-    if started is None and not checked and work == []:
-        pass
     chip, chip_status, rework = _chip(ctx, step, evs, status, checked, artifacts)
     return StepView(step=step, status=status, started=started, last_evidence=last_any, actual_min=actual_min, elapsed_min=elapsed_min,
                     est_min=step.est_min, chip=chip, chip_status=chip_status, rework=rework, why=why)
@@ -567,39 +598,60 @@ def _classify_comment(first_line: str) -> tuple[bool, bool, bool]:
     return review, external, fixpack
 
 
-def _rounds(ctx: _Ctx, ids: set, window: tuple[Optional[datetime], Optional[datetime]], trace_level: bool = False,
-            subject: str = "模块") -> tuple[Rounds, list[Why], int]:
-    """ids 为空且 trace_level 时统计未归属任何 Step 的评论。返回 (Rounds, why, 评论条数)。"""
-    subject = "Trace" if trace_level else subject
+def _module_window(ctx: _Ctx, views: list[StepView]) -> tuple[Optional[datetime], Optional[datetime]]:
+    """模块活动窗口 [首个证据, 末个证据（未全勾选则 now）]。"""
+    work = [e for v in views for e in ctx.step_events.get(v.step.id, []) if e.kind != "checkbox"]
+    allev = [e for v in views for e in ctx.step_events.get(v.step.id, [])]
+    started = min((e.at for e in work), default=None)
+    if started is None:
+        return None, None
+    finished = all(ctx.checked_map.get(v.step.id, False) for v in views)
+    end = max((e.at for e in allev), default=None) if finished else ctx.now
+    return started, end
+
+
+def _rounds(ctx: _Ctx, section_index: Optional[int], window: tuple[Optional[datetime], Optional[datetime]], subject: str) -> tuple[Rounds, list[Why], int]:
+    """section_index 为 None 时统计 Trace 级（未归属任何模块的评论）。返回 (Rounds, why, 评论条数)。"""
     why: list[Why] = []
+    trace_level = section_index is None
     if not ctx.ok("gh.issue"):
         unk = Val.unknown("gh.issue")
         why.append(_why(subject, "轮数", E.COMMENT_TITLE, "gh.issue", "评论不可得：%s" % ctx.err("gh.issue"), None, False))
         n_comments = 0
         rounds = Rounds(unk, unk, unk, Val.unknown("gh.runs", Grade.INFERRED), Val.unknown("gh.runs", Grade.INFERRED))
     else:
-        rv = ex = fx = 0
+        counts = {"审": [0, Grade.MEASURED], "外": [0, Grade.MEASURED], "修": [0, Grade.MEASURED]}
         n_comments = 0
         hits: list[str] = []
         for c in ctx.comments:
             if not ctx.in_window(c["_at"]):
                 continue
-            cs = c.get("_steps") or set()
+            mods = c.get("_modules") or set()
             if trace_level:
-                if cs:
+                if mods:
                     continue
-            elif not (cs & ids):
+            elif section_index not in mods:
                 continue
             n_comments += 1
-            r, e, f = _classify_comment(c.get("first_line", ""))
-            rv += r
-            ex += e
-            fx += f
-            if r or e or f:
-                hits.append("%s%s%s %s" % ("审" if r else "", "外" if e else "", "修" if f else "", (c.get("first_line") or "")[:40]))
-        rounds = Rounds(Val(rv, Grade.MEASURED, "gh.issue"), Val(ex, Grade.MEASURED, "gh.issue"), Val(fx, Grade.MEASURED, "gh.issue"),
-                        Val(0, Grade.INFERRED, "gh.runs"), Val(0, Grade.INFERRED, "gh.runs"))
-        why.append(_why(subject, "轮数", E.COMMENT_TITLE, "gh.issue", "审 %d · 外 %d · 修 %d（评论 %d 条%s）" % (rv, ex, fx, n_comments, "；" + "；".join(hits[:4]) if hits else ""), None))
+            flags = dict(zip(("审", "外", "修"), _classify_comment(c.get("first_line", ""))))
+            if not any(flags.values()):
+                continue
+            for k, hit in flags.items():
+                if hit:
+                    counts[k][0] += 1
+                    if c["_grade"] == Grade.INFERRED:
+                        counts[k][1] = Grade.INFERRED
+            mark = "".join(k for k, hit in flags.items() if hit)
+            if c["_grade"] == Grade.INFERRED and c.get("_window"):
+                lo, hi = c["_window"]
+                mark += "推（落在窗口 %s→%s）" % (beijing(lo), beijing(hi) if hi else "now")
+            else:
+                mark += "实"
+            hits.append("%s %s「%s」" % (mark, beijing(c["_at"]), (c.get("first_line") or "").lstrip("#*> ")[:24]))
+        rounds = Rounds(Val(counts["审"][0], counts["审"][1], "gh.issue"), Val(counts["外"][0], counts["外"][1], "gh.issue"),
+                        Val(counts["修"][0], counts["修"][1], "gh.issue"), Val(0, Grade.INFERRED, "gh.runs"), Val(0, Grade.INFERRED, "gh.runs"))
+        why.append(_why(subject, "轮数", E.COMMENT_TITLE, "gh.issue", "审 %s · 外 %s · 修 %s（评论 %s 条%s）" % (
+            rounds.review.text(), rounds.external.text(), rounds.fixpack.text(), _n(n_comments), "；" + "；".join(hits[:4]) if hits else ""), None))
     if not ctx.ok("gh.runs"):
         rounds.ci_red = Val.unknown("gh.runs", Grade.INFERRED)
         rounds.ci_green = Val.unknown("gh.runs", Grade.INFERRED)
@@ -608,10 +660,7 @@ def _rounds(ctx: _Ctx, ids: set, window: tuple[Optional[datetime], Optional[date
         red = green = 0
         lo, hi = window
         for r in ctx.runs:
-            if trace_level:
-                inside = True
-            else:
-                inside = lo is not None and lo <= r["_at"] <= (hi or ctx.now)
+            inside = True if trace_level else (lo is not None and lo <= r["_at"] <= (hi or ctx.now))
             if not inside:
                 continue
             concl = (r.get("conclusion") or "").lower()
@@ -621,31 +670,30 @@ def _rounds(ctx: _Ctx, ids: set, window: tuple[Optional[datetime], Optional[date
                 red += 1
         rounds.ci_red = Val(red, Grade.INFERRED, "gh.runs")
         rounds.ci_green = Val(green, Grade.INFERRED, "gh.runs")
-        why.append(_why(subject, "CI", E.CI_CONCLUSION, "gh.runs", "红 %d 绿 %d（活动窗口 %s→%s）" % (red, green, beijing(lo), beijing(hi) if hi else "now"), hi))
+        why.append(_why(subject, "CI", E.CI_CONCLUSION, "gh.runs", "红 %s 绿 %s（活动窗口 %s→%s）" % (
+            rounds.ci_red.text(), rounds.ci_green.text(), beijing(lo) if lo else "?", beijing(hi) if hi else "now"), hi))
     return rounds, why, n_comments
 
 
 def _module_view(ctx: _Ctx, section, views: list[StepView], n_sections: int) -> ModuleView:
-    ids = {v.step.id for v in views}
     status = _module_status(views)
     done = sum(1 for v in views if ctx.checked_map.get(v.step.id, False))
     total = len(views)
-    work_evs = [e for v in views for e in ctx.step_events.get(v.step.id, []) if e.kind != "checkbox"]
     all_evs = [e for v in views for e in ctx.step_events.get(v.step.id, [])]
-    started = min((e.at for e in work_evs), default=None)
     last = max((e.at for e in all_evs), default=None)
-    rounds, why, n_comments = _rounds(ctx, ids, (started, last if status in (Status.DONE, Status.DONEQ) else None), subject=section.title)
+    started, win_end = ctx.module_windows.get(section.index, (None, None))
+    finished = total > 0 and done == total
+    rounds, why, n_comments = _rounds(ctx, section.index, (started, last if finished else None), section.title)
     review_n = rounds.review.value if rounds.review.available else 0
     tier = _tier(int(review_n or 0))
     ests = [v.step.est_min for v in views if v.step.est_min is not None]
     est = sum(ests) if ests else None
     actual = elapsed = None
     if started is not None:
-        if status in (Status.DONE, Status.DONEQ) and last is not None:
+        if finished and last is not None:
             actual = _mins(last - started)
-        elif status in (Status.RUNNING, Status.WATCH, Status.STALLED, Status.UNKNOWN, Status.STALE):
+        elif status in (Status.RUNNING, Status.WATCH, Status.STALLED, Status.UNKNOWN, Status.STALE) or not finished:
             elapsed = _mins(ctx.now - started)
-    # 三行
     what = "%s %d/%d" % (section.title, done, total)
     rounds_line = "审 %s · 外 %s · 修 %s · CI 红%s 绿%s" % (rounds.review.text(), rounds.external.text(), rounds.fixpack.text(),
                                                           rounds.ci_red.text(), rounds.ci_green.text())
@@ -659,13 +707,12 @@ def _module_view(ctx: _Ctx, section, views: list[StepView], n_sections: int) -> 
         pr_text = "无 PR"
     elif len(prs) == 1:
         p = next(iter(prs.values()))
-        pr_text = "PR #%d %s" % (p["number"], {"MERGED": "✓合入", "OPEN": "草稿" if p.get("isDraft") else "打开", "CLOSED": "关闭"}[p["_state"]])
+        pr_text = "PR #%d %s" % (p["number"], "草稿" if (p["_state"] == "OPEN" and p.get("isDraft")) else PR_STATE_TEXT[p["_state"]])
     else:
         merged = sum(1 for p in prs.values() if p["_state"] == "MERGED")
-        pr_text = "PR ×%d ✓%d" % (len(prs), merged)
-    comment_text = "评论 %d" % n_comments if ctx.ok("gh.issue") else "评论 未知"
+        pr_text = "PR ×%s ✓%s" % (_n(len(prs)), _n(merged))
+    comment_text = ("评论 %s" % _n(n_comments)) if ctx.ok("gh.issue") else "评论 未知"
     evidence_line = "%s · %s · 最新 %s" % (pr_text, comment_text, beijing(last) if last else "?")
-    # 依赖
     needs: list[int] = []
     for v in views:
         for d in v.step.needs:
@@ -674,17 +721,18 @@ def _module_view(ctx: _Ctx, section, views: list[StepView], n_sections: int) -> 
                 needs.append(dep.section)
     if not needs and section.index > 0:
         needs = [section.index - 1]
-    why.insert(0, _why(section.title, status.value, E.CHECKBOX, "步骤聚合", "%d/%d 勾选；步骤状态 %s" % (done, total, " ".join("%s=%s" % (v.step.id, v.status.value) for v in views)), last))
+    why.insert(0, _why(section.title, LABEL[status], E.CHECKBOX, "步骤聚合", "%d/%d 勾选；步骤状态 %s" % (
+        done, total, " ".join("%s=%s" % (v.step.id, LABEL[v.status]) for v in views)), last))
     why.append(_why(section.title, "边框", E.COMMENT_TITLE, "gh.issue", "审核轮数 %s → 档位 %d" % (rounds.review.text(), int(tier)), None, rounds.review.available))
     if started is not None:
-        hi = last if (status in (Status.DONE, Status.DONEQ) and last) else ctx.now
+        hi = last if (finished and last) else ctx.now
         paused = timedelta(0)
         for p in ctx.pauses:
             lo2, hi2 = max(started, p["start"]), min(hi, p["end"] or ctx.now)
             if hi2 > lo2:
                 paused += hi2 - lo2
         if paused:
-            why.append(_why(section.title, "跨暂停", E.TASKTABLE_TAG, "任务表引用块", "活动窗口内含暂停 %d 分钟（报），时长未扣除" % _mins(paused), None))
+            why.append(_why(section.title, "跨暂停", E.TASKTABLE_TAG, "任务表引用块", "活动窗口内含暂停 %s 分钟，时长未扣除" % _n(_mins(paused), Grade.REPORTED), None))
     return ModuleView(section=section, status=status, tier=tier, rounds=rounds, done=done, total=total, what=what, rounds_line=rounds_line,
                       evidence_line=evidence_line, actual_min=actual, elapsed_min=elapsed, est_min=est, needs=needs, why=why)
 
@@ -708,6 +756,20 @@ def _compare_tag(ctx: _Ctx, published: Optional[str], res) -> Val:
     return Val(bool(published) and got == published, res.grade, res.key, res.fetched_at)
 
 
+def _stage_result(ctx: _Ctx, key: str):
+    """配置阶段的结果键：snapshot.config 记录的 result_key（S-4：`config.<key>`），兼容旧键名。"""
+    for row in ctx.cfg.get("stages") or []:
+        if row.get("key") == key and row.get("result_key"):
+            r = ctx.snap.get(row["result_key"])
+            if r.ok or r.error != "未采集":
+                return r
+    for cand in ("config.%s" % key, "config.stages.%s" % key):
+        r = ctx.snap.get(cand)
+        if r.ok or r.error != "未采集":
+            return r
+    return ctx.snap.get("config.%s" % key)
+
+
 def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
     why: list[Why] = []
     levels: list[StageLevel] = []
@@ -715,19 +777,24 @@ def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
     # 合入主干
     batch_pr = next((p for p in ctx.prs if ctx.snap.branch and p.get("headRefName") == ctx.snap.branch), None)
     merged_at: Optional[datetime] = None
+    merge_sha = ""
     if not ctx.ok("gh.prs"):
         merged = Val.unknown("gh.prs")
         why.append(_why("阶段·合入主干", "未知", E.PR_STATE, "gh.prs", ctx.err("gh.prs"), None, False))
     elif batch_pr is not None:
         merged = Val(batch_pr["_state"] == "MERGED", Grade.MEASURED, "gh.prs PR #%d" % batch_pr["number"], batch_pr["_merged"])
         merged_at = batch_pr["_merged"]
-        why.append(_why("阶段·合入主干", "是" if merged.value else "否", E.PR_STATE, "gh.prs", "批次 PR #%d %s" % (batch_pr["number"], batch_pr["_state"]), batch_pr["_merged"]))
+        merge_sha = batch_pr.get("mergeCommit") or "" if merged_at else ""
+        why.append(_why("阶段·合入主干", "是" if merged.value else "否", E.PR_STATE, "gh.prs", "批次 PR #%d %s%s" % (
+            batch_pr["number"], batch_pr["_state"], " → %s" % merge_sha[:7] if merge_sha else ""), batch_pr["_merged"]))
     elif ctx.snap.branch:
         merged = Val(False, Grade.INFERRED, "gh.prs 无批次 PR")
         why.append(_why("阶段·合入主干", "否", E.PR_STATE, "gh.prs", "分支 %s 尚无 PR" % ctx.snap.branch, None))
     elif ctx.prs:
         all_merged = all(p["_state"] == "MERGED" for p in ctx.prs)
         merged_at = max((p["_merged"] for p in ctx.prs if p["_merged"]), default=None)
+        last_pr = max((p for p in ctx.prs if p["_merged"]), key=lambda p: p["_merged"], default=None)
+        merge_sha = (last_pr.get("mergeCommit") or "") if (all_merged and last_pr) else ""
         merged = Val(all_merged, Grade.INFERRED, "gh.prs 全部 PR", merged_at)
         why.append(_why("阶段·合入主干", "是" if all_merged else "否", E.PR_STATE, "gh.prs", "无批次分支，按 Trace 全部 PR 合入判定：%d/%d MERGED" % (
             sum(1 for p in ctx.prs if p["_state"] == "MERGED"), len(ctx.prs)), merged_at))
@@ -735,49 +802,76 @@ def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
         merged = Val(False, Grade.INFERRED, "gh.prs 无 PR")
         why.append(_why("阶段·合入主干", "否", E.PR_STATE, "gh.prs", "Trace 尚无 PR", None))
     levels.append(StageLevel("merged", STAGE_LABEL["merged"], merged))
-    # 已发布
+
+    # 已发布：gh.tags 为权威（本地 git.tags 只作参考）；配置了发布工作流时还要 run success 且 headSha 为合并提交或其后代
     workflow = ctx.cfg.get("release_workflow") or getattr(ctx.conf, "release_workflow", None) or ""
-    tags_after = [t for t in ctx.tags if ctx.in_window(t["_at"]) and (merged_at is None or t["_at"] >= merged_at)]
-    published_tag = tags_after[-1]["name"] if tags_after else None
-    if not ctx.ok("git.tags"):
-        published = Val.unknown("git.tags")
-        why.append(_why("阶段·已发布", "未知", E.TAG_REF, "git.tags", ctx.err("git.tags"), None, False))
+
+    def after_merge(at: Optional[datetime]) -> bool:
+        if at is None:
+            return False
+        if merged_at is not None:
+            return at >= merged_at
+        return ctx.in_window(at)
+
+    def descendant(sha: str) -> bool:
+        if not sha:
+            return False
+        if merge_sha and _sha_eq(sha, merge_sha):
+            return True
+        c = ctx._commit_by_prefix(sha)
+        return c is not None and after_merge(c["_at"])
+
+    release_run = None
+    if workflow and ctx.ok("gh.release_runs"):
+        for r in ctx.val("gh.release_runs", []):
+            at = parse_ts(r.get("createdAt") or "")
+            if at is None or at > now or not after_merge(at):
+                continue
+            if (r.get("conclusion") or "").lower() == "success" and descendant(r.get("headSha") or ""):
+                release_run = r
+                break
+    matched_tag = None
+    if ctx.ok("gh.tags"):
+        for t in ctx.gh_tags:
+            if descendant(t.get("sha", "")) or (release_run and _sha_eq(t.get("sha", ""), release_run.get("headSha") or "")) or after_merge(t["_at"]):
+                matched_tag = t
+                break
+    local_ref = ", ".join(t["name"] for t in ctx.tags if after_merge(t["_at"])) or "无"
+    published_tag = matched_tag["name"] if matched_tag else None
+    if not ctx.ok("gh.tags"):
+        published = Val.unknown("gh.tags")
+        why.append(_why("阶段·已发布", "未知", E.TAG_REF, "gh.tags", "%s（本地 git.tags 参考：%s）" % (ctx.err("gh.tags"), local_ref if ctx.ok("git.tags") else "不可得"), None, False))
     elif workflow:
         if not ctx.ok("gh.release_runs"):
             published = Val.unknown("gh.release_runs")
             why.append(_why("阶段·已发布", "未知", E.WORKFLOW_RUN, "gh.release_runs", ctx.err("gh.release_runs"), None, False))
         else:
-            good = None
-            for r in ctx.val("gh.release_runs", []):
-                at = parse_ts(r.get("createdAt") or "")
-                if at is None or at > now or (merged_at and at < merged_at):
-                    continue
-                if (r.get("conclusion") or "").lower() == "success" and ctx._commit_by_prefix(r.get("headSha") or "") is not None:
-                    good = r
-                    break
-            ok = good is not None and bool(published_tag)
-            published = Val(ok, Grade.MEASURED, "gh.release_runs ＋ git.tags", parse_ts(good.get("createdAt")) if good else None)
-            why.append(_why("阶段·已发布", "是" if ok else "否", E.WORKFLOW_RUN, "gh.release_runs ＋ git.tags",
-                            "发布 run %s；tag %s" % ("success %s" % (good.get("headSha") or "")[:7] if good else "无成功 run", published_tag or "无"), published.at))
+            ok = release_run is not None and matched_tag is not None
+            at = parse_ts(release_run.get("createdAt") or "") if release_run else None
+            published = Val(ok, Grade.MEASURED, "gh.release_runs ＋ gh.tags", at)
+            why.append(_why("阶段·已发布", "是" if ok else "否", E.WORKFLOW_RUN, "gh.release_runs ＋ gh.tags", "发布 run %s；tag %s（本地参考：%s）" % (
+                "success %s %s" % ((release_run.get("headSha") or "")[:7], beijing(at)) if release_run else "无合并后的成功 run",
+                "%s → %s" % (matched_tag["name"], matched_tag.get("sha", "")[:7]) if matched_tag else "无合并后的 tag", local_ref), at))
     else:
-        published = Val(bool(published_tag), Grade.INFERRED, "git.tags", tags_after[-1]["_at"] if tags_after else None)
-        why.append(_why("阶段·已发布", "是" if published_tag else "否", E.TAG_REF, "git.tags",
-                        "未配置发布工作流，按合并后 tag 判定：%s" % (published_tag or "无 tag"), published.at))
+        published = Val(matched_tag is not None, Grade.INFERRED, "gh.tags", matched_tag["_at"] if matched_tag else None)
+        why.append(_why("阶段·已发布", "是" if matched_tag else "否", E.TAG_REF, "gh.tags", "未配置发布工作流，按合并后 tag 判定：%s（本地参考：%s）" % (
+            "%s → %s" % (matched_tag["name"], matched_tag.get("sha", "")[:7]) if matched_tag else "无 tag", local_ref), published.at))
     levels.append(StageLevel("published", STAGE_LABEL["published"], published))
+
     # 预发 / 生产
     stage_keys = {s.get("key") for s in (ctx.cfg.get("stages") or [])}
     conf_stages = getattr(ctx.conf, "stages", None) or {}
     for key in ("staging", "production"):
         configured = key in stage_keys or (isinstance(conf_stages, dict) and key in conf_stages)
         if not configured:
-            levels.append(StageLevel(key, STAGE_LABEL[key], Val.unknown("config.stages.%s" % key), configured=False))
-            why.append(_why("阶段·" + STAGE_LABEL[key], "未配置", E.CONFIG_COMMAND, "config.stages.%s" % key, "证据源配置未声明", None, False))
+            levels.append(StageLevel(key, STAGE_LABEL[key], Val.unknown("config.%s" % key), configured=False))
+            why.append(_why("阶段·" + STAGE_LABEL[key], "未配置", E.CONFIG_COMMAND, "config.%s" % key, "证据源配置未声明", None, False))
             continue
-        res = ctx.snap.get("config.stages.%s" % key)
+        res = _stage_result(ctx, key)
         val = _compare_tag(ctx, published_tag, res)
         levels.append(StageLevel(key, STAGE_LABEL[key], val))
         why.append(_why("阶段·" + STAGE_LABEL[key], ("是" if val.value else "否") if val.available else "未知", E.IMAGE_TAG, res.key,
-                        ("取得 %s vs 已发布 %s" % (str(res.value).strip()[:40], published_tag)) if res.ok else res.error, res.fetched_at, val.available))
+                        ("取得 %s vs 已发布 %s" % (str(res.value).strip()[:40], published_tag or "无")) if res.ok else res.error, res.fetched_at, val.available))
     # 收口
     if not ctx.ok("gh.issue"):
         closed = Val.unknown("gh.issue")
@@ -800,92 +894,85 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
         s = lv.get(key)
         return bool(s and s.value.available and s.value.value)
 
-    short = ctx.snap.trace_dir.split("/")[-1]
-    short = re.sub(r"^\d+-", "", short)
+    short = re.sub(r"^\d+-", "", ctx.snap.trace_dir.split("/")[-1])
     title = "Trace #%s %s" % (ctx.snap.trace_no or "?", short) + (" · %s" % ctx.snap.branch if ctx.snap.branch else "")
+    checked_text = "%d/%s 勾选" % (n_checked, _n(total))
     # 阶段
     current = next((m for m in modules if m.done < m.total), None)
     if is_true("closed"):
-        stage = "已收口（Issue 关闭 %s）· %d/%d 勾选" % (beijing(lv["closed"].value.at), n_checked, total)
+        stage = "已收口（Issue 关闭 %s）· %s" % (beijing(lv["closed"].value.at), checked_text)
+    elif is_true("production"):
+        stage = "已上生产 · %s" % checked_text
+    elif is_true("staging"):
+        stage = "预发已升级 · %s" % checked_text
+    elif is_true("published"):
+        stage = "已发布 · %s" % checked_text
+    elif is_true("merged"):
+        stage = "已合入主干 · %s" % checked_text
+    else:
+        stage = "执行中 · %s（%s）" % (current.section.title if current else "全部勾选", checked_text)
+    # 下一步 = 第一个未勾选 Step（编号＋标题＋状态）＋ worktree 数
+    wts = [w for w in ctx.worktrees if not w.get("main")]
+    wt_text = ("worktree %s" % _n(len(wts))) if ctx.ok("git.worktrees") else "worktree 未知"
+    if is_true("closed"):
         nxt = "无（Trace 已关闭）"
     elif is_true("production"):
-        stage = "已上生产 · %d/%d 勾选" % (n_checked, total)
-        nxt = "观察与收口"
-    elif is_true("staging"):
-        stage = "预发已升级 · %d/%d 勾选" % (n_checked, total)
-        nxt = "生产升级 → 观察与收口"
-    elif is_true("published"):
-        stage = "已发布 · %d/%d 勾选" % (n_checked, total)
-        nxt = "预发 / 生产升级 → 收口"
-    elif is_true("merged"):
-        stage = "已合入主干 · %d/%d 勾选" % (n_checked, total)
-        nxt = "发布 → 收口"
+        nxt = "观察与收口 · " + wt_text
     else:
-        stage = "执行中 · %s（%d/%d 勾选）" % (current.section.title if current else "全部勾选", n_checked, total)
         first = next((v for v in views if not ctx.checked_map.get(v.step.id, False)), None)
-        nxt = "%s %s（%s）" % (first.step.id, first.step.title[:18], first.status.value) if first else "无未勾选 Step"
-    if not is_true("closed"):
-        # 编排窗口 / worktree 数
-        win_text = ""
-        pattern = ctx.cfg.get("window_pattern") or getattr(ctx.conf, "window_pattern", None) or ""
-        if ctx.cfg.get("tmux_configured") and ctx.ok("tmux.windows") and pattern:
-            try:
-                alive = [w for w in ctx.val("tmux.windows", []) if re.search(pattern, w)]
-            except re.error:
-                alive = []
-            win_text = "窗口 %s" % ("、".join(alive[:2]) + " 存活" if alive else "无匹配")
-        elif ctx.cfg.get("tmux_configured") and not ctx.ok("tmux.windows"):
-            win_text = "窗口 未知"
-        wts = [w for w in ctx.worktrees if not w.get("main")]
-        wt_text = ("worktree %d" % len(wts)) if ctx.ok("git.worktrees") else "worktree 未知"
-        nxt = " · ".join(x for x in (nxt, win_text, wt_text) if x)
-    # 阻塞
+        nxt = ("%s %s（%s）" % (first.step.id, first.step.title[:18], LABEL[first.status]) if first else "无未勾选 Step") + " · " + wt_text
+    # 阻塞：只放当前阻塞
     block_parts: list[str] = []
     for v in views:
         if v.status == Status.STALLED:
-            block_parts.append("%s %d 分钟无证据" % (v.step.id, _mins(now - v.last_evidence) if v.last_evidence else 0))
+            block_parts.append("%s %s 分钟无证据" % (v.step.id, _n(_mins(now - v.last_evidence) if v.last_evidence else 0)))
+    completed = [r for r in ctx.runs if (r.get("status") or "").lower() == "completed" or r.get("conclusion")]
+    if completed:
+        latest = completed[-1]
+        if (latest.get("conclusion") or "").lower() in RED:
+            block_parts.append("CI 红：%s %s" % (latest.get("workflowName") or latest.get("name") or "run", beijing(latest["_at"])))
+            why.append(_why("CI", "红", E.CI_CONCLUSION, "gh.runs", "最近完成的 run %s %s（%s）" % (
+                latest.get("workflowName") or latest.get("name"), latest.get("conclusion"), (latest.get("headSha") or "")[:7]), latest["_at"]))
+    stale_ids = [v.step.id for v in views if v.status == Status.STALE]
+    if stale_ids:
+        block_parts.append("审核结论失效 %s" % "/".join(stale_ids[:3]))
+    unknown_stages = [s.label for s in levels if s.configured and not s.value.available]
+    if unknown_stages:
+        block_parts.append("阶段未知：%s" % " / ".join(unknown_stages))
+    pattern = ctx.cfg.get("window_pattern") or getattr(ctx.conf, "window_pattern", None) or ""
+    window_alive: Optional[bool] = None
+    alive: list[str] = []
+    if ctx.cfg.get("tmux_configured") and pattern and ctx.ok("tmux.windows"):
+        try:
+            alive = [w for w in ctx.val("tmux.windows", []) if re.search(pattern, w)]
+        except re.error:
+            alive = []
+        window_alive = bool(alive)
+        why.append(_why("编排窗口", "存活" if alive else "不在", E.TMUX_WINDOW, "tmux.windows", "%s（模式 %s）" % ("、".join(alive[:3]) if alive else "无匹配窗口", pattern), None))
+        if not alive:
+            block_parts.append("编排窗口不在")
     for p in ctx.pauses:
         if p["end"] is None:
             block_parts.append("暂停中 自 %s（报）" % beijing(p["start"], "%m-%d %H:%M"))
             why.append(_why("暂停", "进行中", E.TASKTABLE_TAG, p["source"], "%s → 无恢复证据；%s" % (beijing(p["start"], "%m-%d %H:%M"), p["line"][:60]), p["start"]))
         else:
-            why.append(_why("暂停", "%d 分钟（报）" % _mins(p["end"] - p["start"]), E.TASKTABLE_TAG, p["source"],
+            why.append(_why("暂停", "%s 分钟" % _n(_mins(p["end"] - p["start"]), Grade.REPORTED), E.TASKTABLE_TAG, p["source"],
                             "%s → %s（恢复＝其后首个证据）；%s" % (beijing(p["start"], "%m-%d %H:%M:%S"), beijing(p["end"], "%m-%d %H:%M:%S"), p["line"][:60]), p["end"]))
-    evs = ctx.step_work_events
-    if len(evs) >= 2:
-        i = max(range(len(evs) - 1), key=lambda k: evs[k + 1].at - evs[k].at)
-        gap, (a, b) = evs[i + 1].at - evs[i].at, (evs[i], evs[i + 1])
-        if gap >= timedelta(minutes=GAP_MIN):
-            paused = timedelta(0)
-            for p in ctx.pauses:
-                lo, hi = max(a.at, p["start"]), min(b.at, p["end"] or now)
-                if hi > lo:
-                    paused += hi - lo
-            text = "最大空档 %d 分钟 %s→%s" % (_mins(gap), beijing(a.at), beijing(b.at))
-            if paused:
-                text += "（其中暂停 %d 分钟报）" % _mins(paused)
-            block_parts.append(text)
-            why.append(_why("空档", "%d 分钟" % _mins(gap), b.etype, "%s → %s" % (a.source, b.source),
-                            "%s %s → %s %s%s" % (a.label, beijing(a.at, "%m-%d %H:%M:%S"), b.label, beijing(b.at, "%m-%d %H:%M:%S"),
-                                                 "；归因暂停 %d 分钟（报）" % _mins(paused) if paused else ""), b.at))
-    unknown_n = sum(1 for v in views if v.status == Status.UNKNOWN)
-    if unknown_n:
-        block_parts.append("未知 %d 步（证据不可得）" % unknown_n)
     block = " · ".join(block_parts) if block_parts else "无"
     # 预算
     budget: list[tuple[str, Val, Optional[int]]] = []
     for b in ctx.cfg.get("budgets") or []:
-        res = ctx.snap.get("config.budget.%s" % b.get("key"))
+        res = ctx.snap.get(b.get("result_key") or ("config.%s" % b.get("key")))
         val = Val(res.value, res.grade, res.key, res.fetched_at) if res.ok else Val.unknown(res.key, res.grade)
         budget.append((b.get("label") or b.get("key") or "", val, b.get("cap")))
     if not budget:
         budget.append(("PR", Val(len(ctx.prs), Grade.MEASURED, "gh.prs") if ctx.ok("gh.prs") else Val.unknown("gh.prs"), None))
         budget.append(("CI 次数", Val(len(ctx.runs), Grade.MEASURED, "gh.runs") if ctx.ok("gh.runs") else Val.unknown("gh.runs"), None))
-    # 存疑
+    # 存疑：自述未证 / 合同 PR / 共用 PR / PR 自合计数 / 历史最大空档
     doubt_parts: list[str] = []
     doneq = [v.step.id for v in views if v.status == Status.DONEQ]
     if doneq:
-        doubt_parts.append("自述未证 %d（%s）" % (len(doneq), "/".join(doneq[:4]) + ("…" if len(doneq) > 4 else "")))
+        doubt_parts.append("自述未证 %s（%s）" % (_n(len(doneq)), "/".join(doneq[:4]) + ("…" if len(doneq) > 4 else "")))
     if ctx.contract_pr is not None:
         p = ctx.contract_pr
         flags = []
@@ -913,33 +1000,49 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
         if merged_prs:
             n_self = sum(1 for p in merged_prs if _pr_self_merged(p))
             n_appr = sum(1 for p in merged_prs if _pr_approved(p))
-            tally = "%d/%d PR 自合" % (n_self, len(merged_prs))
-            tally += " · 零批准" if n_appr == 0 else " · 批准 %d" % n_appr
+            tally = "PR 自合 %d/%s" % (n_self, _n(len(merged_prs)))
+            tally += " · 零批准" if n_appr == 0 else " · 批准 %s" % _n(n_appr)
             doubt_parts.append(tally)
             why.append(_why("PR 合并方式", tally, E.PR_MERGED_BY, "gh.prs", "自合 %s" % " ".join("#%d" % p["number"] for p in merged_prs if _pr_self_merged(p)), None))
     else:
         doubt_parts.append("PR 存疑未知（gh）")
+    evs = ctx.step_work_events
+    if len(evs) >= 2:
+        i = max(range(len(evs) - 1), key=lambda k: evs[k + 1].at - evs[k].at)
+        gap, (a, b) = evs[i + 1].at - evs[i].at, (evs[i], evs[i + 1])
+        if gap >= timedelta(minutes=GAP_MIN):
+            paused = timedelta(0)
+            for p in ctx.pauses:
+                lo, hi = max(a.at, p["start"]), min(b.at, p["end"] or now)
+                if hi > lo:
+                    paused += hi - lo
+            text = "最大空档 %s 分钟 %s→%s" % (_n(_mins(gap), Grade.INFERRED), beijing(a.at), beijing(b.at))
+            if paused:
+                text += "（其中暂停 %s 分钟）" % _n(_mins(paused), Grade.REPORTED)
+            doubt_parts.append(text)
+            why.append(_why("空档", "%s 分钟" % _n(_mins(gap), Grade.INFERRED), b.etype, "%s → %s" % (a.source, b.source),
+                            "%s %s → %s %s%s" % (a.label, beijing(a.at, "%m-%d %H:%M:%S"), b.label, beijing(b.at, "%m-%d %H:%M:%S"),
+                                                 "；归因暂停 %s 分钟" % _n(_mins(paused), Grade.REPORTED) if paused else ""), b.at))
     doubt = " · ".join(doubt_parts) if doubt_parts else "无"
     # 最后外部证据
     external = [e for e in ctx.events if e.kind != "checkbox"]
     if external:
         last = external[-1]
         who = "/".join(sorted(last.steps)[:2]) if last.steps else "Trace"
-        evidence = "%d 分钟前 · %s（%s）· %s" % (_mins(now - last.at), last.label, who, beijing(last.at, "%m-%d %H:%M"))
+        evidence = "%s 分钟前 · %s（%s）· %s" % (_n(_mins(now - last.at)), last.label, who, beijing(last.at, "%m-%d %H:%M"))
     elif not all(ctx.ok(k) for k in CORE_KEYS):
         evidence = "未知（证据不可得）"
     else:
         evidence = "无"
     # 附注与告警
     warnings = list(ctx.warnings)
-    pattern = ctx.cfg.get("window_pattern") or ""
-    if not (ctx.cfg.get("tmux_configured") and ctx.ok("tmux.windows") and pattern and any(re.search(pattern, w) for w in ctx.val("tmux.windows", []))):
+    if window_alive is not True:
         warnings.append(WINDOW_NOTE)
     if ctx.table.unparsed:
-        warnings.append("任务表未解析 %d 行" % len(ctx.table.unparsed))
+        warnings.append("任务表未解析 %s 行" % _n(len(ctx.table.unparsed)))
     if ctx.table.overlong:
-        warnings.append("任务表超限 %d 行" % len(ctx.table.overlong))
-    for key in ("git.log", "git.tasktable_history", "git.worktrees", "git.tags", "gh.prs", "gh.issue", "gh.runs"):
+        warnings.append("任务表超限 %s 行" % _n(len(ctx.table.overlong)))
+    for key in ("git.log", "git.tasktable_history", "git.worktrees", "gh.prs", "gh.issue", "gh.runs", "gh.tags"):
         r = ctx.snap.get(key)
         if not r.ok:
             warnings.append("%s 不可得：%s" % (key, r.error[:60]))
@@ -956,21 +1059,15 @@ def infer(snapshot: Snapshot, conf) -> Board:
     for v in views:
         view_by_section.setdefault(v.step.section, []).append(v)
     n_sections = len(ctx.table.sections)
+    ctx.assign_comments({sec.index: _module_window(ctx, view_by_section.get(sec.index, [])) for sec in ctx.table.sections})
     modules = [_module_view(ctx, sec, view_by_section.get(sec.index, []), n_sections) for sec in ctx.table.sections]
     levels, stage_why, _tag = _stages(ctx)
     header_why: list[Why] = []
     header = _header(ctx, views, modules, levels, header_why)
-    trace_rounds, trace_why, _n = _rounds(ctx, set(), (None, None), trace_level=True)
+    trace_rounds, trace_why, _n_comments = _rounds(ctx, None, (None, None), "Trace")
     if any(v.available and v.value for v in (trace_rounds.review, trace_rounds.external, trace_rounds.fixpack)):
         header.stage += " · Trace 级 审 %s 外 %s 修 %s" % (trace_rounds.review.text(), trace_rounds.external.text(), trace_rounds.fixpack.text())
-    why: list[Why] = []
-    for v in views:
-        why.extend(v.why)
-    for m in modules:
-        why.extend(m.why)
-    why.extend(stage_why)
-    why.extend(header_why)
-    why.extend(trace_why)
-    board = Board(header=header, steps=views, modules=modules, generated_at=ctx.now, why=why)
+    board = Board(header=header, steps=views, modules=modules, generated_at=ctx.now, why=stage_why + header_why + trace_why,
+                  unparsed=list(ctx.table.unparsed))
     board.validate()
     return board
