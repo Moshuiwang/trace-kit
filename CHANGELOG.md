@@ -10,6 +10,18 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-05
+
+热修（Trace [#17](https://github.com/Moshuiwang/trace-kit/issues/17) S-8 试穿发现；合同「试穿缺陷 P1 走热修小 PR」）。证据等级 4（单测 175＋夹具 49 零网络绿、kit-selfcheck）；真实样本 lingxi #606。
+
+### Fixed
+
+- `boardlib/infer.py` 批次 PR 身份四条规则：同一分支多个 PR 时不再一律「未知」——恰一个 MERGED → 批次 PR；多个 MERGED → 最早合并；无 MERGED → 最早创建；全部关闭未合并才未知；其余 PR 记入存疑「另有 PR #n …」（H-1）— 出处 #17 试穿评论（#606 分支上 #608 MERGED ＋ #610 收口 PR 把阶段判成未知）— 验证：`test_batch_pr_identity_rules_h1`、夹具 `stage-two-prs`。
+- 已发布已知为「否」时，已配置的预发 / 生产显示「尚未发布」而非「未知」，不进阻塞（复核② N-1）；合入主干「不适用」时已发布与下游两级显示「不适用」，不进阻塞（N-3）— 验证：`test_staging_production_not_yet_published_n1`、`trace1-replay` 三帧。
+- 版本 0.2.1（plugin.json / marketplace.json）。
+
+## [0.2.0] - 2026-09-05
+
 小修包 v0.1.x：七项净减 / 一句话级修订，全部来自 [trace-kit #13](https://github.com/Moshuiwang/trace-kit/issues/13)（四个拍板项按默认值，产品负责人 2026-09-02 裁定留痕在该 Issue 评论）。不动 `METHOD.md`、不加 CI 门禁。
 
 **v0.2.0 主体：Trace 看板**——一个只显示、不阻断的派生视图（tmux 里的只读 TUI），从任务表与 GitHub 证据画出当前 Trace「做到哪 / 堵在哪 / 每个模块轮了几轮 / 花了多少分钟」。出处：[trace-kit #12](https://github.com/Moshuiwang/trace-kit/issues/12) v3 修订段（v2 十二条设计裁定不变，产品负责人 2026-09-02 逐轮看样稿定下）＋ [lingxi #577](https://github.com/Moshuiwang/lingxi/issues/577) 总纲及其子清单 [#578](https://github.com/Moshuiwang/lingxi/issues/578)（节点粒度上移到模块、边框承载审核轮数）/ [#579](https://github.com/Moshuiwang/lingxi/issues/579)（只认结构化证据，不嗅探评论措辞）/ [#580](https://github.com/Moshuiwang/lingxi/issues/580)（键盘逐序列分发）/ [#581](https://github.com/Moshuiwang/lingxi/issues/581)（数字来源等级与预估口径）/ [#582](https://github.com/Moshuiwang/lingxi/issues/582)（引擎入库、切断工作树依赖）/ [#589](https://github.com/Moshuiwang/lingxi/issues/589)（审核之后的五级阶段）；产品负责人 2026-09-04「模块化、只放大模块、边框呈现轮数、简易版与复杂版分离」与 2026-09-05「同意进入 trace-kit；审过 2 轮、3 轮、3 轮以上用不同样式边框」两次裁定。不动 `METHOD.md`、不加 CI 门禁、不引入任何第三方依赖。

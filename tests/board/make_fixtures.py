@@ -344,12 +344,16 @@ BUDGET_CFG = [{"key": "full_gate", "result_key": "config.full_gate", "label": "�
 
 def build_stage(kind):
     now = T("06:00")
+    two_prs = kind == "two-prs"
     closed = kind == "closed"
     published = kind in ("published", "closed", "unknown-cmd")
+    prs = [G_PR30, G_PR31]
+    if two_prs:  # H-1：同分支两个 PR——#31 MERGED（批次 PR）＋ #32 OPEN（docs 收口）
+        prs.append(pr(32, "docs(#11): 收口回写", T("05:30"), head=G_BRANCH, body="Trace #11 收口小 PR。", draft=True, head_oid=GM_SHA))
     iss = issue(G_NO, T("01:00"), state="CLOSED" if closed else "OPEN", closed=T("05:50") if closed else "",
                 comments=[(7001, T("05:40"), "批次已合入主干，进入发布。")])
     runs = [run(910, T("04:50"), "success", GA_SHA, G_BRANCH)]
-    rows = base_rows(log=G_LOG, hist=history(G_HIST, G_PATH, G_IDS), prs=[G_PR30, G_PR31], iss=iss, runs=runs,
+    rows = base_rows(log=G_LOG, hist=history(G_HIST, G_PATH, G_IDS), prs=prs, iss=iss, runs=runs,
                      tags=[dict(G_TAG, object=GM_SHA, commit=GM_SHA)] if published else [],
                      gh_tags=[G_TAG] if published else [], branches=[{"name": G_BRANCH, "sha": GM_SHA, "at": T("05:00")}],
                      contract=G_CONTRACT, branch=G_BRANCH,
@@ -378,6 +382,7 @@ CASES = {
     "stage-merged": lambda: build_stage("merged"),
     "stage-published": lambda: build_stage("published"),
     "stage-closed": lambda: build_stage("closed"),
+    "stage-two-prs": lambda: build_stage("two-prs"),
 }
 ALL_CASES = list(CASES) + ["trace1-replay"]
 
@@ -398,6 +403,7 @@ SUMMARY = {
     "stage-merged": "五级阶段第一刻：批次 PR 已合入主干、尚未发布。",
     "stage-published": "五级阶段第二刻：发布工作流 run success ＋ gh.tags 出 tag，预发 / 生产命令取到同一 tag → 阶段「已上生产」、下一步「观察与收口」（推断链的「已完成」表达）。",
     "stage-closed": "五级阶段第三刻：Trace Issue 关闭 → 阶段「已收口」、下一步「无（Trace 已关闭）」。",
+    "stage-two-prs": "热修 H-1：同一批次分支上两个 PR（#31 已 MERGED ＋ #32 OPEN 的 docs 收口）→ 批次 PR 取 #31，合入主干「是」，存疑记「另有 PR #32 开放」；尚未发布时预发 / 生产按 N-1 显示「未配置」（本例未配置）。",
 }
 OK = "已逐项人工核对，与接口约定一致"
 CHECKS: dict[str, list] = {
@@ -478,6 +484,11 @@ CHECKS: dict[str, list] = {
         ("五级阶段", "五级阶段  合入主干 是 · 已发布 是 · 预发已升级 是 · 已上生产 是 · 收口 否", "simple", OK),
         ("发布 run ＋ tag 双证据", "发布 run success", "why", OK),
         ("预算条有上限画条", "完整门禁 ▰▰▰▰▱▱ 3实/5", "simple", OK),
+    ],
+    "stage-two-prs": [
+        ("合入主干按唯一 MERGED 的 PR 判定（规则①）", "五级阶段  合入主干 是 · 已发布 否 · 预发已升级 未配置 · 已上生产 未配置 · 收口 否", "simple", OK),
+        ("存疑记另有 PR 开放", "另有 PR #32 开放", "simple", OK),
+        ("Why 写明批次 PR 与规则", "批次 PR #31 MERGED → 合并提交 f1f1f1f；规则①：恰一个 MERGED 到 base；另有 #32 开放", "why", OK),
     ],
     "stage-closed": [
         ("阶段＝已收口", "阶段      已收口（Issue 关闭 13:50）· 2/2实 勾选", "simple", OK),

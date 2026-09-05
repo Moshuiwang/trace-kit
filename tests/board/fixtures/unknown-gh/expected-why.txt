@@ -85,7 +85,7 @@ S-3 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
 S-3 | 未知 | comment_title | gh.issue | gh.issue 不可得：命令不可用 | ? | 否
 S-3 | 未知 | ci_conclusion | gh.runs | gh.runs 不可得：命令不可用 | ? | 否
 阶段·合入主干 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
-阶段·已发布 | 未知 | tag_ref | gh.prs | 无已证实的合并点（合入主干 未知） | ? | 否
+阶段·已发布 | 未知 | tag_ref | gh.prs | 无已证实的合并点（合入主干未知） | ? | 否
 阶段·预发已升级 | 未配置 | config_command | config.staging | 证据源配置未声明 | ? | 否
 阶段·已上生产 | 未配置 | config_command | config.production | 证据源配置未声明 | ? | 否
 阶段·收口 | 未知 | issue_state | gh.issue | gh.issue 不可得：命令不可用 | ? | 否

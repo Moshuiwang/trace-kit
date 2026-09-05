@@ -9,7 +9,7 @@
       "name": "trace-kit",
       "source": "./plugin",
       "description": "Execution Trace 工作方法插件：开工合同、接管、交接、元守护、派发卡、看板六个 skill 与三件套模板；看板从任务表与 GitHub 证据在 tmux 里画出当前 Trace 的进度。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "Moshuiwang"
       },

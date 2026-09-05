@@ -437,7 +437,7 @@ class ModuleTest(unittest.TestCase):
 
 class StageTest(unittest.TestCase):
     def test_merged_only_unique_batch_pr(self):
-        """R1-11：只认唯一识别的批次 PR；无批次分支 → 不适用；多 PR 冲突 → 未知。"""
+        """R1-11 / N-3：唯一批次 PR；无批次分支 → 合入主干「不适用」、已发布「不适用」（不进阻塞）。"""
         b = board_of(results={"gh.prs": ok("gh.prs", [batch_pr()])})
         self.assertIs(stage(b, "merged").value.value, True)
         self.assertTrue(b.header.stage.startswith("已合入主干"))
@@ -446,11 +446,46 @@ class StageTest(unittest.TestCase):
         self.assertEqual(stage(b2, "merged").value.grade, Grade.MEASURED)
         b3 = board_of(branch="", results={"gh.prs": ok("gh.prs", [pr(1, "S-1 kickoff", ago(300), ago(290), head="trace/7-kickoff", merged_by="a")])})
         self.assertFalse(stage(b3, "merged").configured)
-        self.assertFalse(stage(b3, "published").value.available)
+        pub = stage(b3, "published").value
+        self.assertTrue(pub.available)
+        self.assertIs(pub.value, False)
+        self.assertEqual(getattr(pub, "note", ""), "不适用")
+        self.assertNotIn("阶段未知", b3.header.block)
         self.assertTrue(b3.header.stage.startswith("执行中"))
-        b4 = board_of(results={"gh.prs": ok("gh.prs", [batch_pr(), dict(batch_pr(merged=False), number=10)])})
+
+    def test_batch_pr_identity_rules_h1(self):
+        """H-1：同分支多 PR——①恰一 MERGED；②多 MERGED 取最早合并；③无 MERGED 取最早创建的 OPEN；④全部关闭未合并 → 未知。"""
+        m608 = dict(batch_pr(), number=608)
+        o610 = dict(batch_pr(merged=False), number=610, createdAt=iso(ago(10)))
+        b1 = board_of(results={"gh.prs": ok("gh.prs", [m608, o610])})
+        self.assertIs(stage(b1, "merged").value.value, True)
+        self.assertEqual(stage(b1, "merged").value.grade, Grade.INFERRED)
+        self.assertIn("另有 PR #610 开放", b1.header.doubt)
+        w = next(w for w in b1.why if w.subject == "阶段·合入主干")
+        self.assertIn("批次 PR #608", w.value)
+        self.assertIn("规则①", w.value)
+        # 已发布按 #608 合并点判定
+        b1b = board_of(results={"gh.prs": ok("gh.prs", [m608, o610]), "gh.tags": ok("gh.tags", [{"name": "v1", "sha": "m" * 40, "at": ""}])})
+        self.assertIs(stage(b1b, "published").value.value, True)
+        early = dict(batch_pr(), number=1, mergedAt=iso(ago(200)), mergeCommit="e" * 40)
+        late = dict(batch_pr(), number=2)
+        b2 = board_of(results={"gh.prs": ok("gh.prs", [late, early])})
+        self.assertIs(stage(b2, "merged").value.value, True)
+        self.assertIn("批次 PR #1", next(w for w in b2.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("规则②", next(w for w in b2.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("另有 PR #2 已合入", b2.header.doubt)
+        o_old = dict(batch_pr(merged=False), number=3, createdAt=iso(ago(300)))
+        o_new = dict(batch_pr(merged=False), number=4, createdAt=iso(ago(20)))
+        b3 = board_of(results={"gh.prs": ok("gh.prs", [o_new, o_old])})
+        self.assertIs(stage(b3, "merged").value.value, False)
+        self.assertIn("批次 PR #3 OPEN", next(w for w in b3.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("规则③", next(w for w in b3.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("另有 PR #4 开放", b3.header.doubt)
+        closed = [dict(batch_pr(merged=False), number=5, state="CLOSED", closedAt=iso(ago(30))), dict(batch_pr(merged=False), number=6, state="CLOSED", closedAt=iso(ago(20)))]
+        b4 = board_of(results={"gh.prs": ok("gh.prs", closed)})
         self.assertFalse(stage(b4, "merged").value.available)
-        self.assertIn("身份冲突", next(w for w in b4.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("规则④", next(w for w in b4.why if w.subject == "阶段·合入主干").value)
+        self.assertIn("阶段未知：合入主干", b4.header.block)
 
     def test_published_requires_merge_point_and_never_contradicts_merged(self):
         """R1-12：已发布须有已证实的合并点；绝不「合入 否 · 已发布 是」。"""
@@ -497,6 +532,20 @@ class StageTest(unittest.TestCase):
         self.assertIn("无合并后的 tag", next(w for w in b.why if w.subject == "阶段·已发布").value)
         down = dict(base, **{"gh.release_runs": bad("gh.release_runs", "超时 25s")})
         self.assertFalse(stage(board_of(results=down, config=cfg), "published").value.available)
+
+    def test_staging_production_not_yet_published_n1(self):
+        """N-1：已发布已知为「否」→ 预发 / 生产显示「尚未发布」（value=False＋note），不进阻塞；真不可得才未知。"""
+        cfg = {"stages": [{"key": "staging", "result_key": "config.staging", "label": ""}, {"key": "production", "result_key": "config.production", "label": ""}]}
+        res = {"gh.prs": ok("gh.prs", [batch_pr()]), "gh.tags": ok("gh.tags", []), "config.staging": ok("config.staging", "v1"), "config.production": bad("config.production", "超时")}
+        b = board_of(results=res, config=cfg)
+        self.assertIs(stage(b, "published").value.value, False)
+        for key in ("staging", "production"):
+            v = stage(b, key).value
+            self.assertTrue(v.available)
+            self.assertIs(v.value, False)
+            self.assertEqual(getattr(v, "note", ""), "尚未发布")
+        self.assertEqual(b.header.block, "无")
+        self.assertIn("尚未发布", next(w for w in b.why if w.subject == "阶段·已上生产").value)
 
     def test_staging_production_follow_published(self):
         """R1-14：已发布未知 → 预发 / 生产一律未知；已发布可得时按配置命令比对。"""
