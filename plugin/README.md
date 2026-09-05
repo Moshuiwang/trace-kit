@@ -2,7 +2,7 @@
 
 ## 是什么
 
-把 Execution Trace 工作方法（正文见仓库根 `METHOD.md`）里「每个 Trace 都要重复做」的五件事做成 Claude Code skill，并附三件套与派发卡的空白模板：
+把 Execution Trace 工作方法（正文见仓库根 `METHOD.md`）里「每个 Trace 都要重复做」的六件事做成 Claude Code skill，并附三件套与派发卡的空白模板：
 
 | skill | 何时用 | 产出 |
 | --- | --- | --- |
@@ -11,8 +11,9 @@
 | `/handoff` | 上下文接近上限、编排者换班、产品负责人说「交接」 | 七节交接评论（含一句话接手 prompt） |
 | `/guardian` | 合同指定本会话转任元守护、产品负责人说「你转元守护 / 守着」 | 判活记录、失联取证评论、继任窗口 |
 | `/dispatch-card` | 编排者要派发实施、修复或审查子代理 | 一张派发卡（六条款 + 实测附加条款 + 审查小节） |
+| `/board` | 产品负责人或编排者要看当前 Trace 做到哪 / 堵在哪 / 轮了几轮 / 花了多少分钟；收口要归档一帧快照 | tmux 里的只读 TUI（简易 / 复杂两视图），或 `--dump` 一帧纯文本 |
 
-模板在 `templates/`：`合同.md`（六段式）、`任务表.md`、`验收.md`、`派发卡.md`、`tracking-issue.md`。skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/...` 读取它们。
+模板在 `templates/`：`合同.md`（六段式）、`任务表.md`、`验收.md`、`派发卡.md`、`tracking-issue.md`、`board.toml`（看板证据源配置示例）。skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/...` 读取它们。
 
 ## 怎么装
 
@@ -48,6 +49,7 @@ claude plugin install trace-kit@trace-kit
 | `skills/handoff` | 复盘 #330 P0 | 同上，六任编排者交接 |
 | `skills/guardian` | #147 v16 §6.8；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
 | `skills/dispatch-card` | #147 §6.4（[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
+| `skills/board`、`scripts/board.py` 与 `scripts/boardlib/`、`templates/board.toml` | [trace-kit #12](https://github.com/Moshuiwang/trace-kit/issues/12) v3 修订段；[lingxi #577](https://github.com/Moshuiwang/lingxi/issues/577) 子清单（#578 / #579 / #580 / #581 / #582 / #589） | `tests/board/` 夹具在 `kit-selfcheck` 上绿（含 Trace #1 真实历史回放）；[lingxi #606](https://github.com/Moshuiwang/lingxi/issues/606) 真实试穿 |
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |

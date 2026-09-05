@@ -90,6 +90,8 @@
 
 载体规范本身（三件套怎么写、放哪里、何时更新）是 G1，见 [`docs/traces/README.md`](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md) 与套件 `template/docs/traces/README.md`。
 
+证据源配置实例：lingxi `docs/traces/board.toml`（看板的项目专属证据声明——镜像 tag 取法、编排窗口名模式、预算计数命令；随 [trace-kit Trace #17](https://github.com/Moshuiwang/trace-kit/issues/17) 收口 PR 合入后生效）。骨架与全部键的含义见套件 `plugin/templates/board.toml`。
+
 ## 五、lingxi 方法沿革（[#147](https://github.com/Moshuiwang/lingxi/issues/147) v9 → v16）
 
 套件的 `METHOD.md` 就是 v16 原文。这张表说明它是**怎么长出来的**：每一版新增条款都能追到一次复盘或事故，且 v13 起有日落条款——新增须同时提名删除候选，正文体量不得超过上一版。
