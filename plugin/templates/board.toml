@@ -1,0 +1,65 @@
+# 看板证据源配置示例（trace-kit #12 v3；Trace #17 接口约定 §9）。
+# 用法：board.py --repo-root <项目仓库> --config <本文件>。所有值都是占位符（<...> / owner/repo / 123）；
+# 复制到项目仓库（建议 docs/traces/board.toml）后按项目改。每一节都可省略；省略＝不显示 / 「未配置」。
+# 规则：命令只读、单条扁平、显式 timeout；不写任何凭据；引擎用 bash -o pipefail -c 执行、stdin 断开、超时杀整个进程组。
+# 完整 schema、解析规则与缺省值见 plugin/scripts/boardlib/config.py 模块 docstring。
+
+[trace]                       # Trace 编号与批次分支（缺省：docs/traces/ 最大编号；分支按含编号的 PR 推断）
+number = 123
+branch = "batch/123-<short>"
+
+[repo]                        # GitHub 仓库（缺省：git remote）
+slug = "owner/repo"
+
+[orchestrator]                # 编排窗口存活：tmux session 名 + 窗口名正则；不声明则头部固定附注「窗口状态未知」
+tmux_session = "<session>"
+window_pattern = "^<prefix>-b[0-9]+$"
+
+[release]                     # 发布工作流在 GitHub Actions 里显示的 name（阶段「已发布」用）
+workflow = "<publish-workflow>"
+
+# 五级阶段的「预发已升级」「已上生产」：命令取到的镜像 tag == 已发布 tag → 是；不等 → 否；命令失败 → 未知。
+# 只认 staging / production 两个键；不写某一级即显示「未配置」。parse 取第一行镜像最后一个冒号后的 tag。
+[stages.staging]
+label = "预发"
+command = "ssh -n <staging-host> 'docker ps --format \"{{.Image}}\"'"
+parse = "regex:(?m)^\\S+:([^:\\s]+)$"
+timeout = 20
+grade = "measured"
+
+[stages.production]
+label = "生产"
+command = "ssh -n <production-host> 'docker ps --format \"{{.Image}}\"'"
+parse = "regex:(?m)^\\S+:([^:\\s]+)$"
+timeout = 20
+
+# 预算计数条（头部「预算」）：表名即键，顺序＝本文件顺序；cap 省略＝无上限（只计数、不画上限）。
+# 完整门禁 vs 纯文档路由：同一工作流按「门禁作业是否被 skipped」分开计数，只有前者计入上限。
+[budget.full_gate]
+label = "完整门禁"
+cap = 5
+command = "gh run list -R owner/repo --workflow '<gate-workflow>' --branch batch/123-<short> --limit 30 --json databaseId --jq '.[].databaseId' | xargs -r -P 4 -I{} gh api repos/owner/repo/actions/runs/{}/jobs --jq '[.jobs[] | select(.name == \"<gate-job-name>\" and .conclusion != \"skipped\")] | length' | awk '{s += $1} END {print s + 0}'"
+parse = "int"
+timeout = 25
+
+[budget.docs_only]
+label = "纯文档路由"
+command = "gh run list -R owner/repo --workflow '<gate-workflow>' --branch batch/123-<short> --limit 30 --json databaseId --jq '.[].databaseId' | xargs -r -P 4 -I{} gh api repos/owner/repo/actions/runs/{}/jobs --jq '[.jobs[] | select(.name == \"<gate-job-name>\" and .conclusion == \"skipped\")] | length' | awk '{s += $1} END {print s + 0}'"
+parse = "int"
+timeout = 25
+
+[budget.pr_count]
+label = "PR"
+cap = 1
+command = "gh pr list -R owner/repo --head batch/123-<short> --state all --json number --jq 'length'"
+parse = "int"
+timeout = 25
+
+# 附加证据行（头部「最后外部证据」）：key 全局唯一；parse 决定显示值的形态（count:<正则> = 匹配行数）。
+[[evidence]]
+key = "prod_healthy"
+label = "生产 healthy 容器数"
+command = "ssh -n <production-host> 'docker ps --format \"{{.Status}}\"'"
+parse = "count:healthy"
+timeout = 25
+grade = "measured"
