@@ -55,21 +55,21 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/board.py --repo-root . [--config docs/trac
 
 | 状态 | 判定 | 判定用证据类型 |
 | --- | --- | --- |
-| 待做 `todo` | 未勾选、无证据、依赖未全部勾选 | checkbox |
-| 下一步 `ready` | 未勾选、无证据、依赖全部勾选 | checkbox |
+| 待做 `todo` | 未勾选、无证据、依赖状态未全部 ∈ {完成, 自述未证} | checkbox |
+| 下一步 `ready` | 未勾选、无证据、依赖状态全部 ∈ {完成, 自述未证} | checkbox |
 | 运行中 `running` | 未勾选、60 分钟内有归属证据 | commit_time / worktree / pr_state / ci_conclusion / comment_title |
 | 观察 `watch` | 未勾选、最近证据 60–90 分钟前 | commit_time / worktree / pr_state / ci_conclusion / comment_title |
 | 卡住 `stalled` | 未勾选、最近证据 > 90 分钟前 | commit_time / worktree / pr_state / ci_conclusion / comment_title |
 | 待人类 `human` | `t:human` 且未勾选 | tasktable_tag / checkbox |
-| 完成 `done` | 已勾选且有独立制品（PR MERGED / 提交存在 / 评论存在） | checkbox / pr_state / commit_time / comment_title |
-| 自述未证 `doneq` | 已勾选但无独立制品 | checkbox / pr_state / commit_time / comment_title |
-| 失效 `stale` | `t:review` 未勾选且指针 SHA ≠ 分支 HEAD | sha_equal / tasktable_tag |
-| 未知 `unknown` | 判定所需证据键 ok=False（不回落） | config_command / commit_time / pr_state / comment_title / ci_conclusion / worktree |
+| 完成 `done` | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论） | checkbox / pr_state / commit_time / comment_title |
+| 自述未证 `doneq` | 已勾选但无独立制品（只改任务表的提交、评论提及只算活动证据） | checkbox / pr_state / commit_time / comment_title |
+| 失效 `stale` | `t:review` / `t:gate` 指针 SHA ≠ 分支 HEAD（远端 head 优先，本地分支备用；已勾选亦失效） | sha_equal / tasktable_tag / checkbox |
+| 未知 `unknown` | 判定所需证据键 ok=False，或依赖不存在 / 成环，或候选 HEAD 不可得（不回落） | commit_time / pr_state / comment_title / ci_conclusion / worktree / sha_equal / checkbox / config_command |
 
 | 阶段 | 证据类型 |
 | --- | --- |
 | 合入主干 `merged` | pr_state |
-| 已发布 `published` | workflow_run / tag_ref |
+| 已发布 `published` | workflow_run / tag_ref / pr_state |
 | 预发已升级 `staging` | image_tag / config_command |
 | 已上生产 `production` | image_tag / config_command |
 | 收口 `closed` | issue_state |
@@ -81,7 +81,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/board.py --repo-root . [--config docs/trac
 | 预算（配置计数条；无配置只列 PR 数与 CI 次数） `budget` | config_command / pr_state / workflow_run |
 | 存疑（自述未证 / 合同 PR 自合零批准 / 共用 PR / PR 自合计数 / 历史最大空档含暂停归因） `doubt` | checkbox / pr_merged_by / pr_state / commit_time / tasktable_tag |
 | 轮数（审 / 外 / 修＝评论首行匹配，归属 Step ID 实 → 活动窗口 推 → Trace 级；CI 红绿＝活动窗口内 run 结论） `rounds` | comment_title / ci_conclusion |
-| 最后外部证据 `evidence` | commit_time / pr_state / comment_title / ci_conclusion / worktree |
+| 最后外部证据（含 [[evidence]] 附加证据行） `evidence` | commit_time / pr_state / comment_title / ci_conclusion / worktree / config_command |
 
 ## 证据源配置（项目专属证据）
 
