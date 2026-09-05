@@ -5,17 +5,17 @@ Trace 看板 · Trace #11 stage-demo · batch/11-demo  ⚠ 窗口状态未知，
 阻塞      无
 下一步    无未勾选 Step · worktree 0实
 预算      PR 2实   CI 次数 1实
-存疑      PR 自合 0/2实 · 批准 2实 · 最大空档 140推 分钟 10:30→12:50
+存疑      PR 自合 0/2实 批准 2实 · 空档 140推 分 10:30→12:50
 外部证据  20实 分钟前 · 评论 7001（Trace）· 09-03 13:40
 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                                              ┌─ 块 A 合同 · 完成 ─────────────────────────────── 40/15 ─┐
-                                             │ 块 A 合同 1/1                                            │
+                                             │ 块 A 合同 勾选 1/1                                       │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿0推                │
                                              │ PR #30 ✓合入 · 评论 0实 · 最新 10:00                     │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ Wave 1 实施 · 完成 ──────────────────────────── 165/30 ─┐
-                                             │ Wave 1 实施 1/1                                          │
+                                             │ Wave 1 实施 勾选 1/1                                     │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿1推                │
                                              │ PR #31 ✓合入 · 评论 0实 · 最新 13:05                     │
                                              └──────────────────────────────────────────────────────────┘
@@ -52,27 +52,27 @@ Trace 看板 · Trace #11 stage-demo · batch/11-demo  ⚠ 窗口状态未知，
 节点 ■完成 ■自述未证 ┌──┐运行中 ■下一步 ┌──┐观察 ■卡住 ■待人类 ■待做 ■失效 ■未知 边框 ┌─┐未审 ╔═╗1轮 ┏━┓2轮 ┏╍┓3轮 ┏╍┓⟲N 3轮+ 连线=依赖
 
 证据链（--why）：对象 | 状态 | 证据类型 | 来源 | 取值 | 取值时间（UTC+8） | 可得
-块 A 合同 | 完成 | checkbox | 步骤聚合 | 1/1 勾选；步骤状态 S-0=完成 | 2026-09-03 10:00 | 是
+块 A 合同 | 完成 | checkbox | 步骤聚合 | 勾选 1/1 · 完成 1 · 未证 0 · 未知 0；步骤状态 S-0=完成 | 2026-09-03 10:00 | 是
 块 A 合同 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 0实 条） | ? | 是
-块 A 合同 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（活动窗口 09:20→10:00） | 2026-09-03 10:00 | 是
+块 A 合同 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 09:20→10:00） | 2026-09-03 10:00 | 是
 块 A 合同 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-Wave 1 实施 | 完成 | checkbox | 步骤聚合 | 1/1 勾选；步骤状态 S-1=完成 | 2026-09-03 13:05 | 是
+Wave 1 实施 | 完成 | checkbox | 步骤聚合 | 勾选 1/1 · 完成 1 · 未证 0 · 未知 0；步骤状态 S-1=完成 | 2026-09-03 13:05 | 是
 Wave 1 实施 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 0实 条） | ? | 是
-Wave 1 实施 | CI | ci_conclusion | gh.runs | 红 0推 绿 1推（活动窗口 10:20→13:05） | 2026-09-03 13:05 | 是
+Wave 1 实施 | CI | ci_conclusion | gh.runs | 红 0推 绿 1推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 10:20→13:05） | 2026-09-03 13:05 | 是
 Wave 1 实施 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-S-0 | 完成 | pr_state | gh.prs | 已勾选 ＋ 独立制品 PR #30 合入 | 2026-09-03 09:40 | 是
-S-0 | 证据 | checkbox | gh.prs / git.tasktable_history | 3实 条：PR #30、PR #30 合入、勾选 e1e1e1e | 2026-09-03 10:00 | 是
-S-0 | 等待 | pr_state | gh.prs → gh.prs | 20m00s（PR #30 09-03 09:20:00 → PR #30 合入 09-03 09:40:00） | 2026-09-03 09:40 | 是
-S-1 | 完成 | pr_state | gh.prs | 已勾选 ＋ 独立制品 PR #31 合入 / commit a1a1a1a / commit f1f1f1f | 2026-09-03 13:00 | 是
-S-1 | 证据 | checkbox | gh.prs / gh.runs / git.log / git.tasktable_history | 6实 条：commit a1a1a1a、PR #31、CI selfcheck success、commit f1f1f1f、PR #31 合入、勾选 e2e2e2e | 2026-09-03 13:05 | 是
-S-1 | 等待 | ci_conclusion | gh.prs → gh.runs | 2h20m00s（PR #31 09-03 10:30:00 → CI selfcheck success 09-03 12:50:00） | 2026-09-03 12:50 | 是
-阶段·合入主干 | 是 | pr_state | gh.prs | 批次 PR #31 MERGED → f1f1f1f | 2026-09-03 13:00 | 是
-阶段·已发布 | 否 | tag_ref | gh.tags | 未配置发布工作流，按合并后 tag 判定：无 tag（本地参考：无） | ? | 是
+S-0 | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #30 合入 | 2026-09-03 09:40 | 是
+S-0 | 证据 | checkbox | git.tasktable_history | 3实 条：PR #30、PR #30 合入、勾选 e1e1e1e | 2026-09-03 10:00 | 是
+S-0 | 等待 | pr_state | gh.prs | 20m00s（PR #30 09-03 09:20:00 → PR #30 合入 09-03 09:40:00） | 2026-09-03 09:40 | 是
+S-1 | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #31 合入 / commit a1a1a1a / commit f1f1f1f | 2026-09-03 13:00 | 是
+S-1 | 证据 | checkbox | git.tasktable_history | 6实 条：commit a1a1a1a、PR #31、CI selfcheck success、commit f1f1f1f、PR #31 合入、勾选 e2e2e2e | 2026-09-03 13:05 | 是
+S-1 | 等待 | ci_conclusion | gh.runs | 2h20m00s（PR #31 09-03 10:30:00 → CI selfcheck success 09-03 12:50:00） | 2026-09-03 12:50 | 是
+阶段·合入主干 | 是 | pr_state | gh.prs | 批次 PR #31 MERGED → 合并提交 f1f1f1f | 2026-09-03 13:00 | 是
+阶段·已发布 | 否 | tag_ref | gh.tags | 未配置发布工作流，按合并点之后的 tag 判定：无 tag（本地参考：无） | ? | 是
 阶段·预发已升级 | 未配置 | config_command | config.staging | 证据源配置未声明 | ? | 否
 阶段·已上生产 | 未配置 | config_command | config.production | 证据源配置未声明 | ? | 否
 阶段·收口 | 否 | issue_state | gh.issue | Issue #11 OPEN | ? | 是
-合同 PR #30 | 正常 | pr_merged_by | git.contract ＋ gh.prs | 首次加入 合同.md 的提交 c0c0c0c；MERGED；mergedBy=owner-x author=agent-a；APPROVED review 1 | 2026-09-03 09:40 | 是
-PR 合并方式 | PR 自合 0/2实 · 批准 2实 | pr_merged_by | gh.prs | 自合  | ? | 是
-空档 | 140推 分钟 | ci_conclusion | gh.prs → gh.runs | PR #31 09-03 10:30:00 → CI selfcheck success 09-03 12:50:00 | 2026-09-03 12:50 | 是
+合同 PR #30 | 正常 | pr_merged_by | git.contract | 首次加入 合同.md 的提交 c0c0c0c；PR MERGED；mergedBy=owner-x author=agent-a；APPROVED review 1（gh.prs） | 2026-09-03 09:40 | 是
+PR 合并方式 | PR 自合 0/2实 批准 2实 | pr_merged_by | gh.prs | 自合  | ? | 是
+空档 | 140推 分钟 | ci_conclusion | gh.runs | PR #31 09-03 10:30:00 → CI selfcheck success 09-03 12:50:00 | 2026-09-03 12:50 | 是
 Trace | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 1实 条） | ? | 是
-Trace | CI | ci_conclusion | gh.runs | 红 0推 绿 1推（活动窗口 ?→now） | ? | 是
+Trace | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 ?→now） | ? | 是

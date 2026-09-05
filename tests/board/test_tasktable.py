@@ -113,6 +113,31 @@ class GrammarTest(unittest.TestCase):
         t2 = tasktable.parse("## A\n- [ ] S-1 a\n## B\n## C\n- [ ] S-2 b\n")
         self.assertEqual(t2.steps[1].needs, ["S-1"])
 
+    def test_in_progress_markers_are_unchecked_not_unparsed(self):
+        """K-1：`- [~]` / `- [-]` 进行中标记 → 未勾选，不进 unparsed。"""
+        t = tasktable.parse("## W1\n- [~] S-1 进行中 — PR #3\n- [-] S-2 也在做\n- [x] S-3 完成\n")
+        self.assertEqual([(s.id, s.checked) for s in t.steps], [("S-1", False), ("S-2", False), ("S-3", True)])
+        self.assertEqual(t.unparsed, [])
+        self.assertEqual(t.steps[0].prs, [3])
+
+    def test_pointers_only_from_pointer_area_and_url_normalized(self):
+        """R1-10：标题里的 `PR #9` 不是指针；受支持 URL 规范化为 PR / 提交 / 评论指针。"""
+        t = tasktable.parse("## W1\n- [x] S-1 研究 PR #9 命名\n"
+                            "- [x] S-2 做事 — https://github.com/o/r/pull/12 、https://github.com/o/r/commit/abcdef1234567 "
+                            "与 https://github.com/o/r/issues/1#issuecomment-77\n"
+                            "- [x] S-3 三件套（PR #2 合并，main `8b27e68`）\n")
+        by = {s.id: s for s in t.steps}
+        self.assertEqual((by["S-1"].prs, by["S-1"].shas), ([], []))
+        self.assertEqual((by["S-2"].prs, by["S-2"].shas, by["S-2"].comments), ([12], ["abcdef1234567"], [77]))
+        self.assertEqual(len(by["S-2"].urls), 3)
+        self.assertEqual((by["S-3"].prs, by["S-3"].shas), ([2], ["8b27e68"]))
+
+    def test_unparsed_section_index(self):
+        """A-3：未解析行记章节归属；章节前的行为 None。"""
+        t = tasktable.parse("- [ ] 章节前\n## A\n- [x] A-1…A-6 范围\n## B\n- [ ] S-1 a\n- [ ] 无编号\n")
+        self.assertEqual(t.unparsed_section, {1: None, 3: 0, 6: 1})
+        self.assertTrue(t.available)
+
     def test_never_raises_on_garbage(self):
         for text in ("", "\n\n", "## \n- [ ]\n- [x] \n", "- [ ] S-1", "## W\n- [ ] S-1 x [t:]\n"):
             tasktable.parse(text)

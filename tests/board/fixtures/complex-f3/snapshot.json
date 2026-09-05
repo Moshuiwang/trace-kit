@@ -9,56 +9,75 @@
   "git.log": {
    "key": "git.log",
    "ok": true,
-   "value": [
-    {
-     "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
-     "at": "2026-09-03T01:30:00+00:00",
-     "authored": "2026-09-03T01:30:00+00:00",
-     "author": "agent-a",
-     "subject": "docs(#8): 三件套入库 (#20)",
-     "refs": ""
-    },
-    {
-     "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-     "at": "2026-09-03T02:10:00+00:00",
-     "authored": "2026-09-03T02:10:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A1 打包引擎目录",
-     "refs": ""
-    },
-    {
-     "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
-     "at": "2026-09-03T02:40:00+00:00",
-     "authored": "2026-09-03T02:40:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A1 打包引擎目录 (#21)",
-     "refs": ""
-    },
-    {
-     "sha": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-     "at": "2026-09-03T02:55:00+00:00",
-     "authored": "2026-09-03T02:55:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A2 打包模板分层 CI",
-     "refs": ""
-    },
-    {
-     "sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
-     "at": "2026-09-03T03:10:00+00:00",
-     "authored": "2026-09-03T03:10:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A2 打包模板分层 CI (#22)",
-     "refs": ""
-    },
-    {
-     "sha": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
-     "at": "2026-09-03T05:30:00+00:00",
-     "authored": "2026-09-03T05:30:00+00:00",
-     "author": "agent-a",
-     "subject": "fix(#8): 合并主干最新改动",
-     "refs": ""
-    }
-   ],
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/8-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T01:30:00+00:00",
+      "committed": "2026-09-03T01:30:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#8): 三件套入库 (#20)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "at": "2026-09-03T02:10:00+00:00",
+      "committed": "2026-09-03T02:10:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A1 打包引擎目录",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+      "at": "2026-09-03T02:40:00+00:00",
+      "committed": "2026-09-03T02:40:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A1 打包引擎目录 (#21)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
+      "at": "2026-09-03T02:55:00+00:00",
+      "committed": "2026-09-03T02:55:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A2 打包模板分层 CI",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "at": "2026-09-03T03:10:00+00:00",
+      "committed": "2026-09-03T03:10:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A2 打包模板分层 CI (#22)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "at": "2026-09-03T05:30:00+00:00",
+      "committed": "2026-09-03T05:30:00+00:00",
+      "author": "agent-a",
+      "subject": "fix(#8): 合并主干最新改动",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
    "error": "",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",
@@ -128,6 +147,28 @@
       "quotes": [],
       "sha": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
       "at": "2026-09-03T03:20:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-A1",
+       "S-A2",
+       "K-1",
+       "R-1",
+       "F-1",
+       "R-2",
+       "G-1",
+       "H-1",
+       "D-1"
+      ],
+      "checked": [
+       "S-A1",
+       "S-A2",
+       "K-1"
+      ],
+      "quotes": [],
+      "sha": "e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3",
+      "at": "2026-09-03T03:25:00+00:00"
      }
     ]
    },
@@ -214,6 +255,7 @@
       }
      ],
      "headRefName": "wt/8-contract",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
      "url": "https://github.com/example/demo/pull/20",
@@ -232,6 +274,7 @@
      "author": "agent-a",
      "reviews": [],
      "headRefName": "batch/8-demo",
+     "head_oid": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
      "baseRefName": "main",
      "mergeCommit": "",
      "url": "https://github.com/example/demo/pull/29",
@@ -256,6 +299,7 @@
       }
      ],
      "headRefName": "wt/8-S-A1",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
      "url": "https://github.com/example/demo/pull/21",
@@ -289,6 +333,7 @@
       }
      ],
      "headRefName": "wt/8-S-A2",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
      "url": "https://github.com/example/demo/pull/22",
@@ -405,6 +450,15 @@
    "ok": false,
    "value": null,
    "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": false,
+   "value": null,
+   "error": "无已证实的合并点（批次 PR 未合入或未识别）",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",
    "grade": "measured"

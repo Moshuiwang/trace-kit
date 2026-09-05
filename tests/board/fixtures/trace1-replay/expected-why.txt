@@ -1,41 +1,41 @@
-Trace 看板 · Trace #1 trace-kit-v0.1.0  ⚠ 窗口状态未知，需元守护核 · 任务表超限 7实 行                                                      更新 20:00
+Trace 看板 · Trace #1 trace-kit-v0.1.0  ⚠ 窗口状态未知，需元守护核 · 证据可能串线（无批次分支，按全部分支取提交，角标推） · 任务表超限 7实  更新 20:00
  视图 简易版 ═════════════════════════════════════════════════════════════════ v 视图  r 刷新  ↑↓ 逐行  PgUp/PgDn 翻页  Home/End 顶/底  a 动效  q 退出
 阶段      已收口（Issue 关闭 17:54）· 15/15实 勾选
-五级阶段  合入主干 是 · 已发布 是 · 预发已升级 未配置 · 已上生产 未配置 · 收口 是
-阻塞      无
+五级阶段  合入主干 未配置 · 已发布 未知 · 预发已升级 未配置 · 已上生产 未配置 · 收口 是
+阻塞      阶段未知：已发布
 下一步    无（Trace 已关闭）
 预算      PR 9实   CI 次数 10实
-存疑      自述未证 3实（S-0a/S-4a/S-4b） · 合同 PR #2 自合 / 零批准 · 共用 PR #9（S-5/S-6a） · PR 自合 9/9实 · 零批准 · 最大空档 299推 分钟 10:48→15:4
-外部证据  126实 分钟前 · 评论 5507741150（Trace）· 09-02 17:54
+存疑      自述未证 3实（S-0a/S-4a/S-4b） · 合同 PR #2 自合/零批准 · 共用 PR #9 · PR 自合 9/9实 零批准 · 空档 299推 分 10:48→15:46（暂停 219报）
+外部证据  125实 分钟前 · CI kit-selfcheck success（S-7）· 09-02 17:54
 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                                              ┌─ W0 只读盘点 · 自述未证 ────────────────────────── 12/─ ─┐
-                                             │ W0 只读盘点 3/3                                          │
+                                             │ W0 只读盘点 勾选 3/3 · 未证 1                            │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿0推                │
                                              │ PR #2 ✓合入 · 评论 1实 · 最新 10:38                      │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ W1 并行打包 · 完成 ───────────────────────────── 329/─ ─┐
-                                             │ W1 并行打包 5/5                                          │
+                                             │ W1 并行打包 勾选 5/5                                     │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿0推                │
                                              │ PR ×5实 ✓5实 · 评论 2实 · 最新 16:16                     │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ W2 集成与自验证 · 自述未证 ────────────────────── 43/─ ─┐
-                                             │ W2 集成与自验证 4/4                                      │
-                                             │ 审 0实 · 外 0实 · 修 0实 · CI 红1推 绿5推                │
+                                             │ W2 集成与自验证 勾选 4/4 · 未证 2                        │
+                                             │ 审 0实 · 外 0实 · 修 0实 · CI 红1推 绿2推                │
                                              │ PR ×2实 ✓2实 · 评论 2实 · 最新 17:07                     │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
-                                             ┌─ W3 发布与收口 · 完成 ──────────────────────────── 18/─ ─┐
-                                             │ W3 发布与收口 2/2                                        │
+                                             ┌─ W3 发布与收口 · 完成 ──────────────────────────── 19/─ ─┐
+                                             │ W3 发布与收口 勾选 2/2                                   │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿6推                │
-                                             │ PR ×2实 ✓2实 · 评论 1实 · 最新 17:09                     │
+                                             │ PR ×2实 ✓2实 · 评论 1实 · 最新 17:10                     │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
-                                             ┌─ 收口后追加 · 完成 ──────────────────────────────── 0/─ ─┐
-                                             │ 收口后追加 1/1                                           │
+                                             ┌─ 收口后追加 · 完成 ──────────────────────────────── 1/─ ─┐
+                                             │ 收口后追加 勾选 1/1                                      │
                                              │ 审 0实 · 外 0实 · 修 0实 · CI 红0推 绿1推                │
-                                             │ 无 PR · 评论 0实 · 最新 17:54                            │
+                                             │ 无 PR · 评论 1实 · 最新 17:54                            │
                                              └──────────────────────────────────────────────────────────┘
 
 
@@ -52,68 +52,69 @@ Trace 看板 · Trace #1 trace-kit-v0.1.0  ⚠ 窗口状态未知，需元守护
 节点 ■完成 ■自述未证 ┌──┐运行中 ■下一步 ┌──┐观察 ■卡住 ■待人类 ■待做 ■失效 ■未知 边框 ┌─┐未审 ╔═╗1轮 ┏━┓2轮 ┏╍┓3轮 ┏╍┓⟲N 3轮+ 连线=依赖
 
 证据链（--why）：对象 | 状态 | 证据类型 | 来源 | 取值 | 取值时间（UTC+8） | 可得
-W0 只读盘点 | 自述未证 | checkbox | 步骤聚合 | 3/3 勾选；步骤状态 S-0a=自述未证 S-0b=完成 S-1=完成 | 2026-09-02 10:38 | 是
+W0 只读盘点 | 自述未证 | checkbox | 步骤聚合 | 勾选 3/3 · 完成 2 · 未证 1 · 未知 0；步骤状态 S-0a=自述未证 S-0b=完成 S-1=完成 | 2026-09-02 10:38 | 是
 W0 只读盘点 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 1实 条） | ? | 是
-W0 只读盘点 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（活动窗口 10:26→10:38） | 2026-09-02 10:38 | 是
+W0 只读盘点 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 10:26→10:38） | 2026-09-02 10:38 | 是
 W0 只读盘点 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-W1 并行打包 | 完成 | checkbox | 步骤聚合 | 5/5 勾选；步骤状态 S-2a=完成 S-2b=完成 S-2c=完成 S-2d=完成 S-2e=完成 | 2026-09-02 16:16 | 是
+W1 并行打包 | 完成 | checkbox | 步骤聚合 | 勾选 5/5 · 完成 5 · 未证 0 · 未知 0；步骤状态 S-2a=完成 S-2b=完成 S-2c=完成 S-2d=完成 S-2e=完成 | 2026-09-02 16:16 | 是
 W1 并行打包 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 2实 条） | ? | 是
-W1 并行打包 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（活动窗口 10:46→16:16） | 2026-09-02 16:16 | 是
+W1 并行打包 | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 10:46→16:16） | 2026-09-02 16:16 | 是
 W1 并行打包 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-W1 并行打包 | 跨暂停 | tasktable_tag | 任务表引用块 | 活动窗口内含暂停 219报 分钟，时长未扣除 | ? | 是
-W2 集成与自验证 | 自述未证 | checkbox | 步骤聚合 | 4/4 勾选；步骤状态 S-3=完成 S-4a=自述未证 S-4b=自述未证 S-5=完成 | 2026-09-02 17:07 | 是
+W1 并行打包 | 跨暂停 | tasktable_tag | git.tasktable_history | 活动窗口内含暂停 219报 分钟，时长未扣除 | ? | 是
+W2 集成与自验证 | 自述未证 | checkbox | 步骤聚合 | 勾选 4/4 · 完成 2 · 未证 2 · 未知 0；步骤状态 S-3=完成 S-4a=自述未证 S-4b=自述未证 S-5=完成 | 2026-09-02 17:07 | 是
 W2 集成与自验证 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 2实 条） | ? | 是
-W2 集成与自验证 | CI | ci_conclusion | gh.runs | 红 1推 绿 5推（活动窗口 16:24→17:07） | 2026-09-02 17:07 | 是
+W2 集成与自验证 | CI | ci_conclusion | gh.runs | 红 1推 绿 2推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 16:24→17:07） | 2026-09-02 17:07 | 是
 W2 集成与自验证 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-W3 发布与收口 | 完成 | checkbox | 步骤聚合 | 2/2 勾选；步骤状态 S-6a=完成 S-6b=完成 | 2026-09-02 17:09 | 是
+W3 发布与收口 | 完成 | checkbox | 步骤聚合 | 勾选 2/2 · 完成 2 · 未证 0 · 未知 0；步骤状态 S-6a=完成 S-6b=完成 | 2026-09-02 17:10 | 是
 W3 发布与收口 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 1实 条） | ? | 是
-W3 发布与收口 | CI | ci_conclusion | gh.runs | 红 0推 绿 6推（活动窗口 16:51→17:09） | 2026-09-02 17:09 | 是
+W3 发布与收口 | CI | ci_conclusion | gh.runs | 红 0推 绿 6推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 16:51→17:10） | 2026-09-02 17:10 | 是
 W3 发布与收口 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-收口后追加 | 完成 | checkbox | 步骤聚合 | 1/1 勾选；步骤状态 S-7=完成 | 2026-09-02 17:54 | 是
-收口后追加 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 0实 条） | ? | 是
-收口后追加 | CI | ci_conclusion | gh.runs | 红 0推 绿 1推（活动窗口 17:54→17:54） | 2026-09-02 17:54 | 是
+收口后追加 | 完成 | checkbox | 步骤聚合 | 勾选 1/1 · 完成 1 · 未证 0 · 未知 0；步骤状态 S-7=完成 | 2026-09-02 17:54 | 是
+收口后追加 | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 1实 条） | ? | 是
+收口后追加 | CI | ci_conclusion | gh.runs | 红 0推 绿 1推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 17:54→17:54） | 2026-09-02 17:54 | 是
 收口后追加 | 边框 | comment_title | gh.issue | 审核轮数 0实 → 档位 0 | ? | 是
-S-0a | 自述未证 | checkbox | 任务表 | 已勾选，无独立制品（指针 PR / 提交 / 评论均未命中） | ? | 是
+S-0a | 自述未证 | checkbox | 任务表 | 已勾选但无独立制品（只改任务表的提交、评论提及只算活动证据）｜无独立制品（指针 PR / 触及 Trace 目录外的提交 / 指针评论均未命中） | ? | 是
 S-0a | 证据 | checkbox | git.tasktable_history | 1实 条：勾选 8b27e68 | 2026-09-02 10:30 | 是
-S-0b | 完成 | comment_title | gh.issue | 已勾选 ＋ 独立制品 评论 5503411104 | 2026-09-02 10:26 | 是
-S-0b | 证据 | checkbox | gh.issue / git.tasktable_history | 2实 条：评论 5503411104、勾选 8b27e68 | 2026-09-02 10:30 | 是
-S-1 | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #2 合入 / commit 88646b9 / commit 8b27e68 | 2026-09-02 10:38 | 是
-S-1 | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #2、commit 8b27e68、PR #2 合入、commit 88646b9、勾选 88646b9 | 2026-09-02 10:38 | 是
-S-1 | 等待 | commit_time | gh.prs → git.log | 8m31s（PR #2 合入 09-02 10:30:07 → commit 88646b9 09-02 10:38:38） | 2026-09-02 10:38 | 是
-S-2a | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #3 合入 / commit 77dd191 / commit f65c250 | 2026-09-02 10:47 | 是
-S-2a | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #3、commit f65c250、PR #3 合入、commit 77dd191、勾选 77dd191 | 2026-09-02 10:47 | 是
-S-2b | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #5 合入 / commit 3ff5dfd / commit fd04332 | 2026-09-02 15:48 | 是
-S-2b | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #5、commit fd04332、PR #5 合入、commit 3ff5dfd、勾选 3ff5dfd | 2026-09-02 15:48 | 是
-S-2c | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #6 合入 / commit 9fa2548 / commit b2ddefb | 2026-09-02 16:16 | 是
-S-2c | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #6、commit 9fa2548、PR #6 合入、commit b2ddefb、勾选 b2ddefb | 2026-09-02 16:16 | 是
-S-2d | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #7 合入 / commit b2ddefb / commit c871cd3 | 2026-09-02 16:16 | 是
-S-2d | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #7、commit c871cd3、PR #7 合入、commit b2ddefb、勾选 b2ddefb | 2026-09-02 16:16 | 是
-S-2e | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #4 合入 / commit 2183910 / commit 630b2d8 | 2026-09-02 10:48 | 是
-S-2e | 证据 | checkbox | gh.prs / git.log / git.tasktable_history | 5实 条：PR #4、commit 630b2d8、PR #4 合入、commit 2183910、勾选 2183910 | 2026-09-02 10:48 | 是
-S-3 | 完成 | pr_state | gh.prs | 已勾选 ＋ 独立制品 PR #8 合入 / commit dd53ecf | 2026-09-02 16:26 | 是
-S-3 | 证据 | ci_conclusion | gh.prs / gh.runs / git.log / git.tasktable_history | 7实 条：PR #8、CI kit-selfcheck failure、CI kit-selfcheck success、commit dd53ecf、PR #8 合入、勾选 dd53ecf… | 2026-09-02 16:26 | 是
-S-4a | 自述未证 | checkbox | 任务表 | 已勾选，无独立制品（指针 PR / 提交 / 评论均未命中） | ? | 是
+S-0b | 完成 | comment_title | gh.issue | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 评论 5503411104 | 2026-09-02 10:26 | 是
+S-0b | 证据 | checkbox | git.tasktable_history | 2实 条：评论 5503411104、勾选 8b27e68 | 2026-09-02 10:30 | 是
+S-1 | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #2 合入 / commit 8b27e68 | 2026-09-02 10:30 | 是
+S-1 | 证据 | checkbox | git.tasktable_history | 5实 条：PR #2、commit 8b27e68、PR #2 合入、commit 88646b9、勾选 88646b9 | 2026-09-02 10:38 | 是
+S-1 | 等待 | commit_time | git.log | 8m31s（PR #2 合入 09-02 10:30:07 → commit 88646b9 09-02 10:38:38） | 2026-09-02 10:38 | 是
+S-2a | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #3 合入 / commit f65c250 | 2026-09-02 10:47 | 是
+S-2a | 证据 | checkbox | git.tasktable_history | 5实 条：PR #3、commit f65c250、PR #3 合入、commit 77dd191、勾选 77dd191 | 2026-09-02 10:47 | 是
+S-2b | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #5 合入 / commit fd04332 | 2026-09-02 15:47 | 是
+S-2b | 证据 | checkbox | git.tasktable_history | 5实 条：PR #5、commit fd04332、PR #5 合入、commit 3ff5dfd、勾选 3ff5dfd | 2026-09-02 15:48 | 是
+S-2c | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #6 合入 / commit 9fa2548 | 2026-09-02 16:15 | 是
+S-2c | 证据 | checkbox | git.tasktable_history | 5实 条：PR #6、commit 9fa2548、PR #6 合入、commit b2ddefb、勾选 b2ddefb | 2026-09-02 16:16 | 是
+S-2d | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #7 合入 / commit c871cd3 | 2026-09-02 16:15 | 是
+S-2d | 证据 | checkbox | git.tasktable_history | 5实 条：PR #7、commit c871cd3、PR #7 合入、commit b2ddefb、勾选 b2ddefb | 2026-09-02 16:16 | 是
+S-2e | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #4 合入 / commit 630b2d8 | 2026-09-02 10:48 | 是
+S-2e | 证据 | checkbox | git.tasktable_history | 5实 条：PR #4、commit 630b2d8、PR #4 合入、commit 2183910、勾选 2183910 | 2026-09-02 10:48 | 是
+S-3 | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #8 合入 / commit dd53ecf | 2026-09-02 16:26 | 是
+S-3 | 证据 | ci_conclusion | gh.runs | 7实 条：PR #8、CI kit-selfcheck failure、CI kit-selfcheck success、commit dd53ecf、PR #8 合入、勾选 dd53ecf… | 2026-09-02 16:27 | 是
+S-4a | 自述未证 | checkbox | 任务表 | 已勾选但无独立制品（只改任务表的提交、评论提及只算活动证据）｜无独立制品（指针 PR / 触及 Trace 目录外的提交 / 指针评论均未命中） | ? | 是
 S-4a | 证据 | checkbox | git.tasktable_history | 1实 条：勾选 dd53ecf | 2026-09-02 16:26 | 是
-S-4b | 自述未证 | checkbox | 任务表 | 已勾选，无独立制品（指针 PR / 提交 / 评论均未命中） | ? | 是
+S-4b | 自述未证 | checkbox | 任务表 | 已勾选但无独立制品（只改任务表的提交、评论提及只算活动证据）｜无独立制品（指针 PR / 触及 Trace 目录外的提交 / 指针评论均未命中） | ? | 是
 S-4b | 证据 | checkbox | git.tasktable_history | 1实 条：勾选 dd53ecf | 2026-09-02 16:26 | 是
-S-5 | 完成 | pr_state | gh.prs | 已勾选 ＋ 独立制品 PR #9 合入 / commit b5bb404 / commit dd53ecf | 2026-09-02 16:52 | 是
-S-5 | 证据 | checkbox | gh.prs / gh.runs / git.log / git.tasktable_history | 7实 条：commit dd53ecf、PR #9、CI kit-selfcheck success、commit b5bb404、PR #9 合入、CI kit-selfcheck success… | 2026-09-02 17:07 | 是
-S-5 | 等待 | pr_state | git.log → gh.prs | 24m36s（commit dd53ecf 09-02 16:26:47 → PR #9 09-02 16:51:23） | 2026-09-02 16:51 | 是
-S-6a | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 PR #10 合入 / PR #9 合入 / commit 2d1bdaa / commit 47aaef5 | 2026-09-02 17:08 | 是
-S-6a | 证据 | ci_conclusion | gh.prs / gh.runs / git.log / git.tasktable_history | 13实 条：PR #9、CI kit-selfcheck success、commit b5bb404、PR #9 合入、CI kit-selfcheck success、PR #10… | 2026-09-02 17:08 | 是
-S-6a | 等待 | pr_state | gh.runs → gh.prs | 14m16s（CI kit-selfcheck success 09-02 16:52:11 → PR #10 09-02 17:06:27） | 2026-09-02 17:06 | 是
-S-6b | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 commit 5d3f54e / 评论 5507202948 | 2026-09-02 17:09 | 是
-S-6b | 证据 | ci_conclusion | gh.issue / gh.runs / git.log / git.tasktable_history | 4实 条：评论 5507202948、commit 5d3f54e、勾选 5d3f54e、CI kit-selfcheck success | 2026-09-02 17:09 | 是
-S-7 | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 commit 300ded8 | 2026-09-02 17:54 | 是
-S-7 | 证据 | ci_conclusion | gh.runs / git.log / git.tasktable_history | 3实 条：commit 300ded8、勾选 300ded8、CI kit-selfcheck success | 2026-09-02 17:54 | 是
-阶段·合入主干 | 是 | pr_state | gh.prs | 无批次分支，按 Trace 全部 PR 合入判定：9/9 MERGED | 2026-09-02 17:07 | 是
-阶段·已发布 | 是 | tag_ref | gh.tags | 未配置发布工作流，按合并后 tag 判定：v0.1.0 → 47aaef5（本地参考：v0.1.0） | 2026-09-02 17:07 | 是
+S-5 | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #9 合入 / commit b5bb404 / commit dd53ecf | 2026-09-02 16:52 | 是
+S-5 | 证据 | checkbox | git.tasktable_history | 7实 条：commit dd53ecf、PR #9、CI kit-selfcheck success、commit b5bb404、PR #9 合入、CI kit-selfcheck success… | 2026-09-02 17:07 | 是
+S-5 | 等待 | pr_state | gh.prs | 24m36s（commit dd53ecf 09-02 16:26:47 → PR #9 09-02 16:51:23） | 2026-09-02 16:51 | 是
+S-6a | 完成 | pr_state | gh.prs | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 PR #10 合入 / PR #9 合入 / commit 47aaef5 / commit b5bb404 | 2026-09-02 17:07 | 是
+S-6a | 证据 | ci_conclusion | gh.runs | 13实 条：PR #9、CI kit-selfcheck success、commit b5bb404、PR #9 合入、CI kit-selfcheck success、PR #10… | 2026-09-02 17:08 | 是
+S-6a | 等待 | pr_state | gh.prs | 13m50s（CI kit-selfcheck success 09-02 16:52:37 → PR #10 09-02 17:06:27） | 2026-09-02 17:06 | 是
+S-6b | 完成 | comment_title | gh.issue | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 评论 5507202948 | 2026-09-02 17:09 | 是
+S-6b | 证据 | ci_conclusion | gh.runs | 4实 条：评论 5507202948、commit 5d3f54e、勾选 5d3f54e、CI kit-selfcheck success | 2026-09-02 17:10 | 是
+S-7 | 完成 | commit_time | git.log | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 commit 300ded8 | 2026-09-02 17:54 | 是
+S-7 | 证据 | ci_conclusion | gh.runs | 3实 条：commit 300ded8、勾选 300ded8、CI kit-selfcheck success | 2026-09-02 17:54 | 是
+阶段·合入主干 | 不适用 | pr_state | gh.prs | 无批次分支，无法识别批次 PR（不适用） | ? | 否
+阶段·已发布 | 未知 | tag_ref | gh.prs | 无已证实的合并点（合入主干 不适用） | ? | 否
 阶段·预发已升级 | 未配置 | config_command | config.staging | 证据源配置未声明 | ? | 否
 阶段·已上生产 | 未配置 | config_command | config.production | 证据源配置未声明 | ? | 否
 阶段·收口 | 是 | issue_state | gh.issue | Issue #1 CLOSED | 2026-09-02 17:54 | 是
-暂停 | 219报 分钟 | tasktable_tag | git.tasktable_history 5693980 | 09-02 12:07:58 → 09-02 15:46:55（恢复＝其后首个证据）；> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降 | 2026-09-02 15:46 | 是
-合同 PR #2 | 存疑 | pr_merged_by | git.contract ＋ gh.prs | 首次加入 合同.md 的提交 8b27e68；MERGED；mergedBy=app/moshui-claude-code-tz author=app/moshui-claude-code-tz；APPROVED review 0 | 2026-09-02 10:30 | 是
-PR 合并方式 | PR 自合 9/9实 · 零批准 | pr_merged_by | gh.prs | 自合 #2 #3 #4 #5 #6 #7 #8 #9 #10 | ? | 是
-空档 | 299推 分钟 | pr_state | git.log → gh.prs | commit 2183910 09-02 10:48:20 → PR #5 09-02 15:46:55；归因暂停 219报 分钟 | 2026-09-02 15:46 | 是
-Trace | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 2实 条） | ? | 是
-Trace | CI | ci_conclusion | gh.runs | 红 1推 绿 9推（活动窗口 ?→now） | ? | 是
+暂停 | 219报 分钟 | tasktable_tag | git.tasktable_history | 09-02 12:07:58 → 09-02 15:46:55（恢复＝其后首个证据）；> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降 | 2026-09-02 15:46 | 是
+合同 PR #2 | 存疑 | pr_merged_by | git.contract | 首次加入 合同.md 的提交 8b27e68；PR MERGED；mergedBy=app/moshui-claude-code-tz author=app/moshui-claude-code-tz；APPROVED review 0（gh.prs） | 2026-09-02 10:30 | 是
+共用 PR | 1实 个 | pr_state | gh.prs | #9（S-5/S-6a） | ? | 是
+PR 合并方式 | PR 自合 9/9实 零批准 | pr_merged_by | gh.prs | 自合 #2 #3 #4 #5 #6 #7 #8 #9 #10 | ? | 是
+空档 | 299推 分钟 | pr_state | gh.prs | commit 2183910 09-02 10:48:20 → PR #5 09-02 15:46:55；归因暂停 219报 分钟 | 2026-09-02 15:46 | 是
+Trace | 轮数 | comment_title | gh.issue | 审 0实 · 外 0实 · 修 0实（评论 1实 条） | ? | 是
+Trace | CI | ci_conclusion | gh.runs | 红 0推 绿 0推（唯一归属：headSha 提交 → PR 分支 → 活动窗口 ?→now） | ? | 是
