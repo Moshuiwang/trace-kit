@@ -14,7 +14,7 @@
 
 ### Changed
 
-- `templates/合同.md` 合同区：`METHOD.md` §八各表由「逐表填写或写不适用 + 原因」改为**条件触发**——独占共享资源 → 共享资源租约；生产 / 外部写入 / 发布 → 正式验收对象、授权与外部动作；有可推翻合同的未知 → Wave 0 与 Decision Gate；跨会话或多编排者接力 → 批后继任条件；输入 Issue ≥2 或含多 Epic → 输入 Issue 准入、Epic 双账、结果可达性；未命中即「不适用：未命中触发条件」，不逐表写原因 — 出处 [#13 第 1 项](https://github.com/Moshuiwang/trace-kit/issues/13) — 验证：本仓 Trace #1 合同六段 49 行、零 §八表格，执行到 Complete（[PR #2](https://github.com/Moshuiwang/trace-kit/pull/2)）。
+- `templates/合同.md` 合同区：`METHOD.md` §八各表由「逐表填写或写不适用 + 原因」改为**条件触发**——模板只留一行「命中才出现，未命中即『不适用：未命中触发条件』，不逐表写原因」，五条触发条件（共享独占资源 → 共享资源租约；生产 / 外部写入或发布 → 正式验收对象 + 授权与外部动作；可能推翻合同的未知 → Wave 0 与 Decision Gate；多编排者接力或跨会话 → 批后继任条件；输入 Issue ≥ 2 个或含多 Epic → 输入 Issue 准入 + Epic 双账 + 结果可达性；其余 Trace 只有计划执行步骤与验收合同）作为起草判据落在 `skills/kickoff/SKILL.md` 新增小节「§八各表的触发条件」——判据是规划者的起草指引，不必逐份复制进每个 Trace 的合同 — 出处 [#13 第 1 项](https://github.com/Moshuiwang/trace-kit/issues/13) — 验证：本仓 Trace #1 合同六段 49 行、零 §八表格，执行到 Complete（[PR #2](https://github.com/Moshuiwang/trace-kit/pull/2)）。
 - `templates/合同.md` §5 成本预算加一行「产品负责人批的是本段上限；配比为规划者建议值，单字确认即可；切换规则按 `METHOD.md` §3.3 不变」；模型配比行的括注同步收敛为「项目自定」（其余内容已被新行与 §3.3 指针覆盖） — 出处 [#13 第 3 项](https://github.com/Moshuiwang/trace-kit/issues/13)（[lingxi #162](https://github.com/Moshuiwang/lingxi/issues/162) 审核—修复循环预算超标；rc22 复盘把模型偏离定为异常信号） — 验证：措辞级，不改 `METHOD.md` §3.3 的切换规则。
 - `skills/kickoff/SKILL.md` 第 2 步：「按先例给出建议值」改为「空不出来的段写『未知 + Owner + 补齐时点』（`METHOD.md` §4.8 Pre-ready 形态），不编建议值；成本段的上限（人次 / 完整门禁次数 / 时间窗）例外，必须写数字」；同步加一条依赖自检「这条依赖传什么制品？一句话说不清就是假依赖，去掉或合并」 — 出处 [#13 第 2 项](https://github.com/Moshuiwang/trace-kit/issues/13)（[#11](https://github.com/Moshuiwang/trace-kit/issues/11) 评审「强制填满制造虚假精确」；[lingxi #330](https://github.com/Moshuiwang/lingxi/issues/330) P0-5 六段式目的是「一条指令换长程自治」而非填满） — 验证：Pre-ready 本就是 §4.8 合法值，不与 §4.8 冲突；空项目 kickoff 真实旅程见本批收口评论。
 - `templates/任务表.md` 头部加一句「代理只改复选框与括号内指针，不改 Step 编号与文字；要改文字走合同修订 PR」 — 出处 [#13 第 4 项](https://github.com/Moshuiwang/trace-kit/issues/13)（Anthropic《Effective harnesses for long-running agents》「We prompt coding agents to edit this file only by changing the status of a passes field」，https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents ） — 验证口径：**外部出处、本仓零实证**，按准入门槛本该等实证；因是一句话且可退场，经产品负责人拍板（默认值「加」）带入，列为下一版日落候选。
@@ -27,9 +27,9 @@
 
 ### 体量核对（日落条款）
 
-- `template/` 受版本控制文件总字节数：410114 → 410114（本批未改）。`plugin/`：85355 → 86577（+1222）。`templates/合同.md`：6336 → 6494（+158）。
-- **体量增加的理由**（日落条款要求写明）：第 1 项把 `METHOD.md` §八八张表的「逐表填写」换成逐条触发条件，触发条件本身比原来的表名枚举长；净减发生在**产出物**一侧——命中不了触发条件的 Trace 不再在合同里出现 §八空表（Trace #1 实测零表格），模板本身反而多出这段判据。第 3 项在 §5 增加一行上限声明，同批已把被它复述的括注收敛掉（-140B）；第 1 项同批去掉合同区「批后继任条件」的行内重复（-75B），仍不足以抵消。
-- 下一版日落候选：`templates/任务表.md` 的「只改状态位」句（外部出处、零内部实证，见上）；若条件触发段在两个真实 Trace 里都用不上判据，改为指向 kickoff skill 的一行指针。
+- `template/` 受版本控制文件总字节数：410114 → 410114（本批未改）。`plugin/`：85355 → 86836（+1481）。`templates/合同.md`：6336 → **6137（−199）**，满足 [#13](https://github.com/Moshuiwang/trace-kit/issues/13) 关卡 5「小于 6336B」。
+- **`plugin/` 体量增加的理由**（日落条款要求写明）：净减的对象是**每个 Trace 的产出物**（合同模板 −199B，且命中不了触发条件的 Trace 不再出现 §八空表，Trace #1 实测零表格），代价是判据与新增的一句话级条款留在 `plugin/` 内的 skill 侧：`skills/kickoff` +817B（触发条件小节 + 不编建议值 + 依赖自检）、`skills/dispatch-card` +318B（刹车句带内外双出处）、`templates/派发卡.md` +132B、`templates/任务表.md` +108B、`README.md` +305B（CODEOWNERS 一行）。这几项都是被 [#13](https://github.com/Moshuiwang/trace-kit/issues/13) 逐条点名、且各自带出处的条款，无可删的等量候选，故按日落条款「除非 CHANGELOG 写明理由」记账通过。
+- 下一版日落候选：`templates/任务表.md` 的「只改状态位」句（外部出处、零内部实证，见上）；若「§八各表的触发条件」小节在两个真实 Trace 里一次都没被用来判定，整节删除，合同区那行也一并去掉。
 
 ## [0.1.0] - 2026-09-02
 
