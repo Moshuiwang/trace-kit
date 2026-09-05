@@ -1,0 +1,1621 @@
+{
+ "now": "2026-09-02T12:00:00+00:00",
+ "repo": "Moshuiwang/trace-kit",
+ "trace_no": 1,
+ "trace_dir": "docs/traces/1-trace-kit-v0.1.0",
+ "branch": "",
+ "tasktable_path": "docs/traces/1-trace-kit-v0.1.0/任务表.md",
+ "results": {
+  "gh.release_runs": {
+   "key": "gh.release_runs",
+   "ok": false,
+   "value": null,
+   "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": null,
+   "grade": "measured"
+  },
+  "git.contract": {
+   "key": "git.contract",
+   "ok": true,
+   "value": {
+    "sha": "8b27e687b2c5a7fc80e5226ed28313f56c75329b",
+    "at": "2026-09-02T02:30:07+00:00",
+    "subject": "docs(#1): 三件套 + METHOD.md v16 入库（合同 v1）(#2)",
+    "path": "docs/traces/1-trace-kit-v0.1.0/合同.md"
+   },
+   "error": "",
+   "cmd": "git log --all --reverse --diff-filter=A --date=iso-strict --format=%H\u001f%cd\u001f%s -- docs/traces/1-trace-kit-v0.1.0/合同.md",
+   "fetched_at": "2026-09-05T07:32:52.707957+00:00",
+   "grade": "measured"
+  },
+  "git.tags": {
+   "key": "git.tags",
+   "ok": true,
+   "value": [
+    {
+     "name": "v0.1.0",
+     "at": "2026-09-02T09:07:28+00:00",
+     "object": "a94a4d85d27284952e699e2762b3ecbb0840dba7",
+     "commit": "47aaef5b287d630775cfc87847c60448e94623d1"
+    }
+   ],
+   "error": "",
+   "cmd": "git tag --format=%(refname:short)\u001f%(creatordate:iso-strict)\u001f%(objectname)\u001f%(*objectname)",
+   "fetched_at": "2026-09-05T07:32:52.695643+00:00",
+   "grade": "measured"
+  },
+  "tasktable.quotes": {
+   "key": "tasktable.quotes",
+   "ok": true,
+   "value": [
+    "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+   ],
+   "error": "",
+   "cmd": "读 <任务表> 引用块",
+   "fetched_at": "2026-09-05T07:32:52.694743+00:00",
+   "grade": "reported"
+  },
+  "tmux.windows": {
+   "key": "tmux.windows",
+   "ok": false,
+   "value": null,
+   "error": "未配置编排 session",
+   "cmd": "",
+   "fetched_at": null,
+   "grade": "measured"
+  },
+  "gh.tags": {
+   "key": "gh.tags",
+   "ok": true,
+   "value": [
+    {
+     "name": "v0.1.0",
+     "sha": "47aaef5b287d630775cfc87847c60448e94623d1",
+     "at": "2026-09-02T09:07:25Z"
+    }
+   ],
+   "error": "",
+   "cmd": "gh api repos/<repo>/tags?per_page=30 ＋ 前 5 个 tag 的 repos/<repo>/commits/<sha>",
+   "fetched_at": "2026-09-05T07:32:54.213457+00:00",
+   "grade": "measured"
+  },
+  "git.tasktable_history": {
+   "key": "git.tasktable_history",
+   "ok": true,
+   "value": {
+    "path": "docs/traces/1-trace-kit-v0.1.0/任务表.md",
+    "commits": [
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b"
+      ],
+      "quotes": [],
+      "sha": "8b27e687b2c5a7fc80e5226ed28313f56c75329b",
+      "at": "2026-09-02T02:30:07+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1"
+      ],
+      "quotes": [],
+      "sha": "88646b911a763a13efa312f18d1a0ce84e396fb6",
+      "at": "2026-09-02T02:38:38+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a"
+      ],
+      "quotes": [],
+      "sha": "77dd19125e2da48122e9732aff5a5fce0ad08c19",
+      "at": "2026-09-02T02:47:33+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2e"
+      ],
+      "quotes": [],
+      "sha": "218391080ebd8da44942dd2698b09a3653c59fc2",
+      "at": "2026-09-02T02:48:20+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2e"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "5693980ea1dc4e0d1e7dccf19f0da178b43d9a4a",
+      "at": "2026-09-02T04:07:58+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2e"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "3ff5dfd5350843dda38cd790f72d642d8635bbd0",
+      "at": "2026-09-02T07:48:45+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "b2ddefb79161b0094adc4ff345253ee6f9bfe9f5",
+      "at": "2026-09-02T08:16:13+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "dd53ecfe86cc4d0c58ee676e8048ec1755ec6963",
+      "at": "2026-09-02T08:26:47+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "b5bb4043cc67ff2aec2ce29b414d757d7369f231",
+      "at": "2026-09-02T08:52:08+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "47aaef5b287d630775cfc87847c60448e94623d1",
+      "at": "2026-09-02T09:07:25+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "2d1bdaadaea740875b7b01937621d446b412d296",
+      "at": "2026-09-02T09:08:06+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "5d3f54eebdc94f1cd6a7d2f5ed391708a0dfdea4",
+      "at": "2026-09-02T09:09:42+00:00"
+     },
+     {
+      "ids": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b",
+       "S-7"
+      ],
+      "checked": [
+       "S-0a",
+       "S-0b",
+       "S-1",
+       "S-2a",
+       "S-2b",
+       "S-2c",
+       "S-2d",
+       "S-2e",
+       "S-3",
+       "S-4a",
+       "S-4b",
+       "S-5",
+       "S-6a",
+       "S-6b",
+       "S-7"
+      ],
+      "quotes": [
+       "> **2026-09-02 04:1x UTC / 12:1x 北京：产品负责人指令「额度紧张，trace-kit 降为最低优先级，优雅暂停」**——在途子代理收尾提交 WIP 到各自分支并推送（不合并）；交接评论落 Issue #1；此后不派子代理、不做工作，等元守护通知恢复。"
+      ],
+      "sha": "300ded88af6b745f2ca05595674b2eba3beaead4",
+      "at": "2026-09-02T09:54:16+00:00"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "git log --all --reverse --date=iso-strict --format=%H\u001f%cd -- docs/traces/1-trace-kit-v0.1.0/任务表.md ＋ git show <sha>:<任务表>",
+   "fetched_at": "2026-09-05T07:32:52.752617+00:00",
+   "grade": "inferred"
+  },
+  "gh.prs": {
+   "key": "gh.prs",
+   "ok": true,
+   "value": [
+    {
+     "number": 2,
+     "title": "docs(#1): 三件套 + METHOD.md v16 入库（合同 v1）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T02:29:47Z",
+     "mergedAt": "2026-09-02T02:30:07Z",
+     "closedAt": "2026-09-02T02:30:07Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "trace/1-kickoff",
+     "baseRefName": "main",
+     "mergeCommit": "8b27e687b2c5a7fc80e5226ed28313f56c75329b",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/2",
+     "body": "## 关联与长期文档\n\n- Trace：#1（本 PR 合并即合同 v1 批准）\n- 长期文档：`METHOD.md`（lingxi #147 v16 原样搬运，仅加版本头）、`docs/traces/1-trace-kit-v0.1.0/{合同,任务表,验收}.md`、README 占位\n\n## 本次改动\n\n第 0 步分级清单已落 #1 评论；本 PR 把三件套与方法正文入库。`METHOD.md` 正文与 #147 v16 逐字一致（除文件顶部两行版本头）。\n\n## Review 与验证记录\n\n- 证据层级：全局 2（文档已形成）；`diff <(gh issue view 147 --json body -q .body) <(tail -n +5 METHOD.md)` 零差异（本机核对）\n- 尚未验证项：无\n",
+     "checks": []
+    },
+    {
+     "number": 3,
+     "title": "feat(kit): plugin/ 五 skill + 三件套模板 + 插件与市场清单（#1 S-2a）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T02:46:47Z",
+     "mergedAt": "2026-09-02T02:47:13Z",
+     "closedAt": "2026-09-02T02:47:13Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "pack/plugin",
+     "baseRefName": "main",
+     "mergeCommit": "f65c250f004e29aa67b82a0c1cf5254339d597e7",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/3",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-2a）\n- 长期文档：`plugin/README.md`（是什么 / 怎么装 / 何时用 / 换什么 / 出处表）\n\n## 本次改动\n\nClaude Code 插件：五个 skill（kickoff / takeover / handoff / guardian / dispatch-card）+ `templates/`（合同 / 任务表 / 验收 / 派发卡 / tracking-issue）+ `plugin/.claude-plugin/plugin.json` + 根 `.claude-plugin/marketplace.json`。每文件头带 lingxi 出处。\n\n## Review 与验证记录\n\n- 证据层级：全局 3——`claude plugin validate --strict plugin` 与 `--strict .` 均通过；`claude --plugin-dir plugin -p` 加载冒烟列出五个 skill；禁词 grep 仅命中「出处」行与 `examples/lingxi/` 路径引用；行尾空白零命中。\n- 尚未验证：远端 marketplace 安装（发布后补）；在空项目实际走 kickoff→三件套（S-4b）。\n- 独立审查：批终一次批量审查（S-5），本 PR 按攒批纪律先合入。\n",
+     "checks": []
+    },
+    {
+     "number": 4,
+     "title": "docs(kit): examples/lingxi G3 示例清单（#1 S-2e）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T02:48:05Z",
+     "mergedAt": "2026-09-02T02:48:18Z",
+     "closedAt": "2026-09-02T02:48:18Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "pack/examples",
+     "baseRefName": "main",
+     "mergeCommit": "630b2d8d4b8171ec49d67be03f713995a60d3b62",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/4",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-2e）\n- 长期文档：`examples/lingxi/README.md`\n\n## 本次改动\n\nG3 档参考：lingxi 特有实现只作示例——G3 资产逐条（解决什么 / 挡住过什么 / 固定 SHA 链接）、一个项目的实际取值（模型配比、常设授权、P2 豁免、bootstrap PR、`Image-Candidate`）、三件套真实样本、方法沿革表。只链接不复制正文。\n\n## Review 与验证记录\n\n- 证据层级：全局 3——34 条 `caa845d` 路径 `cat-file -e` 全部存在；24 个 Issue/PR 号标题核实；5 个行锚点回读；禁词零命中；无行尾空白。\n- 尚未验证：链接的浏览器实拉渲染（公开仓，`gh` 匿名可读）。\n",
+     "checks": []
+    },
+    {
+     "number": 5,
+     "title": "feat(kit): template/ 文档与 GitHub 约定（#1 S-2b）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T07:46:55Z",
+     "mergedAt": "2026-09-02T07:47:00Z",
+     "closedAt": "2026-09-02T07:47:00Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "pack/tdocs",
+     "baseRefName": "main",
+     "mergeCommit": "fd043329affd6202cc27ce893ecc51dcad71097a",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/5",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-2b）\n- 长期文档：`template/` 文档与 GitHub 约定 21 个文件（AGENTS / CLAUDE / README / CHANGELOG、docs 十一件、Issue 模板四份、PR 模板、copilot-instructions）\n\n## 本次改动\n\n新项目骨架的文档层（G2）：按分级清单 B 节从 lingxi 对应文件去名词参数化；文件名与矩阵 / 覆盖清单表头按与 CI 脚本的约定固定。\n\n## Review 与验证记录\n\n- 证据层级：全局 3——lingxi 链接检查与验收矩阵检查副本通过；`AGENTS.md` 5730B + `验证与门禁.md` 18358B = 24088B ≤ 32KB；禁词仅在「出处」行；行尾空白零命中。\n- 尚未验证：用本仓 `scripts/ci/*`（pack/tci）对本目录实跑（S-3 集成）；Issue 表单真实渲染；指向 `v0.1.0` tag 的外链在 tag 打出前不可达。\n- 小偏差（编排者接受）：协作约定新增「写入姿势与凭据」小标题；`docs/traces/README.md` 通用化并加插件指向；`bug.yml` 字段标签改为「当前规格（产品合同章节或当前能力条目）」。\n",
+     "checks": []
+    },
+    {
+     "number": 6,
+     "title": "feat(kit): template/ 分层 CI、通用检查、check.sh 与 app 骨架（#1 S-2c）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T08:10:34Z",
+     "mergedAt": "2026-09-02T08:15:28Z",
+     "closedAt": "2026-09-02T08:15:28Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "pack/tci",
+     "baseRefName": "main",
+     "mergeCommit": "9fa254842b5a664006ddc7d3ee868788496f8f89",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/6",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-2c）\n- 长期文档：`template/scripts/dev/README.md`；工作流与脚本各带出处头\n\n## 本次改动\n\n新项目骨架的 CI 层（G1/G2）：分层工作流 `Story Fast` / `Epic Full` / `Main Publish` / `Docs`（候选证明 + 不可变 tag 发布）、风险分级器（未知路径→full）、通用检查（链接 / 验收矩阵 / 单行棘轮 / 体量预算 / 归属核对 / 源码棘轮 / 候选证明）、`verify_docs.sh` / `verify_repository.sh`、本机=CI 同构 `scripts/dev/check.sh`（版本与 extras 现读自工作流，venv 默认重建，uv 退回）、可运行的最小 `app` 骨架（常驻 / healthcheck / migrate）与 Dockerfile，`tests/` 79 条。\n\n## Review 与验证记录\n\n- 证据层级：全局 3——`unittest` 79 条全绿；`verify_docs.sh` 与 `verify_repository.sh`（借 `pack/tdeploy` 的部署契约脚本联调）通过；`check.sh docs / fast / full` 三层通过；四份工作流 YAML 可解析且 `gate_spec.py` 现读一致；`docker build` 成功、容器内 healthcheck / migrate 退出码如设计、`docker stop` 优雅退出码 0；禁词与行尾空白零命中。\n- 尚未验证：工作流从未在真实 GitHub Actions 上运行（`publish.yml` GHCR 推送、候选证明回读只有单元级验证）。\n- 跨分支依赖：`verify_repository.sh` 调用 `check_deploy_contract.py`、`ci.yml` 调用 `verify_compose_structure.sh`（均在 `pack/tdeploy`）——两 PR 连续合入。\n- 对文档的最小修正 1 处：`docs/技术设计/README.md` 一格措辞（避免归属触发词误判），语义不变。\n",
+     "checks": []
+    },
+    {
+     "number": 7,
+     "title": "feat(kit): template/deploy 骨架、部署契约检查与监控告警（#1 S-2d）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T08:15:23Z",
+     "mergedAt": "2026-09-02T08:15:33Z",
+     "closedAt": "2026-09-02T08:15:33Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "pack/tdeploy",
+     "baseRefName": "main",
+     "mergeCommit": "c871cd3efcfa16f84899bcdef0d7a2f547f734ab",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/7",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-2d）\n- 长期文档：`template/deploy/README.md`、`生产部署runbook.md`、`验收前部署配置清单.md`、`监控告警.md`\n\n## 本次改动\n\n新项目骨架的部署层（G2）：compose profile（`app` 常驻 + `migrate` job）、不可变 tag + digest 固定、stage / prod 覆盖结构相同只有配置不同、`.env.example`；runbook / 预检清单骨架；最小监控告警到群（`host_health_alert.py` 单一 `send_alert()` 扩展点 + systemd timer）；`check_deploy_contract.py`（文本级契约，200 行）与 `verify_compose_structure.sh`（渲染级结构对照）。\n\n## Review 与验证记录\n\n- 证据层级：全局 3——契约检查通过并改坏验红（给 migrate 加 restart → 红，还原逐字节一致）；`verify_compose_structure.sh` 在 docker compose v2.40 下通过（stage / prod 结构一致、生产零 build）；告警脚本真实 docker + 本地 HTTP 接收端闭环（触发→去重→恢复通知）与四条故障路径；禁词与行尾空白零命中；三份文档 33 个相对链接与 11 个锚点解析成功。\n- 编排者接受的卡面外加法：契约检查补两条断言（`deploy.resources.limits` 三项键存在；容器内 `*_DIR`/`*_PATH` 路径落在挂载点下，即分级清单 D3「凭据路径落持久卷」）；三脚本加可执行位；告警触发含 `Restarting` 第四态。\n- 尚未验证：文档未经第二人对真实生产流程走查；`监控告警.md` 时延表的活性阈值留「这里填你的」。\n- 跨分支依赖：契约检查失败关闭地要求 `Dockerfile` 与 `.gitignore`（PR #6）；两 PR 连续合入。\n",
+     "checks": []
+    },
+    {
+     "number": 8,
+     "title": "feat(kit): 套件集成——init.sh、自检脚本、kit-selfcheck、自回灌报告与验收现值（#1 S-3/S-4）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T08:24:21Z",
+     "mergedAt": "2026-09-02T08:26:47Z",
+     "closedAt": "2026-09-02T08:26:47Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "kit/integration",
+     "baseRefName": "main",
+     "mergeCommit": "dd53ecfe86cc4d0c58ee676e8048ec1755ec6963",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/8",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-3 集成 + S-4 两条自验证）\n- 长期文档：根 `README.md` / `CHANGELOG.md`（出处条目）、`init.sh`、`scripts/kit/*`、`.github/workflows/kit-selfcheck.yml`、`docs/traces/1-trace-kit-v0.1.0/{验收.md,任务表.md,自回灌报告.md}`\n\n## 本次改动\n\n套件级集成：`init.sh`（template 提升到根）、禁词扫描、链接检查（复用 template 脚本）、空项目冒烟（拷贝 → init → 全部本机门禁）、自回灌 diff；`kit-selfcheck` 工作流把冒烟固化为 CI；合同模板标题占位改为非链接写法（链接检查误判）；验收现值与自回灌报告入库。\n\n## Review 与验证记录\n\n- 证据层级：全局 3 → 本 PR 的 `kit-selfcheck` 首跑即为 4——本机：`smoke.sh` 六步全绿；`check_no_lingxi.sh`、`check_links.py`、行尾空白零命中；`claude plugin validate --strict` 双绿；`METHOD.md` 与 #147 逐字零差异；kickoff 真实旅程在空项目生成三件套并通过 `verify_docs.sh`（验收.md 追记）。\n- 尚未验证：template 工作流在真实 Actions 运行；插件远端安装。\n- 独立审查：合入后冻结候选，S-5 一次批量审查（Fable xhigh，只读）。\n",
+     "checks": [
+      {
+       "name": "kit-selfcheck",
+       "workflowName": "kit-selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "2026-09-02T08:25:40Z",
+       "completedAt": "2026-09-02T08:26:04Z"
+      }
+     ]
+    },
+    {
+     "number": 9,
+     "title": "fix(kit): 审查修复包 + 发布文档定稿（#1 S-5 / S-6a）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T08:51:23Z",
+     "mergedAt": "2026-09-02T08:52:09Z",
+     "closedAt": "2026-09-02T08:52:09Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "kit/release",
+     "baseRefName": "main",
+     "mergeCommit": "b5bb4043cc67ff2aec2ce29b414d757d7369f231",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/9",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-5 修复包 + S-6a 发布文档）\n- 长期文档：`README.md`（安装两步定稿）、`CHANGELOG.md`（全部资产出处、明确不带入、证据等级与未验证）、`init.sh`、`scripts/kit/check_no_lingxi.sh`、`plugin/skills/dispatch-card`、`plugin/templates/派发卡.md`、`template/deploy/README.md`、`template/deploy/生产部署runbook.md`、`template/scripts/dev/README.md`、`template/scripts/ci/verify_*.sh`、Issue / PR 模板头、三件套\n\n## 本次改动\n\n唯一独立审核者对候选 `dd53ecf` 的批量审查（零 P0、4 P1、10 P2）的统一修复包，全部为机械 / 文档类，由编排者直接坐实：\n- P1-1 安装命令补 `--public`，README 写明 Template 开关前提；P1-2 CHANGELOG 填齐 CI / deploy / app 骨架条目与「明确不带入」；P1-3 禁词脚本去掉用户名字面量、改 `~/ ]+/`，新增全仓机器事实扫描（主机名 / 路径 / 凭据形态），三件套去 session 名与本机路径；P1-4 退出码 / 管道收尾条款因 lingxi 无留痕按准入门槛移除并登记为下版候选，派发卡附加条款出处改为 METHOD §6.4。\n- P2-6 「500+ Issue」口径改「约 220 个 Issue / 301 个合并 PR」；P2-7 `verify_*.sh` 出处 PR #12→PR #3、删「PR #48 半开守卫」；P2-8 deploy/README 补「编排者冻结前显式触发镜像构建」小节、runbook 改引用 AGENTS Code Review Rules 与验证与门禁 §九；P2-9 自回灌报告登记弱词局限；P2-10 敏感名词改通用；P2-11 init.sh 说明；P2-12 dev README 三问标题；P2-13 「原文」措辞。P2-5 已在 Issue #1 评论补证；P2-14 待打 tag。\n\n## Review 与验证记录\n\n- 证据层级：全局 3 → 本 PR `kit-selfcheck` 为 4——本机 `check_no_lingxi.sh`（含新增全仓扫描）、`check_links.py`、行尾空白、shellcheck、`smoke.sh --strict` 全绿（79 条测试）。\n- 定向复核：合入后请同一审核者对本修复包定向复核一次。\n",
+     "checks": [
+      {
+       "name": "kit-selfcheck",
+       "workflowName": "kit-selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "2026-09-02T08:51:29Z",
+       "completedAt": "2026-09-02T08:51:51Z"
+      }
+     ]
+    },
+    {
+     "number": 10,
+     "title": "docs(kit): v0.1.0 收口——远端安装已验证、复核 N1–N3、三件套回写（#1 S-6a）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T09:06:27Z",
+     "mergedAt": "2026-09-02T09:07:25Z",
+     "closedAt": "2026-09-02T09:07:26Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "kit/v0.1.0",
+     "baseRefName": "main",
+     "mergeCommit": "47aaef5b287d630775cfc87847c60448e94623d1",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/10",
+     "body": "## 关联与长期文档\n\n- Trace：#1（S-6a 发布前收口）\n- 长期文档：`README.md`、`CHANGELOG.md`、`template/scripts/dev/README.md`、三件套（任务表 S-5、验收独立审查行与未验证清单）\n\n## 本次改动\n\n定向复核后的收口：插件远端安装已实测（市场添加 → 安装 → enabled 0.1.0 → 卸载还原），README / CHANGELOG / 验收改为已验证；Template 开关机器人 403 记入验收未验证清单（需产品负责人勾选）；复核新增 N1（README 兜底路径实测走不通，补 `git add/commit` 步骤）、N2（dev README 段落归位）、N3（自验证描述补全仓扫描）三条 P2。合入后在合并提交上打 `v0.1.0`。\n\n## Review 与验证记录\n\n- 证据层级：3 → 本 PR `kit-selfcheck` 为 4；本机禁词 / 链接 / 行尾空白通过。\n- 独立审查：批量审查 + 定向复核均已完成（Issue #1 收口评论汇总）。\n",
+     "checks": [
+      {
+       "name": "kit-selfcheck",
+       "workflowName": "kit-selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "2026-09-02T09:06:40Z",
+       "completedAt": "2026-09-02T09:07:02Z"
+      }
+     ]
+    },
+    {
+     "number": 16,
+     "title": "docs(#15): 三件套入库——看板 v0（tmux TUI）+ v0.1.x 小修包 → v0.2.0（合同 v1）",
+     "state": "CLOSED",
+     "isDraft": false,
+     "createdAt": "2026-09-02T16:38:39Z",
+     "mergedAt": "",
+     "closedAt": "2026-09-05T05:57:46Z",
+     "mergedBy": "",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "trace/15-kickoff",
+     "baseRefName": "main",
+     "mergeCommit": "",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/16",
+     "body": "## 这个 PR 是什么\n\nTrace #15 的三件套（合同 / 任务表 / 验收），落 `docs/traces/15-看板v0/`。输入 Issue = #12（看板 v0，tmux TUI，v2 正文）+ #13（v0.1.x 小修包）。\n\n**请由产品负责人本人合并——合并即批准合同 v1。机器人不合并本 PR。** 这是 #11 指出的「九个 PR 全部自发自合、含合同 PR」的第一次修正；#13 会把 `docs/traces/**/合同.md` 加进 CODEOWNERS，规则集由产品负责人在 Settings 建立后，这条就从约定变成门禁。\n\n## 批准时需一并裁定（可单字回复，默认全批）\n\n1. 模型配比：编排 opus max / 实施 opus high / 唯一审核 opus max（默认：批）\n2. 本合同 PR 由你本人合并，机器人不合并（默认：批）\n3. `v0.2.0` tag 在本 Trace 收口时发布（默认：批）\n4. 时间窗两个工作日（默认：批）\n\n## 里程碑\n\nM0 三件套获批（本 PR）→ M1 小修包合入 → M2 看板第一批（解析 / 证据 / 判定 / 渲染，Trace #1 回放）→ M3 第二批（四夹具进 CI、skill、`--dump` 归档）→ M4 第三批（文案与 CHANGELOG）→ M5 `v0.2.0` tag + 收口，并用本 Trace 自己的看板归档 `看板.txt`。\n\n## 不做\n\nHTML / Pages / Action 回贴、服务器、token 统计、DSL / Linter / 事件真源、进 `template/` 的 Action 与 CODEOWNERS、改 `METHOD.md`。\n\n## 检查\n\n`check_no_lingxi.sh` 与 `check_links.py` 本机通过；本 PR 只新增三个文档文件，不动代码。\n",
+     "checks": [
+      {
+       "name": "kit-selfcheck",
+       "workflowName": "kit-selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "2026-09-02T16:38:46Z",
+       "completedAt": "2026-09-02T16:39:08Z"
+      }
+     ]
+    },
+    {
+     "number": 18,
+     "title": "docs(#17): 看板 v1 三件套 v1（合并即批准）",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-05T06:04:48Z",
+     "mergedAt": "2026-09-05T06:07:10Z",
+     "closedAt": "2026-09-05T06:07:10Z",
+     "mergedBy": "app/moshui-claude-code-tz",
+     "author": "app/moshui-claude-code-tz",
+     "reviews": [],
+     "headRefName": "trace/board-v1-kickoff",
+     "baseRefName": "main",
+     "mergeCommit": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "url": "https://github.com/Moshuiwang/trace-kit/pull/18",
+     "body": "## 这是什么\n\nTrace [#17](https://github.com/Moshuiwang/trace-kit/issues/17) 看板 v1 的三件套 v1（合同 / 任务表 / 验收）＋决策清单，落 `docs/traces/17-看板v1/`。**本 PR 合并即批准 v1**。接替已作废的 #15 / PR #16。\n\n## 批准依据\n\n产品负责人 2026-09-05 13:4x–13:5x 北京在 lingxi 规划者会话裁定：看板引擎的家＝trace-kit（「同意进入 trace-kit」）；审过 1 / 2 / 3 / 3 轮以上用不同样式边框；简易版＝大模块＋每模块轮数与耗时；编排者可到 Fable 5.1 max；外审 codex sol max；「其他无异议，你立即规划，然后安排新的窗口编排执行吧」。据此由规划者合并本 PR 并立即拉起编排者；#13 第 6 项「合同 PR 由产品负责人本人合并」自规则集建立后的下一份合同起生效。\n\n## 要点\n\n- 输入：本仓 #12（v3 修订）、#13；lingxi #577–#582、#589。\n- 授权终点：K-9 有条件合 main、tag v0.2.0、tz 装插件、lingxi 一个收口小 PR（时机受 R-3 租约）。\n- 预算：kit-selfcheck ≤ 10、Draft PR 1、时间窗 09-05 → 09-08；编排 Fable max / 核心 Fable xhigh / 外围 Opus high / 审核 Fable xhigh / codex sol max ×2。\n- 本机 `check_links.py` 通过；纯文档改动。\n",
+     "checks": [
+      {
+       "name": "kit-selfcheck",
+       "workflowName": "kit-selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "2026-09-05T06:06:28Z",
+       "completedAt": "2026-09-05T06:06:51Z"
+      }
+     ]
+    }
+   ],
+   "error": "",
+   "cmd": "gh pr list -R Moshuiwang/trace-kit --state all --limit 200 --search #1 --json number,title,state,isDraft,createdAt,mergedAt,closedAt,mergedBy,author,reviews,headRefName,baseRefName,mergeCommit,url,body,statusCheckRollup",
+   "fetched_at": "2026-09-05T07:32:55.382287+00:00",
+   "grade": "measured"
+  },
+  "gh.issue": {
+   "key": "gh.issue",
+   "ok": true,
+   "value": {
+    "number": 1,
+    "title": "[tracking] 2026-09-02 trace-kit v0.1.0：把 lingxi 实证的工作方法资产打包成可复用套件",
+    "state": "CLOSED",
+    "createdAt": "2026-09-02T02:24:10Z",
+    "closedAt": "2026-09-02T09:54:23Z",
+    "url": "https://github.com/Moshuiwang/trace-kit/issues/1",
+    "comments": [
+     {
+      "id": 5503411104,
+      "createdAt": "2026-09-02T02:26:26Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 第 0 步：只读盘点与 G1 / G2 / G3 分级清单（2026-09-02 02:5x UTC / 10:5x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5503411104"
+     },
+     {
+      "id": 5503505141,
+      "createdAt": "2026-09-02T02:38:49Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 里程碑收口：M0 只读盘点 + M1 三件套与方法正文入库（2026-09-02 03:3x UTC / 11:3x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5503505141"
+     },
+     {
+      "id": 5504300234,
+      "createdAt": "2026-09-02T04:17:34Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 交接评论：按产品负责人指令优雅暂停（2026-09-02 04:1x UTC / 12:1x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5504300234"
+     },
+     {
+      "id": 5506260636,
+      "createdAt": "2026-09-02T07:47:07Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 恢复执行留痕（2026-09-02 07:5x UTC / 15:5x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5506260636"
+     },
+     {
+      "id": 5506729400,
+      "createdAt": "2026-09-02T08:27:57Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 里程碑收口：M2 五目录打包合入 + M3 前半（集成与两条自验证通过，候选冻结）（2026-09-02 08:4x UTC / 16:4x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5506729400"
+     },
+     {
+      "id": 5506944045,
+      "createdAt": "2026-09-02T08:47:05Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 留痕：kickoff 真实旅程产物（空项目冒烟，2026-09-02 08:2x UTC / 16:2x 北京；审查 P2-5 补证）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5506944045"
+     },
+     {
+      "id": 5507202948,
+      "createdAt": "2026-09-02T09:09:18Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "## 批次收口评论：v0.1.0 已发布（2026-09-02 09:2x UTC / 17:2x 北京）",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5507202948"
+     },
+     {
+      "id": 5507741150,
+      "createdAt": "2026-09-02T09:54:22Z",
+      "author": "moshui-claude-code-tz",
+      "first_line": "按产品负责人 2026-09-02 17:3x 北京指令关闭：根 README 已改写为面向后来代理的完整使用指南（提交见 main 最新 `docs(kit): README 改写…`），v0.1.0 已发布（tag → `47aaef5`），整体交付结果 **Complete**。",
+      "url": "https://github.com/Moshuiwang/trace-kit/issues/1#issuecomment-5507741150"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "gh issue view 1 -R Moshuiwang/trace-kit --json number,title,state,createdAt,closedAt,url,comments",
+   "fetched_at": "2026-09-05T07:32:54.584200+00:00",
+   "grade": "measured"
+  },
+  "git.branches": {
+   "key": "git.branches",
+   "ok": true,
+   "value": [
+    {
+     "name": "batch/17-board",
+     "sha": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "at": "2026-09-05T07:30:53+00:00"
+    },
+    {
+     "name": "main",
+     "sha": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "at": "2026-09-05T06:07:10+00:00"
+    },
+    {
+     "name": "sample/board-v0",
+     "sha": "4844b5da60c7bd126657ca8259a6af6687b80ade",
+     "at": "2026-09-02T16:25:34+00:00"
+    },
+    {
+     "name": "trace/15-kickoff",
+     "sha": "f3d9e934e2f29f8b0d9eecd0ee559dbcc30c97ec",
+     "at": "2026-09-02T16:35:35+00:00"
+    },
+    {
+     "name": "wt/17-S-5",
+     "sha": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "at": "2026-09-05T07:30:53+00:00"
+    },
+    {
+     "name": "wt/17-W0-2",
+     "sha": "5cbe609423a0ff457a61135a0e4d369183119f11",
+     "at": "2026-09-05T06:45:25+00:00"
+    },
+    {
+     "name": "origin",
+     "sha": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "at": "2026-09-05T06:07:10+00:00"
+    },
+    {
+     "name": "origin/batch/17-board",
+     "sha": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "at": "2026-09-05T07:30:53+00:00"
+    },
+    {
+     "name": "origin/main",
+     "sha": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "at": "2026-09-05T06:07:10+00:00"
+    },
+    {
+     "name": "origin/sample/board-v0",
+     "sha": "4844b5da60c7bd126657ca8259a6af6687b80ade",
+     "at": "2026-09-02T16:25:34+00:00"
+    },
+    {
+     "name": "origin/trace/15-kickoff",
+     "sha": "f3d9e934e2f29f8b0d9eecd0ee559dbcc30c97ec",
+     "at": "2026-09-02T16:35:35+00:00"
+    }
+   ],
+   "error": "",
+   "cmd": "git for-each-ref --format=%(refname:short)\u001f%(objectname)\u001f%(committerdate:iso-strict) refs/heads refs/remotes",
+   "fetched_at": "2026-09-05T07:32:52.700755+00:00",
+   "grade": "measured"
+  },
+  "git.log": {
+   "key": "git.log",
+   "ok": true,
+   "value": [
+    {
+     "sha": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "at": "2026-09-05T07:30:53+00:00",
+     "authored": "2026-09-05T07:30:53+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): 集成——SKILL.md 登记表节按 r2 重生成、冻结任务表夹具去相对链接；任务表 S-2 勾选",
+     "refs": "HEAD -> wt/17-S-5, origin/batch/17-board, batch/17-board"
+    },
+    {
+     "sha": "572bbc9f666bd1e1d7d2bfe335e5e6b9315e9fc2",
+     "at": "2026-09-05T07:28:49+00:00",
+     "authored": "2026-09-05T07:28:49+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-2 r2 轮数时间窗回落、gh.tags 权威、Board.unparsed、头部文案角标、任务表冻结夹具（wt/17-S-2 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "d1948514821b9afea6ae4d85925c25f02a122fc7",
+     "at": "2026-09-05T07:27:26+00:00",
+     "authored": "2026-09-05T07:27:26+00:00",
+     "author": "Claude",
+     "subject": "chore(#17): 移除误提交的 boardlib/__pycache__ 并加根 .gitignore；CHANGELOG 体量句回写；任务表 S-3 / S-6 勾选",
+     "refs": ""
+    },
+    {
+     "sha": "0ec1279d6e107b031831dabb6460a955287c3284",
+     "at": "2026-09-05T07:26:38+00:00",
+     "authored": "2026-09-05T07:26:38+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-6 看板 skill / README / CHANGELOG / 版本 0.2.0 / 模板留痕句（wt/17-S-6 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "b614944dd23ee8b18abc818e69fb0179ddb509da",
+     "at": "2026-09-05T07:26:33+00:00",
+     "authored": "2026-09-05T07:26:33+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-2 r2 评论轮数时间窗回落（推）、gh.tags 为已发布权威、Board.unparsed、头部文案与角标、任务表冻结夹具",
+     "refs": ""
+    },
+    {
+     "sha": "61c036b3281b04c358f447ff2b8f1cbeceb2ae38",
+     "at": "2026-09-05T07:24:21+00:00",
+     "authored": "2026-09-05T07:24:21+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): S-6 看板 skill／README／CHANGELOG／版本 0.2.0／模板留痕句",
+     "refs": ""
+    },
+    {
+     "sha": "f5584ed62f05e0da7cafdd882330a6bfff2c77c2",
+     "at": "2026-09-05T07:20:53+00:00",
+     "authored": "2026-09-05T07:20:53+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-3 r2 dump 状态词、预算条、自由文本灰卡、步骤第三行指针摘要（wt/17-S-3 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "75328a83f88e5e880bafadac551bef4fe9052ac9",
+     "at": "2026-09-05T07:19:30+00:00",
+     "authored": "2026-09-05T07:19:30+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-3 r2 dump 标题带状态词、无上限预算不画条、自由文本灰卡、步骤第三行「章节名 · 指针摘要」",
+     "refs": ""
+    },
+    {
+     "sha": "796e00a4622f17ad248511b678bd42499c1b5695",
+     "at": "2026-09-05T07:13:05+00:00",
+     "authored": "2026-09-05T07:13:05+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): W0-2 快照收进 快照/、任务表 W0-2 / S-4 勾选、决策清单 C-7…C-9",
+     "refs": ""
+    },
+    {
+     "sha": "819169979b076b84cf333d85369716266fcf196c",
+     "at": "2026-09-05T07:10:49+00:00",
+     "authored": "2026-09-05T07:10:49+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): 接口约定回写 W0-2 / S-3 定稿——轮数归属时间窗回落（推）、dump 标题带状态词、无上限预算不画条、Board.unparsed 灰卡；任务表 A-1 行改为可解析格式",
+     "refs": ""
+    },
+    {
+     "sha": "acb8bb4e3587b9aba7baa0088950a909b4645b17",
+     "at": "2026-09-05T07:08:49+00:00",
+     "authored": "2026-09-05T07:08:49+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-3 渲染两视图＋四档边框＋键盘＋TUI（wt/17-S-3 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "52a8c2257821c9fe376b9b6bb8751cc1f9d316dd",
+     "at": "2026-09-05T07:08:49+00:00",
+     "authored": "2026-09-05T07:08:49+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-2 任务表解析＋证据采集＋状态推断＋登记表（wt/17-S-2 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "fb19ae01be6a8cafc79e28932109de23076e9408",
+     "at": "2026-09-05T07:03:40+00:00",
+     "authored": "2026-09-05T07:03:40+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-2 任务表解析＋证据采集＋状态推断＋登记表定稿（§5 / §6 / §7），Trace #1 真实回放三件事对齐",
+     "refs": ""
+    },
+    {
+     "sha": "5a90a93694bd6abea28332003a1c5f0a7fcb539d",
+     "at": "2026-09-05T06:58:15+00:00",
+     "authored": "2026-09-05T06:58:15+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-3 渲染两视图＋四档边框＋键盘逐序列＋TUI 主循环（看门狗 / 差异重画 / 动效）",
+     "refs": ""
+    },
+    {
+     "sha": "299a4d0f6a071a4a664788714378fbea596d3900",
+     "at": "2026-09-05T06:47:13+00:00",
+     "authored": "2026-09-05T06:47:13+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): 接口约定按 S-4 定稿回写——gh.tags 为已发布 tag 权威来源、--why 只打印证据键、parse 规则与 ConfigError 口径",
+     "refs": ""
+    },
+    {
+     "sha": "bc637b954eb46defda95fcd5dac94616132f2ad9",
+     "at": "2026-09-05T06:47:13+00:00",
+     "authored": "2026-09-05T06:47:13+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-4 证据源配置 schema＋shell provider＋配置模板＋单测（wt/17-S-4 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "d8a7cb9673e5672ce411e4ac4ff3e55adb9d7f17",
+     "at": "2026-09-05T06:45:33+00:00",
+     "authored": "2026-09-05T06:45:33+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): 任务表 S-1 勾选；决策清单 C-6（#13 第 1 项改法）",
+     "refs": ""
+    },
+    {
+     "sha": "fd42fee9fbd9719f4d995b37d225e002a0bf279b",
+     "at": "2026-09-05T06:45:32+00:00",
+     "authored": "2026-09-05T06:45:32+00:00",
+     "author": "Claude",
+     "subject": "merge(#17): S-1 #13 小修包七项＋CODEOWNERS＋CHANGELOG 出处（wt/17-S-1 → batch/17-board）",
+     "refs": ""
+    },
+    {
+     "sha": "5cbe609423a0ff457a61135a0e4d369183119f11",
+     "at": "2026-09-05T06:45:25+00:00",
+     "authored": "2026-09-05T06:45:25+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): W0-2 简易版真实快照原型——#606 数据一帧 150×52、四档边框样张、合成档位帧（原型与快照均非交付物）",
+     "refs": "wt/17-W0-2"
+    },
+    {
+     "sha": "77ac896d832b43848cfb2a96cafa78cde9fbaf90",
+     "at": "2026-09-05T06:44:53+00:00",
+     "authored": "2026-09-05T06:44:53+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-4 healthy 计数改精确匹配 (healthy)，unhealthy 不计（模板 + 单测）",
+     "refs": ""
+    },
+    {
+     "sha": "e517d8e218d4ee39fd38d5640794017875fd3d7b",
+     "at": "2026-09-05T06:44:13+00:00",
+     "authored": "2026-09-05T06:44:13+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): S-4 证据源配置 schema 定稿 + 通用 shell provider + 阶段比对 + 配置模板 + 单测",
+     "refs": ""
+    },
+    {
+     "sha": "e2bf520caa017ed7165c616e13fbbd833611ab0d",
+     "at": "2026-09-05T06:43:08+00:00",
+     "authored": "2026-09-05T06:43:08+00:00",
+     "author": "Claude",
+     "subject": "fix(kit): #13 第 1 项改法调整——触发条件搬进 kickoff skill，合同模板只留一行指针",
+     "refs": ""
+    },
+    {
+     "sha": "91905dc235a88a3b410648b9fbd5fd0ded851e16",
+     "at": "2026-09-05T06:39:21+00:00",
+     "authored": "2026-09-05T06:39:21+00:00",
+     "author": "Claude",
+     "subject": "fix(kit): #13 小修包七项——合同 §八表条件触发、kickoff 不编建议值、任务表只改状态位、审查刹车句、合同路径 CODEOWNERS",
+     "refs": ""
+    },
+    {
+     "sha": "3530c71c50e2d546fb59e0f91f9663de32790987",
+     "at": "2026-09-05T06:34:32+00:00",
+     "authored": "2026-09-05T06:34:32+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): 任务表 W0-1 勾选、W1 派发登记；决策清单现场裁定 C-1…C-5",
+     "refs": ""
+    },
+    {
+     "sha": "ac1c6206d01895cb745dedd6029b2db455896ab8",
+     "at": "2026-09-05T06:25:37+00:00",
+     "authored": "2026-09-05T06:25:37+00:00",
+     "author": "Claude",
+     "subject": "docs(#17): 接口约定补铁律 6——引擎对目标仓库只读（不 fetch）",
+     "refs": ""
+    },
+    {
+     "sha": "df2110197d6b46b84fc84ad0218c144ea189ea67",
+     "at": "2026-09-05T06:23:28+00:00",
+     "authored": "2026-09-05T06:23:28+00:00",
+     "author": "Claude",
+     "subject": "feat(#17): 看板引擎接口约定与代码骨架（数据模型 / 登记表种子 / CLI / 模块桩），并行施工共同基线（W0-1）",
+     "refs": ""
+    },
+    {
+     "sha": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "at": "2026-09-05T06:07:10+00:00",
+     "authored": "2026-09-05T06:07:10+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "docs(#17): 看板 v1 三件套 v1——模块化简易版＋边框轮数＋只认结构化证据 → v0.2.0，lingxi #606 真实试穿（合并即批准）(#18)",
+     "refs": "origin/main, origin/HEAD, main"
+    },
+    {
+     "sha": "f3d9e934e2f29f8b0d9eecd0ee559dbcc30c97ec",
+     "at": "2026-09-02T16:35:35+00:00",
+     "authored": "2026-09-02T16:35:35+00:00",
+     "author": "Claude",
+     "subject": "docs(#15): 三件套入库——看板 v0（tmux TUI）+ v0.1.x 小修包 → v0.2.0（合同 v1，由产品负责人合并即批准）",
+     "refs": "origin/trace/15-kickoff, trace/15-kickoff"
+    },
+    {
+     "sha": "4844b5da60c7bd126657ca8259a6af6687b80ade",
+     "at": "2026-09-02T16:25:34+00:00",
+     "authored": "2026-09-02T16:25:34+00:00",
+     "author": "Claude",
+     "subject": "docs(sample): 看板 TUI 样稿 v3（#12 视觉与交互基准；内嵌三组用例，不读仓库）",
+     "refs": "origin/sample/board-v0, sample/board-v0"
+    },
+    {
+     "sha": "57e87cb0abe7bd78ea8204f71d48765c6b1b5f03",
+     "at": "2026-09-02T14:50:39+00:00",
+     "authored": "2026-09-02T14:50:39+00:00",
+     "author": "Claude",
+     "subject": "docs(sample): 撤下 githack 用的副本，只留 Pages 的 docs/index.html",
+     "refs": ""
+    },
+    {
+     "sha": "c67a9f314c6cd3de58d5ee8e0921ac1a846fbcaf",
+     "at": "2026-09-02T14:46:28+00:00",
+     "authored": "2026-09-02T14:46:28+00:00",
+     "author": "Claude",
+     "subject": "docs(sample): Pages 试看——docs/index.html 与 .nojekyll（临时分支）",
+     "refs": ""
+    },
+    {
+     "sha": "94a032b35e23a40d3107549807e7098d4be0ea51",
+     "at": "2026-09-02T14:32:56+00:00",
+     "authored": "2026-09-02T14:32:56+00:00",
+     "author": "Claude",
+     "subject": "docs(sample): 看板样稿 HTML（#12 讨论用，临时分支，不合 main）",
+     "refs": ""
+    },
+    {
+     "sha": "300ded88af6b745f2ca05595674b2eba3beaead4",
+     "at": "2026-09-02T09:54:16+00:00",
+     "authored": "2026-09-02T09:54:16+00:00",
+     "author": "Claude",
+     "subject": "docs(kit): README 改写为完整使用指南（读者角色 / Trace 生命周期 / 目录导览 / 门禁与 CI / 部署 / 修改准入 / 已知边界 / 常见坑）；任务表追加 S-7",
+     "refs": ""
+    },
+    {
+     "sha": "5d3f54eebdc94f1cd6a7d2f5ed391708a0dfdea4",
+     "at": "2026-09-02T09:09:42+00:00",
+     "authored": "2026-09-02T09:09:42+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-6b 勾选（收口评论与残留盘点）",
+     "refs": ""
+    },
+    {
+     "sha": "2d1bdaadaea740875b7b01937621d446b412d296",
+     "at": "2026-09-02T09:08:06+00:00",
+     "authored": "2026-09-02T09:08:06+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-6a 勾选、验收发布行回填（tag v0.1.0 → 47aaef5）",
+     "refs": ""
+    },
+    {
+     "sha": "47aaef5b287d630775cfc87847c60448e94623d1",
+     "at": "2026-09-02T09:07:25+00:00",
+     "authored": "2026-09-02T09:07:25+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "docs(kit): v0.1.0 收口——远端安装已验证、复核 N1–N3、三件套回写（#1 S-6a）(#10)",
+     "refs": "tag: v0.1.0"
+    },
+    {
+     "sha": "b5bb4043cc67ff2aec2ce29b414d757d7369f231",
+     "at": "2026-09-02T08:52:08+00:00",
+     "authored": "2026-09-02T08:52:08+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "fix(kit): 审查修复包 + 发布文档定稿（#1 S-5 / S-6a）(#9)",
+     "refs": ""
+    },
+    {
+     "sha": "dd53ecfe86cc4d0c58ee676e8048ec1755ec6963",
+     "at": "2026-09-02T08:26:47+00:00",
+     "authored": "2026-09-02T08:26:47+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "feat(kit): 套件集成——init.sh、自检脚本、kit-selfcheck、自回灌报告与验收现值（#1 S-3/S-4）(#8)",
+     "refs": ""
+    },
+    {
+     "sha": "b2ddefb79161b0094adc4ff345253ee6f9bfe9f5",
+     "at": "2026-09-02T08:16:13+00:00",
+     "authored": "2026-09-02T08:16:13+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-2c / S-2d 勾选",
+     "refs": ""
+    },
+    {
+     "sha": "c871cd3efcfa16f84899bcdef0d7a2f547f734ab",
+     "at": "2026-09-02T08:15:33+00:00",
+     "authored": "2026-09-02T08:15:33+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "feat(kit): template/deploy 骨架、部署契约检查与监控告警（#1 S-2d）(#7)",
+     "refs": ""
+    },
+    {
+     "sha": "9fa254842b5a664006ddc7d3ee868788496f8f89",
+     "at": "2026-09-02T08:15:27+00:00",
+     "authored": "2026-09-02T08:15:27+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "feat(kit): template/ 分层 CI、通用检查、check.sh 与 app 骨架（#1 S-2c）(#6)",
+     "refs": ""
+    },
+    {
+     "sha": "3ff5dfd5350843dda38cd790f72d642d8635bbd0",
+     "at": "2026-09-02T07:48:45+00:00",
+     "authored": "2026-09-02T07:48:45+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-2b 勾选；模型配比按恢复指令改实施 opus high",
+     "refs": ""
+    },
+    {
+     "sha": "fd043329affd6202cc27ce893ecc51dcad71097a",
+     "at": "2026-09-02T07:47:00+00:00",
+     "authored": "2026-09-02T07:47:00+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "feat(kit): template/ 文档与 GitHub 约定（#1 S-2b）(#5)",
+     "refs": ""
+    },
+    {
+     "sha": "5693980ea1dc4e0d1e7dccf19f0da178b43d9a4a",
+     "at": "2026-09-02T04:07:58+00:00",
+     "authored": "2026-09-02T04:07:58+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表登记 PM 暂停指令（04:1x UTC）",
+     "refs": ""
+    },
+    {
+     "sha": "218391080ebd8da44942dd2698b09a3653c59fc2",
+     "at": "2026-09-02T02:48:20+00:00",
+     "authored": "2026-09-02T02:48:20+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-2e 勾选",
+     "refs": ""
+    },
+    {
+     "sha": "630b2d8d4b8171ec49d67be03f713995a60d3b62",
+     "at": "2026-09-02T02:48:17+00:00",
+     "authored": "2026-09-02T02:48:17+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "docs(kit): examples/lingxi G3 示例清单（#1 S-2e）(#4)",
+     "refs": ""
+    },
+    {
+     "sha": "77dd19125e2da48122e9732aff5a5fce0ad08c19",
+     "at": "2026-09-02T02:47:33+00:00",
+     "authored": "2026-09-02T02:47:33+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-2a 勾选",
+     "refs": ""
+    },
+    {
+     "sha": "f65c250f004e29aa67b82a0c1cf5254339d597e7",
+     "at": "2026-09-02T02:47:12+00:00",
+     "authored": "2026-09-02T02:47:12+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "feat(kit): plugin/ 五 skill + 三件套模板 + 插件与市场清单（#1 S-2a）(#3)",
+     "refs": ""
+    },
+    {
+     "sha": "88646b911a763a13efa312f18d1a0ce84e396fb6",
+     "at": "2026-09-02T02:38:38+00:00",
+     "authored": "2026-09-02T02:38:38+00:00",
+     "author": "Claude",
+     "subject": "docs(#1): 任务表 S-1 勾选，W1 派发登记",
+     "refs": ""
+    },
+    {
+     "sha": "8b27e687b2c5a7fc80e5226ed28313f56c75329b",
+     "at": "2026-09-02T02:30:07+00:00",
+     "authored": "2026-09-02T02:30:07+00:00",
+     "author": "moshui-claude-code-tz[bot]",
+     "subject": "docs(#1): 三件套 + METHOD.md v16 入库（合同 v1）(#2)",
+     "refs": ""
+    },
+    {
+     "sha": "b742fd8d9c5f32db94a906119efc71334105d9c1",
+     "at": "2026-09-02T10:13:15+08:00",
+     "authored": "2026-09-02T10:13:15+08:00",
+     "author": "Moshuiwang",
+     "subject": "Initial commit",
+     "refs": ""
+    }
+   ],
+   "error": "",
+   "cmd": "git log --all --date=iso-strict --max-count=5000 --format=%H\u001f%cd\u001f%ad\u001f%an\u001f%s\u001f%D",
+   "fetched_at": "2026-09-05T07:32:52.701887+00:00",
+   "grade": "measured"
+  },
+  "git.worktrees": {
+   "key": "git.worktrees",
+   "ok": true,
+   "value": [
+    {
+     "name": "trace-kit",
+     "head": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "branch": "batch/17-board",
+     "main": true,
+     "last_at": "2026-09-05T07:30:53+00:00",
+     "last_subject": "feat(#17): 集成——SKILL.md 登记表节按 r2 重生成、冻结任务表夹具去相对链接；任务表 S-2 勾选",
+     "ahead": null,
+     "dirty": 0,
+     "files": [],
+     "error": ""
+    },
+    {
+     "name": "S-5",
+     "head": "49ddfd29b6153d16fc3217aefd1e5fbc000a6548",
+     "branch": "wt/17-S-5",
+     "main": false,
+     "last_at": "2026-09-05T07:30:53+00:00",
+     "last_subject": "feat(#17): 集成——SKILL.md 登记表节按 r2 重生成、冻结任务表夹具去相对链接；任务表 S-2 勾选",
+     "ahead": null,
+     "dirty": 0,
+     "files": [],
+     "error": ""
+    },
+    {
+     "name": "sample-board",
+     "head": "4844b5da60c7bd126657ca8259a6af6687b80ade",
+     "branch": "sample/board-v0",
+     "main": false,
+     "last_at": "2026-09-02T16:25:34+00:00",
+     "last_subject": "docs(sample): 看板 TUI 样稿 v3（#12 视觉与交互基准；内嵌三组用例，不读仓库）",
+     "ahead": null,
+     "dirty": 0,
+     "files": [],
+     "error": ""
+    }
+   ],
+   "error": "",
+   "cmd": "git worktree list --porcelain ＋ 每个 worktree 的 log -1 / rev-list --count / status",
+   "fetched_at": "2026-09-05T07:32:55.697668+00:00",
+   "grade": "measured"
+  },
+  "gh.runs": {
+   "key": "gh.runs",
+   "ok": true,
+   "value": [
+    {
+     "id": 33948954203,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-05T06:07:13Z",
+     "updatedAt": "2026-09-05T06:07:38Z",
+     "headSha": "9d91a383f104b1e2d0c00af4fd50c4859dc23c5b",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33948954203"
+    },
+    {
+     "id": 33948917594,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-05T06:06:24Z",
+     "updatedAt": "2026-09-05T06:06:52Z",
+     "headSha": "3bcf438aff9de36258be8f6881fee269b779ff9d",
+     "headBranch": "trace/board-v1-kickoff",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33948917594"
+    },
+    {
+     "id": 33948846843,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "failure",
+     "status": "completed",
+     "createdAt": "2026-09-05T06:04:50Z",
+     "updatedAt": "2026-09-05T06:05:03Z",
+     "headSha": "8dcd3db8374e3bf1e3dccb1f09fec108a72631bf",
+     "headBranch": "trace/board-v1-kickoff",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33948846843"
+    },
+    {
+     "id": 33656182868,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T16:38:43Z",
+     "updatedAt": "2026-09-02T16:39:09Z",
+     "headSha": "f3d9e934e2f29f8b0d9eecd0ee559dbcc30c97ec",
+     "headBranch": "trace/15-kickoff",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33656182868"
+    },
+    {
+     "id": 33654848727,
+     "name": "pages build and deployment",
+     "workflowName": "pages-build-deployment",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T16:25:44Z",
+     "updatedAt": "2026-09-02T16:26:09Z",
+     "headSha": "4844b5da60c7bd126657ca8259a6af6687b80ade",
+     "headBranch": "sample/board-v0",
+     "event": "dynamic",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33654848727"
+    },
+    {
+     "id": 33644718217,
+     "name": "pages build and deployment",
+     "workflowName": "pages-build-deployment",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T14:50:53Z",
+     "updatedAt": "2026-09-02T14:51:27Z",
+     "headSha": "57e87cb0abe7bd78ea8204f71d48765c6b1b5f03",
+     "headBranch": "sample/board-v0",
+     "event": "dynamic",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33644718217"
+    },
+    {
+     "id": 33644495976,
+     "name": "pages build and deployment",
+     "workflowName": "pages-build-deployment",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T14:48:50Z",
+     "updatedAt": "2026-09-02T14:49:26Z",
+     "headSha": "c67a9f314c6cd3de58d5ee8e0921ac1a846fbcaf",
+     "headBranch": "sample/board-v0",
+     "event": "dynamic",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33644495976"
+    },
+    {
+     "id": 33616647660,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T09:54:21Z",
+     "updatedAt": "2026-09-02T09:54:50Z",
+     "headSha": "300ded88af6b745f2ca05595674b2eba3beaead4",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33616647660"
+    },
+    {
+     "id": 33612598823,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T09:09:47Z",
+     "updatedAt": "2026-09-02T09:10:11Z",
+     "headSha": "5d3f54eebdc94f1cd6a7d2f5ed391708a0dfdea4",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33612598823"
+    },
+    {
+     "id": 33612456069,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T09:08:10Z",
+     "updatedAt": "2026-09-02T09:08:37Z",
+     "headSha": "2d1bdaadaea740875b7b01937621d446b412d296",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33612456069"
+    },
+    {
+     "id": 33612393697,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T09:07:29Z",
+     "updatedAt": "2026-09-02T09:07:55Z",
+     "headSha": "47aaef5b287d630775cfc87847c60448e94623d1",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33612393697"
+    },
+    {
+     "id": 33612304748,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T09:06:32Z",
+     "updatedAt": "2026-09-02T09:07:02Z",
+     "headSha": "cc26b30bb503f7457f823d03bb7a7e48b4ec505c",
+     "headBranch": "kit/v0.1.0",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33612304748"
+    },
+    {
+     "id": 33611019923,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T08:52:11Z",
+     "updatedAt": "2026-09-02T08:52:37Z",
+     "headSha": "b5bb4043cc67ff2aec2ce29b414d757d7369f231",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33611019923"
+    },
+    {
+     "id": 33610951969,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T08:51:26Z",
+     "updatedAt": "2026-09-02T08:51:52Z",
+     "headSha": "a1becbd8c6a0dba639dc0c956dd3bb6ff5b11e1b",
+     "headBranch": "kit/release",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33610951969"
+    },
+    {
+     "id": 33608749746,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T08:26:51Z",
+     "updatedAt": "2026-09-02T08:27:17Z",
+     "headSha": "dd53ecfe86cc4d0c58ee676e8048ec1755ec6963",
+     "headBranch": "main",
+     "event": "push",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33608749746"
+    },
+    {
+     "id": 33608640660,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-02T08:25:36Z",
+     "updatedAt": "2026-09-02T08:26:05Z",
+     "headSha": "8c58a76d02e8614ed1e9103aaa5835cdc72995f3",
+     "headBranch": "kit/integration",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33608640660"
+    },
+    {
+     "id": 33608531890,
+     "name": "kit-selfcheck",
+     "workflowName": "kit-selfcheck",
+     "conclusion": "failure",
+     "status": "completed",
+     "createdAt": "2026-09-02T08:24:25Z",
+     "updatedAt": "2026-09-02T08:24:41Z",
+     "headSha": "170e3b8983dd0c1867060c6aecde972d0eff7e81",
+     "headBranch": "kit/integration",
+     "event": "pull_request",
+     "url": "https://github.com/Moshuiwang/trace-kit/actions/runs/33608531890"
+    }
+   ],
+   "error": "",
+   "cmd": "gh run list -R Moshuiwang/trace-kit --limit 100 --json databaseId,name,workflowName,conclusion,status,createdAt,updatedAt,headSha,headBranch,event,url",
+   "fetched_at": "2026-09-05T07:32:58.078249+00:00",
+   "grade": "measured"
+  }
+ },
+ "config": {
+  "repo_slug": "",
+  "trace_branch": "",
+  "tmux_configured": false,
+  "window_pattern": "",
+  "release_workflow": "",
+  "stages": [],
+  "budgets": [],
+  "evidence": []
+ }
+}
