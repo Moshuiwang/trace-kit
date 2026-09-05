@@ -225,6 +225,8 @@ class ProviderTests(unittest.TestCase):
 
     def test_parse_regex(self):
         r = self.run_cmd("printf 'registry/app:20260101-abc\\nother:x\\n'", "regex:(?m)^\\S+:([^:\\s]+)$")
+        self.assertEqual((r.ok, r.value), (True, ["20260101-abc", "x"]))       # G-2：两行两个值 → 集合
+        r = self.run_cmd("printf 'registry/app:20260101-abc\\n'", "regex:(?m)^\\S+:([^:\\s]+)$")
         self.assertEqual((r.ok, r.value), (True, "20260101-abc"))
         r = self.run_cmd("printf 'tag=v9\\n'", "regex:v[0-9]+")
         self.assertEqual((r.ok, r.value), (True, "v9"))
@@ -250,6 +252,18 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual((r.ok, r.value), (True, 0))
         r = self.run_cmd("printf 'Up 2h (healthy)\\nUp 1h (unhealthy)\\nUp 1m (health: starting)\\n'", r"count:\(healthy\)")
         self.assertEqual((r.ok, r.value), (True, 1), "unhealthy 不得计入 healthy")
+
+    def test_g2_regex_multiline_set(self):
+        rule = "regex:(?m)^\\S+:([^:\\s]+)$"
+        self.assertEqual(cfg.parse_output(rule, "a:t1\nb:t1\nc:t1\n"), "t1")            # 三行同 tag → 该值
+        self.assertEqual(cfg.parse_output(rule, "a:t1\nb:t2\nc:t1\n"), ["t1", "t2"])    # 两种 tag → 去重集合（保序）
+        self.assertEqual(cfg.parse_output("count:t1", "a:t1\nb:t1\nc:t2\n"), 2)         # count 不受影响
+        r = self.run_cmd("printf 'x:t1\\ny:t1\\n'", rule)
+        self.assertEqual((r.ok, r.value), (True, "t1"))
+        r = self.run_cmd("printf 'x:t1\\ny:t2\\n'", rule)
+        self.assertEqual((r.ok, r.value), (True, ["t1", "t2"]))
+        v = cfg.compare_tag("t1", r)
+        self.assertEqual((v.available, getattr(v, "note", "")), (False, "多值不一致：t1, t2"))
 
     def test_parse_int_failure(self):
         r = self.run_cmd("printf 'abc\\n'", "int")
@@ -350,13 +364,29 @@ class CompareTagTests(unittest.TestCase):
     def test_unavailable_when_published_unknown(self):
         self.assertFalse(cfg.compare_tag(None, self.result("x")).available)
         self.assertFalse(cfg.compare_tag("", self.result("x")).available)
-        self.assertFalse(cfg.compare_tag("x", self.result("")).available)
-        self.assertFalse(cfg.compare_tag("x", self.result([])).available)
         self.assertFalse(cfg.compare_tag("x", None).available)
 
-    def test_list_value_uses_first_and_strips(self):
-        self.assertTrue(cfg.compare_tag(" v1 ", self.result(["", "v1\n", "v2"])).value)
-        self.assertFalse(cfg.compare_tag("v1", self.result(["v2", "v1"])).value)
+    def test_g1_empty_output_means_no_container(self):
+        """账本 G-1：命令成功但输出为空（容器停着）→ False＋说明「无容器」，不是「未知」也不是普通「否」。"""
+        for res in (self.result(""), self.result([]), self.result("  \n"),
+                    ProviderResult("config.staging", False, None, "无输出", "cmd", None, Grade.MEASURED)):
+            v = cfg.compare_tag("v1", res)
+            self.assertEqual((v.value, v.available), (False, True), res)
+            self.assertEqual(getattr(v, "note", ""), "无容器")
+        v = cfg.compare_tag("v1", ProviderResult("config.staging", False, None, "解析失败（regex:x）", "cmd", None, Grade.MEASURED))
+        self.assertFalse(v.available)                                   # 非空但无匹配才是未知
+        self.assertEqual(getattr(v, "note", ""), "解析失败")
+        v = cfg.compare_tag("v1", ProviderResult("config.staging", False, None, "非零退出 255", "cmd", None, Grade.MEASURED))
+        self.assertFalse(v.available)
+        self.assertEqual(getattr(v, "note", ""), "非零退出 255")
+
+    def test_g2_multi_value_list(self):
+        """账本 G-2：多行取集合——全部相同才是值；不一致 → 未知（多值不一致：a, b）。"""
+        self.assertTrue(cfg.compare_tag(" v1 ", self.result(["", "v1\n", "v1"])).value)
+        v = cfg.compare_tag("v1", self.result(["v2", "v1"]))
+        self.assertFalse(v.available)
+        self.assertEqual(getattr(v, "note", ""), "多值不一致：v2, v1")
+        self.assertFalse(cfg.compare_tag("v1", self.result(["v2", "v2"])).value)
 
 
 if __name__ == "__main__":
