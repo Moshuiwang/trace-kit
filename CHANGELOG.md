@@ -47,9 +47,9 @@
 
 ### 体量核对（日落条款）
 
-- `template/` 受版本控制文件总字节数：410114 → 410114（本批未改）。`plugin/`：85355 → 86836（+1481）。`templates/合同.md`：6336 → **6137（−199）**，满足 [#13](https://github.com/Moshuiwang/trace-kit/issues/13) 关卡 5「小于 6336B」。
+- 小修包自身增量：`plugin/` +1481B（S-1 七项文案；触发条件五条搬进 kickoff skill 后合同模板 6336 → 6137B，−199）；`template/` 本批未改。总量口径统一见下方「看板批体量」行（同一基线 v0.1.0 发布态）。
 - **`plugin/` 体量增加的理由**（日落条款要求写明）：净减的对象是**每个 Trace 的产出物**（合同模板 −199B，且命中不了触发条件的 Trace 不再出现 §八空表，Trace #1 实测零表格），代价是判据与新增的一句话级条款留在 `plugin/` 内的 skill 侧：`skills/kickoff` +817B（触发条件小节 + 不编建议值 + 依赖自检）、`skills/dispatch-card` +318B（刹车句带内外双出处）、`templates/派发卡.md` +132B、`templates/任务表.md` +108B、`README.md` +305B（CODEOWNERS 一行）。这几项都是被 [#13](https://github.com/Moshuiwang/trace-kit/issues/13) 逐条点名、且各自带出处的条款，无可删的等量候选，故按日落条款「除非 CHANGELOG 写明理由」记账通过。
-- **看板批（v0.2.0）体量**：`plugin/` 受版本控制文件总字节数 33811（v0.1.0 发布态，main `9d91a38`）→ **228740（+194929）**——其中引擎代码 177920B（91%）、`skills/board/SKILL.md` 10456B、`templates/board.toml` 3553B，其余为三句可选条款与两张表的一行。统计**不含** 8 个曾误随骨架提交的 `plugin/scripts/boardlib/__pycache__/*.pyc`（28783B，构建产物；集成时已从仓库移除并加根 `.gitignore`）。`template/` 410114 → **411319（+1205）**，只有 `docs/traces/README.md` 的看板段。
+- **看板批（v0.2.0）体量**：`plugin/` 受版本控制文件总字节数 33811（v0.1.0 发布态）→ **299976（+266165）**——其中引擎代码 `plugin/scripts/` 247641B（83%）、`skills/board/SKILL.md` 11971B、`templates/board.toml` 3553B，其余为三句可选条款与两张表的一行；数字按修复包合入后的最终候选重算（审① P2-3 指出 S-6 时的数字失实）。`template/` 410114 → **411319（+1205）**，只有 `docs/traces/README.md` 的看板段。
 - **`plugin/` 体量大幅增加的理由**（日落条款要求写明）：增量的 91% 是 `scripts/board.py` ＋ `scripts/boardlib/` 九个模块的**可执行引擎代码**，不是方法条款——它替代的是原先只活在一台机器上、未入库、硬依赖另一仓工作树的临时脚本（[lingxi #582](https://github.com/Moshuiwang/lingxi/issues/582)：换机器即失效、上游一改就崩、无版本无回滚、数据层无断言）。产品负责人 2026-09-05 裁定「同意进入 trace-kit」，代码的家定在本仓；对采用套件的项目而言新增负担只有**一份可选的 `docs/traces/board.toml`**（不写也能跑，项目专属证据显示「未配置」）。方法条款侧的净增只有三句（任务表标签块、dispatch-card / handoff 各一句可选留痕），且都可退场。故按日落条款「除非 CHANGELOG 写明理由」记账通过。
 - 看板批的下一版日落候选：`--record` 与 `complex` 视图若在两个真实 Trace 里一次都没被用到，下一版删除；`plugin/templates/board.toml` 若第一个采用项目一节都没填，收敛为 skill 里的一段示例。
 - 下一版日落候选：`templates/任务表.md` 的「只改状态位」句（外部出处、零内部实证，见上）；若「§八各表的触发条件」小节在两个真实 Trace 里一次都没被用来判定，整节删除，合同区那行也一并去掉。
