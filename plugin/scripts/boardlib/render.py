@@ -54,13 +54,34 @@ GAP = 2                   # 同层节点间距
 SIMPLE_BOX_MAX, COMPLEX_BOX_MAX, BOX_MIN = 60, 34, 20
 CHIP_MIN, CHIP_MAX = 10, 46
 MARK_RE = re.compile(r"\d+[实报推]|未知")
+MIN_W, MIN_H = 20, 12                 # 小于此尺寸只显示单行「窗口过小」（账本 R2-13）
+UNKNOWN_BORDER = "┌┄┐┆└┘"             # 轮数不可得：细虚线档（账本 R1-16；不改 Tier 枚举）
+_SEQ_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]|\x9b[0-?]*[ -/]*[@-~]|\x1b[\]P_^X][^\x07\x1b]*(?:\x07|\x1b\\\\)?")
+_NL_RE = re.compile(r"\r\n|[\r\n\t\u2028\u2029]")
+_CTRL_RE = re.compile(r"[\x00-\x1f\x7f-\x9f]")
 
 
 # ---------- 显示宽度 ----------
 def cw(ch: str) -> int:
-    if unicodedata.combining(ch) or ch == "\ufe0f":
+    if unicodedata.combining(ch) or unicodedata.category(ch) in ("Mn", "Me", "Cf"):
         return 0
     return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+
+
+def clean(s) -> str:
+    """渲染边界净化外部字符串（账本 R2-3 / R2-10）：整段 CSI / OSC / DCS 序列与残余 ESC / C0 / C1 删除，
+    换行 / 制表 → 空格，NFC 规范化。任务表、评论、命令输出都可能来自不可信来源。"""
+    if s is None:
+        return ""
+    if not isinstance(s, str):
+        s = str(s)
+    if not s.isprintable():
+        s = _SEQ_RE.sub("", s)
+        s = _NL_RE.sub(" ", s)
+        s = _CTRL_RE.sub("", s)
+    if not unicodedata.is_normalized("NFC", s):
+        s = unicodedata.normalize("NFC", s)
+    return s
 
 
 def dw(s: str) -> int:
@@ -83,6 +104,21 @@ def fit(s: str, n: int) -> str:
 
 def pad(s: str, n: int) -> str:
     return s + " " * max(0, n - dw(s))
+
+
+def fit_mark(s: str, n: int) -> str:
+    """头部行专用：超宽时行尾加 `…(+N)`（N＝被隐藏的字符数），绝不静默截断（账本 K-4）。"""
+    if dw(s) <= n:
+        return s
+    widths, acc = [], 0
+    for c in s:
+        acc += cw(c)
+        widths.append(acc)
+    for cut in range(len(s) - 1, -1, -1):
+        suffix = "…(+%d)" % (len(s) - cut)
+        if (widths[cut - 1] if cut else 0) + dw(suffix) <= n:
+            return s[:cut] + suffix
+    return fit("…(+%d)" % len(s), n)
 
 
 def wrap2(s: str, n: int) -> list[str]:
@@ -116,11 +152,15 @@ class Canvas:
     def put(self, x, y, s, color=None, bold=False, italic=False):
         if y < 0 or y >= self.h or not s:
             return
+        s = clean(s)
         st = (color, bold, italic)
         row = self.cells[y]
+        last = None
         for c in s:
             k = cw(c)
-            if k == 0:
+            if k == 0:                              # 零宽码点附着到前一格（账本 R2-10）
+                if last is not None:
+                    row[last] = (row[last][0] + c, row[last][1])
                 continue
             if x >= self.w:
                 break
@@ -130,6 +170,7 @@ class Canvas:
                 elif x + 1 < self.w and row[x + 1][0] == "" and row[x][0] != "":   # 覆盖了宽字符的左半：清掉右半
                     row[x + 1] = (" ", None)
                 row[x] = (c, st)
+                last = x
                 if k == 2:
                     if x + 1 < self.w:
                         if x + 2 < self.w and row[x + 2][0] == "" and row[x + 1][0] != "":
@@ -538,11 +579,23 @@ def _free_col(want, taken, used, W):
 
 
 # ---------- 画节点 ----------
-def _title_row(cv, x, y, w, tl, hz, tr, left_text, tag, dur, col, bold, dur_color, anim_border):
-    """卡片标题行：`tl hz 文字 [tag] hz…hz dur hz tr`；返回 (tag 单元格集合, dur 单元格集合)。"""
+def _title_row(cv, x, y, w, tl, hz, tr, left_text, tag, dur, col, bold, dur_color, anim_border, suffix="", tag_style=None):
+    """卡片标题行：`tl hz 文字[suffix] [tag] hz…hz dur hz tr`；返回 (tag 单元格集合, dur 单元格集合)。
+    suffix（dump 状态词）是不可裁固定后缀（账本 R2-11）：放不下先压缩时长两侧空格，再裁 left_text，最后才碰 suffix。"""
+    tag_style = tag_style or (HOT, True, False)
+    tagw = dw(tag) + 1 if tag else 0
     right = (" " + dur + " " + hz + tr) if dur else tr
-    fixed = dw(tl + hz + " ") + dw(" ") + dw(right) + (dw(tag) + 1 if tag else 0)
-    left_text = fit(left_text, max(0, w - fixed))
+    room = w - 4 - dw(right) - tagw
+    tight = False
+    if suffix and dur and dw(left_text) + dw(suffix) > room:
+        right, tight = dur + tr, True
+        room = w - 4 - dw(right) - tagw
+    if suffix:
+        if dw(suffix) > room:
+            suffix = fit(suffix, max(0, room))
+        left_text = fit(left_text, max(0, room - dw(suffix))) + suffix
+    else:
+        left_text = fit(left_text, max(0, room))
     cx = x
     cv.put(cx, y, tl + hz + " ", col, bold)
     cx += 3
@@ -551,7 +604,7 @@ def _title_row(cv, x, y, w, tl, hz, tr, left_text, tag, dur, col, bold, dur_colo
     tag_cells = set()
     if tag:
         cv.put(cx, y, " ", col)
-        cv.put(cx + 1, y, tag, HOT, True)
+        cv.put(cx + 1, y, tag, *tag_style)
         tag_cells = set(range(cx + 1, cx + 1 + dw(tag)))
         cx += 1 + dw(tag)
     cv.put(cx, y, " ", col)
@@ -559,7 +612,11 @@ def _title_row(cv, x, y, w, tl, hz, tr, left_text, tag, dur, col, bold, dur_colo
     rx = x + w - dw(right)
     cv.put(cx, y, hz * max(0, rx - cx), col, bold)
     dur_cells = set()
-    if dur:
+    if dur and tight:
+        cv.put(rx, y, dur, dur_color, bold)
+        dur_cells = set(range(rx, rx + dw(dur)))
+        cv.put(rx + dw(dur), y, tr, col, bold)
+    elif dur:
         cv.put(rx, y, " ", col)
         cv.put(rx + 1, y, dur, dur_color, bold)
         dur_cells = set(range(rx + 1, rx + 1 + dw(dur)))
@@ -595,14 +652,14 @@ def _text_style(status):
 
 
 def _head(text, status, plain, room=None, short=None):
-    """标题行文字：dump（plain）追加「 · 状态词」，TUI 不加（颜色即状态）。
-    room 为标题可用列数：带状态词放不下时先退到 short（如去掉类型词的编号），再由 _title_row 裁。"""
+    """标题行文字 → (前缀, 后缀)：dump（plain）后缀为「 · 状态词」（不可裁），TUI 后缀为空（颜色即状态）。
+    room 为标题可用列数：带状态词放不下时前缀先退到 short（如去掉类型词的编号），再由 _title_row 压缩时长 / 裁前缀。"""
     if not plain:
-        return text
-    full = "%s · %s" % (text, STATUS_LABEL[status])
-    if room is not None and short is not None and dw(full) > room:
-        return "%s · %s" % (short, STATUS_LABEL[status])
-    return full
+        return text, ""
+    suffix = " · " + STATUS_LABEL[status]
+    if room is not None and short is not None and dw(text) + dw(suffix) > room:
+        return short, suffix
+    return text, suffix
 
 
 def _title_room(w, dur, tag=""):
@@ -613,17 +670,22 @@ def _title_room(w, dur, tag=""):
 def draw_module(cv, x, y, w, mv, anim, plain=False):
     st, tier = mv.status, mv.tier
     col = C[st]
-    tl, hz, tr, vt, bl, br = BORDER[tier]
+    unknown_rounds = not getattr(mv.rounds.review, "available", True)
+    tl, hz, tr, vt, bl, br = UNKNOWN_BORDER if unknown_rounds else BORDER[tier]
     bold = st in BOLD_STATUS
-    tag = ("⟲%s" % _review_n(mv)) if tier == Tier.MORE else ""
+    if unknown_rounds:
+        tag, tag_style = "审 未知", (UNKNOWN_COLOR, False, True)
+    else:
+        tag, tag_style = (("⟲%s" % _review_n(mv)) if tier == Tier.MORE else ""), None
     dur = dur_text(mv.actual_min, mv.elapsed_min, mv.est_min, st)
     dur_color = 250 if (st in ANIM or st == Status.STALLED) else DIM
     border_top = [] if st in ANIM else None
-    name = short_title(mv.section.title)
-    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, _head(name, st, plain, _title_room(w, dur, tag), name), tag, dur, col, bold, dur_color, border_top)
+    name = clean(short_title(mv.section.title))
+    prefix, suffix = _head(name, st, plain, _title_room(w, dur, tag), name)
+    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, prefix, tag, dur, col, bold, dur_color, border_top, suffix=suffix, tag_style=tag_style)
     tcol, ital = _text_style(st)
     inner = w - 4
-    lines = (mv.what or "", mv.rounds_line or rounds_text(mv.rounds), mv.evidence_line or "")
+    lines = tuple(clean(t) for t in (mv.what or "", mv.rounds_line or rounds_text(mv.rounds), mv.evidence_line or ""))
     for k, line in enumerate(lines, 1):
         cv.put(x, y + k, vt, col)
         cv.put(x + 1, y + k, " " * (w - 2), None)
@@ -653,14 +715,16 @@ def draw_step(cv, x, y, w, sv, anim, plain=False, section_names=None):
     tl, hz, tr, vt, bl, br = BORDER[Tier.NONE]
     bold = st in BOLD_STATUS
     step = sv.step
-    head = "%s %s" % (step.id, TYPE.get(getattr(step.type, "value", str(step.type)), ""))
+    sid = clean(step.id)
+    head = "%s %s" % (sid, TYPE.get(getattr(step.type, "value", str(step.type)), ""))
     dur = dur_text(sv.actual_min, sv.elapsed_min, sv.est_min, st)
     dur_color = 250 if (st in ANIM or st == Status.STALLED) else DIM
     border_top = [] if st in ANIM else None
-    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, _head(head, st, plain, _title_room(w, dur), step.id), "", dur, col, bold, dur_color, border_top)
+    prefix, suffix = _head(head, st, plain, _title_room(w, dur), sid)
+    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, prefix, "", dur, col, bold, dur_color, border_top, suffix=suffix)
     tcol, ital = _text_style(st)
     inner = w - 4
-    t1, t2 = wrap2(step.title, inner)
+    t1, t2 = wrap2(clean(step.title), inner)
     for k, line in ((1, t1), (2, t2)):
         cv.put(x, y + k, vt, col)
         cv.put(x + 1, y + k, " " * (w - 2), None)
@@ -669,15 +733,13 @@ def draw_step(cv, x, y, w, sv, anim, plain=False, section_names=None):
     cv.put(x, y + 3, vt, col)
     cv.put(x + 1, y + 3, " " * (w - 2), None)
     sec = (section_names or {}).get(getattr(step, "section", None), "")
-    sub = " · ".join(s for s in (sec, pointer_summary(step)) if s)
+    sub = clean(" · ".join(s for s in (sec, pointer_summary(step)) if s))
     cx = x + 2
+    if sv.rework:                                   # 账本 K-5：短形放行首，卡再窄也不被裁
+        cv.put(cx, y + 3, "↺重审", HOT)
+        cx += dw("↺重审") + 1
     if sub:
-        sub = fit(sub, inner)
-        cv.put(cx, y + 3, sub, DIM)
-        cx += dw(sub)
-    if sv.rework:
-        mark = fit((" " if sub else "") + "↺重审来源", max(0, x + w - 2 - cx))
-        cv.put(cx, y + 3, mark, HOT)
+        cv.put(cx, y + 3, fit(sub, max(0, x + w - 2 - cx)), DIM)
     cv.put(x + w - 1, y + 3, vt, col)
     cv.put(x, y + 4, bl + hz * (w - 2) + br, col)
     if border_top is not None:
@@ -688,9 +750,10 @@ def draw_free(cv, x, y, w, node, plain=False):
     """任务表无法解析的行：灰色「? 自由文本」卡片，正文＝原文截 18 汉字（36 列），不连线。"""
     col = C[Status.TODO]
     tl, hz, tr, vt, bl, br = BORDER[Tier.NONE]
-    _title_row(cv, x, y, w, tl, hz, tr, _head("? 自由文本", Status.TODO, plain), "", "", col, False, DIM, None)
+    prefix, suffix = _head("? 自由文本", Status.TODO, plain, _title_room(w, ""), "?")
+    _title_row(cv, x, y, w, tl, hz, tr, prefix, "", "", col, False, DIM, None, suffix=suffix)
     inner = w - 4
-    t1, t2 = wrap2(fit(re.sub(r"^- \[[ xX]\]\s*", "", node["raw"].strip()), 36), inner)
+    t1, t2 = wrap2(fit(re.sub(r"^- \[[ xX]\]\s*", "", clean(node["raw"]).strip()), 36), inner)
     for k, line in ((1, t1), (2, t2)):
         cv.put(x, y + k, vt, col)
         cv.put(x + 1, y + k, " " * (w - 2), None)
@@ -765,6 +828,7 @@ def _legend_rows(W, view):
     for tier in Tier:
         tl, hz, tr = BORDER[tier][:3]
         segs.append((tl + hz + tr + ("⟲N " if tier == Tier.MORE else "") + TIER_LABEL[tier], INK, False))
+    segs.append((UNKNOWN_BORDER[:3] + "未知", UNKNOWN_COLOR, False))
     segs.append((("[ ]=机器证据 " if view == "complex" else "") + "连线=依赖", DIM, False))
     rows, cur, width = [], [], 0
     for seg in segs:
@@ -791,15 +855,21 @@ def _draw_legend(cv, rows, y0, anim):
             x += dw(text)
 
 
-def _draw_header(cv, board, view, W, scroll, limit, note):
+def _draw_header(cv, board, view, W, scroll, limit, note, extra=()):
     h = board.header
-    right = "更新 " + beijing(board.generated_at) + ("  " + note if note else "")
+    right = "更新 " + beijing(board.generated_at) + ("  " + clean(note) if note else "")
     cv.put(W - dw(right), 0, right, DIM)
-    title = fit("Trace 看板 · " + (h.title or ""), max(0, W - dw(right) - 1))
-    cv.put(0, 0, title, INK, True)
-    if h.warnings:
-        warn = fit("  ⚠ " + " · ".join(h.warnings), max(0, W - dw(right) - 1 - dw(title)))
-        cv.put(dw(title), 0, warn, WARN, True)
+    avail = max(0, W - dw(right) - 1)
+    title_full = "Trace 看板 · " + clean(h.title or "")
+    warns = [clean(w) for w in list(h.warnings) + list(extra) if w]
+    if warns:                                        # 账本 R2-6：告警先占位（至少半行），标题让位并带 …(+N)
+        warn_full = "⚠ " + " · ".join(warns)
+        warn_room = max(0, min(dw(warn_full), max(avail // 2, avail - dw(title_full) - 2)))
+        title = fit_mark(title_full, max(0, avail - warn_room - 2))
+        cv.put(0, 0, title, INK, True)
+        cv.put(dw(title) + 2, 0, fit_mark(warn_full, warn_room), WARN, True)
+    else:
+        cv.put(0, 0, fit_mark(title_full, avail), INK, True)
     y = 1
     for x in range(W):
         cv.put(x, y, "═", DIM)
@@ -818,34 +888,40 @@ def _draw_header(cv, board, view, W, scroll, limit, note):
     def kv(label, text, color=INK, bold=False, italic=False):
         nonlocal y
         cv.put(0, y, pad(label, 10), LABEL)
-        put_marked(cv, 10, y, fit(text or "", W - 10), color, bold, italic)
+        put_marked(cv, 10, y, fit_mark(clean(text or ""), W - 10), color, bold, italic)
         y += 1
 
     kv("阶段", h.stage)
     cv.put(0, y, pad("五级阶段", 10), LABEL)
-    parts = [(st.label + " ",) + stage_text(st) for st in h.stages]
+    parts = [(clean(st.label) + " ",) + stage_text(st) for st in h.stages]
     need = sum(dw(a) + dw(b) for a, b, _, _ in parts)
     sep = " · " if need + 3 * max(0, len(parts) - 1) + 10 <= W else " "
-    x = 10
-    for k, (seg, text, color, ital) in enumerate(parts):
-        if k:
-            cv.put(x, y, sep, DIM)
-            x += dw(sep)
-        cv.put(x, y, seg, INK)
-        x += dw(seg)
-        cv.put(x, y, text, color, False, ital)
-        x += dw(text)
+    if need + dw(sep) * max(0, len(parts) - 1) + 10 <= W:
+        x = 10
+        for k, (seg, text, color, ital) in enumerate(parts):
+            if k:
+                cv.put(x, y, sep, DIM)
+                x += dw(sep)
+            cv.put(x, y, seg, INK)
+            x += dw(seg)
+            cv.put(x, y, text, color, False, ital)
+            x += dw(text)
+    else:                                            # 连单空格分隔都放不下：退成纯文本行尾 …(+N)
+        put_marked(cv, 10, y, fit_mark(sep.join(a + b for a, b, _, _ in parts), W - 10), INK)
     if not h.stages:
         cv.put(10, y, "未知", UNKNOWN_COLOR, False, True)
     y += 1
-    block = h.block or ""
+    block = clean(h.block or "")
     kv("阻塞", block, RED if block and block not in ("无", "—", "-") else INK)
     kv("下一步", h.nxt, BLUE)
     cv.put(0, y, pad("预算", 10), LABEL)
     x = 10
-    for label, val, cap in h.budget:
-        text, color = budget_text(label, val, cap)
-        if x + dw(text) > W:
+    items = [budget_text(clean(label), val, cap) for label, val, cap in h.budget]
+    for k, (text, color) in enumerate(items):
+        rest = len(items) - k
+        reserve = (3 + dw("…(+%d 项)" % rest)) if rest > 1 else 0
+        if x + dw(text) + reserve > W:            # 账本 K-4：放不下的预算条以 …(+N 项) 提示，不静默丢
+            cv.put(x, y, fit("…(+%d 项)" % rest, max(0, W - x)), WARN)
             break
         x = put_marked(cv, x, y, text, color) + 3
     if not h.budget:
@@ -868,14 +944,19 @@ def _compose(board, view, W, H, scroll, phase, note, plain=False):
     """整帧画布：返回 (Canvas, anim, avail, scroll, limit)。plain=True 为 dump（标题行带状态词）。"""
     board.validate()
     view = _check_view(view)
-    W, H = max(20, int(W)), max(HEADER_ROWS + 2, int(H))
+    W, H = int(W), int(H)
+    if W < MIN_W or H < MIN_H:                       # 账本 R2-13：小窗口只给一行，不按放大的逻辑尺寸输出
+        cv = Canvas(max(1, W), max(1, H))
+        cv.put(0, 0, fit("窗口过小（需 ≥ %d×%d）" % (MIN_W, MIN_H), max(1, W)), WARN, True)
+        return cv, [], 1, 0, 0
     body, banim, body_h = draw_graph(board, view, W, plain)
     legend = _legend_rows(W, view)
     avail = max(1, H - HEADER_ROWS - len(legend))
     limit = max(0, body_h - avail)
     scroll = max(0, min(int(scroll), limit))
+    extra = ["简易版 %d 行超一屏" % limit] if (view == "simple" and limit > 0) else []   # 账本 R2-12
     cv = Canvas(W, H)
-    y0 = _draw_header(cv, board, view, W, scroll, limit, note)
+    y0 = _draw_header(cv, board, view, W, scroll, limit, note, extra)
     for i in range(avail):
         r = scroll + i
         if r < body.h:
@@ -920,10 +1001,13 @@ def why_table(board) -> str:
     for sv in board.steps:
         items.extend(sv.why)
     items.extend(board.why)
+    def cell(v):                                     # 账本 R2-3：评论来自任何 GitHub 用户，去控制字符、转义竖线
+        return clean(v).replace("|", "\\|")
+
     for w in items:
         ev = getattr(w.evidence, "value", w.evidence)
-        rows.append("%s | %s | %s | %s | %s | %s | %s" % (
-            w.subject, w.status, ev, w.source, w.value, beijing(w.at, "%Y-%m-%d %H:%M"), "是" if w.available else "否"))
+        rows.append(" | ".join(cell(v) for v in (w.subject, w.status, ev, w.source, w.value,
+                                                 beijing(w.at, "%Y-%m-%d %H:%M"), "是" if w.available else "否")))
     return "\n".join(r.rstrip() for r in rows) + "\n"
 
 
