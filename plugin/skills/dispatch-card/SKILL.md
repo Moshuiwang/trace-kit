@@ -49,3 +49,4 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 - 编排者先用 grep / git diff 自己坐实机械性与文档类发现（通常占一半以上），只把行为面 / 合同面的发现派对抗验证（https://github.com/Moshuiwang/lingxi/issues/203 期实测省约 85%）。
 - 给外部审查收敛线：按威胁模型裁——会真的废掉产品负责人窗口的必修；需要刻意环境操纵才能触发的明确接受，写进代码或文档「已知边界」并说明为什么接受。
 - 批量审查从关键测试抽 3–5 个独立复做变异实测，在审核者自己的 worktree 内做（https://github.com/Moshuiwang/lingxi/issues/521）。
+- 卡面写死刹车句：只报影响正确性或既定需求的缺口，其余标可选；审核者天生会报问题，追着每条改会过度工程（https://github.com/Moshuiwang/lingxi/issues/162 审核—修复循环预算超标；Claude Code 最佳实践 https://code.claude.com/docs/en/best-practices ）。

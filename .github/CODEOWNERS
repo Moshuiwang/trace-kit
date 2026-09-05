@@ -1,0 +1,4 @@
+# 出处：https://github.com/Moshuiwang/trace-kit/issues/13 第 6 项——本仓九个 PR（#2–#10）全部由机器人自发自合，含合同 PR #2；
+# 合同「合并即批准」要在技术上为真，合同文件路径必须要求代码所有者审查。
+# 配套的 main 分支规则集（要求这些路径经代码所有者审查）由产品负责人在 Settings 操作，本文件不覆盖该项。
+docs/traces/**/合同.md @Moshuiwang

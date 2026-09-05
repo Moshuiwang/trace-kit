@@ -13,7 +13,8 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
 
 1. 读模板：`${CLAUDE_PLUGIN_ROOT}/templates/合同.md`（六段结构与每段的既定条款）、`${CLAUDE_PLUGIN_ROOT}/templates/任务表.md`、`${CLAUDE_PLUGIN_ROOT}/templates/验收.md`、`${CLAUDE_PLUGIN_ROOT}/templates/tracking-issue.md`。模板头部的出处注释与「用法」段不进产出物。
 2. 从当前对话与相关 Issue 收集素材，逐段填实——**每段都不允许留空**：
-   - 空不出来的段（如成本预算）按项目既有先例给出建议值并标注「建议值，批准时可改」；
+   - 空不出来的段写「未知 + Owner + 补齐时点」（`METHOD.md` §4.8 Pre-ready 形态），不编建议值；成本段的上限（人次 / 完整门禁次数 / 时间窗）例外，必须写数字；
+   - 每条 Step 的依赖：这条依赖传什么制品？一句话说不清就是假依赖，去掉或合并；
    - 授权终点只写产品负责人**已经说过**的授权；没说过的写进「显式除外」。
 3. 产出物：三件套（合同.md / 任务表.md / 验收.md）落 `docs/traces/<issue号>-<短名>/`，走 PR，**合并即批准**；`[tracking]` Issue 正文只留「给产品负责人」段与瘦指针（按 `tracking-issue.md`；`METHOD.md` §二、§八）。
 4. 合同末尾附「批准时需一并裁定」编号清单（把所有开放决策点收拢成可单字回复的编号项，每项带默认值）。
