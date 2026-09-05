@@ -92,7 +92,7 @@ def main(argv=None) -> int:
         return 0
     size = shutil.get_terminal_size((150, 52))
     args.width, args.height = args.width or size.columns, args.height or size.lines
-    return tui.run(args, lambda: build_board(args, conf, source))
+    return tui.run(args, lambda: build_board(args, conf, source), source=source)   # source.cancel() 供看门狗取消旧轮（账本 R2-5）
 
 
 if __name__ == "__main__":
