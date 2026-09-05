@@ -49,6 +49,12 @@ class PtySession:
         """记下当前输出长度：之后的 wait_for 只看新增部分（账本 R2-16）。"""
         self.offset = len(self.raw())
 
+    def mark_after(self, literal: str):
+        """把偏移设到原始输出里最后一次出现 literal 之后（锚点之后才算新增）。"""
+        pos = self.raw().rfind(literal)
+        assert pos >= 0, "锚点 %r 不在输出里" % literal
+        self.offset = pos + len(literal)
+
     def _pump(self, wait):
         r, _, _ = select.select([self.fd], [], [], wait)
         if not r:
@@ -228,8 +234,8 @@ class TuiPtyTest(unittest.TestCase):
         s = PtySession(["--sample", "six", "--no-anim", "--as-job"])   # 前台进程组不孤儿，TSTP 才会真的停
         s.read_tui_pid()
         s.wait_for(r"第 1 轮")
-        s.mark()
-        s.wait_for(r"连线=依赖")                                    # 等这一帧写完（帧比 pty 缓冲大）
+        s.mark_after("第 1 轮")                                     # 以真实首帧的第一行为锚点
+        s.wait_for(r"连线=依赖")                                    # 等这一帧写完（帧比 pty 缓冲大，TSTP 不能落在写入中途）
         time.sleep(0.2)
         s.mark()
         state0 = s.tui_state()
