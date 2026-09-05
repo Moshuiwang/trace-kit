@@ -229,10 +229,15 @@ class TuiPtyTest(unittest.TestCase):
         s.read_tui_pid()
         s.wait_for(r"第 1 轮")
         s.mark()
+        s.wait_for(r"连线=依赖")                                    # 等这一帧写完（帧比 pty 缓冲大）
+        time.sleep(0.2)
+        s.mark()
+        state0 = s.tui_state()
         s.kill(signal.SIGTSTP)
-        self.assertTrue(s.wait_stopped(), "TSTP 后进程应真正停住")
+        self.assertTrue(s.wait_stopped(), "TSTP 后进程应真正停住（发信号前状态 %s，现在 %s）" % (state0, s.tui_state()))
         s._pump(0.3)
-        self.assertIn(LEAVE_ALT, s.raw()[s.offset:], "挂起前必须离开备用屏")
+        self.assertIn(LEAVE_ALT, s.raw()[s.offset:], "挂起前必须离开备用屏（发信号前状态 %s，现在 %s；新增输出尾部 %r）"
+                      % (state0, s.tui_state(), ANSI.sub("", s.raw()[s.offset:])[-300:]))
         self.assertTrue(s.lflag() & termios.ICANON, "挂起前必须恢复 termios")
         s.mark()
         s.kill(signal.SIGCONT)

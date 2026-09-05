@@ -56,8 +56,27 @@ class Terminal:
 
     def __init__(self, fd, out):
         self.fd, self.out = fd, out
+        try:
+            self.out_fd = out.fileno()
+        except (OSError, ValueError, AttributeError):
+            self.out_fd = None
         self.saved = None
         self.active = False
+
+    def _emit(self, seq: str) -> None:
+        """进出序列直接写 fd：信号处理器可能在 sys.stdout 一次大写入的中途被调用，经缓冲对象会重入报错。"""
+        try:
+            self.out.flush()
+        except (RuntimeError, OSError, ValueError):
+            pass
+        try:
+            if self.out_fd is not None:
+                os.write(self.out_fd, seq.encode("utf-8"))
+            else:
+                self.out.write(seq)
+                self.out.flush()
+        except (RuntimeError, OSError, ValueError):
+            pass
 
     def enter(self) -> None:
         try:
@@ -70,11 +89,7 @@ class Terminal:
             termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
         except (termios.error, OSError, ValueError):
             pass
-        try:
-            self.out.write(ENTER_SEQ)
-            self.out.flush()
-        except (OSError, ValueError):
-            pass
+        self._emit(ENTER_SEQ)
         self.active = True
 
     def leave(self) -> None:
@@ -83,11 +98,7 @@ class Terminal:
             termios.tcflow(self.fd, termios.TCOON)             # 先解除可能的输出流控，否则后面的写会永远等 Ctrl-Q
         except (termios.error, OSError, ValueError):
             pass
-        try:
-            self.out.write(LEAVE_SEQ)
-            self.out.flush()
-        except (OSError, ValueError):
-            pass
+        self._emit(LEAVE_SEQ)
         try:
             if self.saved is not None:
                 termios.tcsetattr(self.fd, termios.TCSANOW, self.saved)   # TCSANOW：不等输出排空
