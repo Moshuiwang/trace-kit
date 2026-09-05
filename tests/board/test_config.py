@@ -260,19 +260,27 @@ class ProviderTests(unittest.TestCase):
     def test_nonzero_exit(self):
         r = self.run_cmd("false")
         self.assertFalse(r.ok)
-        self.assertIn("退出码 1", r.error)
+        self.assertEqual(r.error, "非零退出 1")             # 账本 A-1：error 只写失败类别
         self.assertIsNone(r.value)
 
-    def test_stderr_tail_in_error(self):
-        r = self.run_cmd("printf 'boom here\\n' >&2 && exit 3")
+    def test_a1_stderr_kept_out_of_error(self):
+        """账本 A-1：stderr（常含主机名）绝不进 error（会随 --why 进公开面），只留在 provider.last_stderr。"""
+        r = self.run_cmd("printf 'boom here at host-x\\n' >&2 && exit 3")
         self.assertFalse(r.ok)
-        self.assertIn("退出码 3", r.error)
-        self.assertIn("boom here", r.error)
+        self.assertEqual(r.error, "非零退出 3")
+        self.assertNotIn("boom", r.error)
+        self.assertIn("boom here at host-x", self.p.last_stderr["config.k"])
+        r = self.run_cmd("printf 'host-y says no\\n'", "int")
+        self.assertEqual(r.error, "解析失败（int）")
+        self.assertNotIn("host-y", r.error)
+        self.assertIn("host-y", self.p.last_stderr["config.k"])
+        r = self.run_cmd("true", "int")
+        self.assertEqual(r.error, "无输出")
 
     def test_missing_binary(self):
         r = self.run_cmd("no-such-command-board-xyz")
         self.assertFalse(r.ok)
-        self.assertIn("退出码 127", r.error)
+        self.assertEqual(r.error, "非零退出 127")
 
     def test_pipefail(self):
         r = self.run_cmd("false | true")
@@ -285,8 +293,7 @@ class ProviderTests(unittest.TestCase):
         r = self.run_cmd("sleep 3", timeout=1)
         elapsed = time.monotonic() - t0
         self.assertFalse(r.ok)
-        self.assertIn("超时", r.error)
-        self.assertIn("1 秒", r.error)
+        self.assertEqual(r.error, "超时 1s")
         self.assertLess(elapsed, 2.5, "超时后必须立即返回")
 
     def test_timeout_kills_process_group(self):
@@ -300,7 +307,15 @@ class ProviderTests(unittest.TestCase):
     def test_provider_default_timeout(self):
         r = cfg.ShellProvider(per_cmd_timeout=1).run(cfg.CommandSpec(key="k", command="sleep 3"))
         self.assertFalse(r.ok)
-        self.assertIn("超时（1 秒）", r.error)
+        self.assertEqual(r.error, "超时 1s")
+
+    def test_r1_26_runs_in_private_temp_cwd(self):
+        """账本 R1-26：配置命令以临时目录为 cwd，跑完即删，不在目标仓库 / 当前目录里执行。"""
+        r = self.run_cmd("pwd")
+        self.assertTrue(r.ok, r.error)
+        self.assertNotEqual(os.path.realpath(r.value), os.path.realpath(os.getcwd()))
+        self.assertFalse(os.path.isdir(r.value), "临时 cwd 跑完应删除")
+        self.assertTrue(r.value.startswith(os.path.realpath(tempfile.gettempdir())) or r.value.startswith(tempfile.gettempdir()))
 
     def test_grade_and_key_override(self):
         r = self.p.run(cfg.CommandSpec(key="k", command="printf 1", parse="int", grade=Grade.REPORTED), "config.custom")

@@ -191,9 +191,19 @@ BOARDS = {"simple": board_simple, "complex": board_complex, "tiers": board_tiers
 
 def fake_build(name="six", delay=0.0, fail="none"):
     """假 build()：`delay` 每轮睡眠秒数；`fail` ∈ none / exception（每轮抛）/ exception-once（首轮抛）/ timeout（首轮睡 delay 秒，之后正常）。
-    返回的 board 标题带轮次号「第 N 轮」，便于测试观察刷新是否发生；`build.calls[0]` 是调用次数。"""
+    返回的 board 标题带轮次号「第 N 轮」，便于测试观察刷新是否发生；`build.calls[0]` 是调用次数。
+    `build.cancel()`（账本 R2-5 的 `LiveSource.cancel()` 替身）：让正在睡眠的那一轮立刻以「已取消」异常返回；
+    `build.cancels[0]` 是被调用次数。tui.run(..., source=build) 即可接上。"""
+    import threading
     factory = BOARDS[name]
-    calls = [0]
+    calls, cancels, stop = [0], [0], threading.Event()
+
+    def nap(seconds):
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            if stop.is_set():
+                raise RuntimeError("已取消")
+            time.sleep(min(0.05, max(0.0, deadline - time.monotonic())))
 
     def build():
         calls[0] += 1
@@ -202,12 +212,16 @@ def fake_build(name="six", delay=0.0, fail="none"):
             raise RuntimeError("注入异常 #%d" % n)
         if fail == "timeout":
             if n == 1:
-                time.sleep(delay)
+                nap(delay)
         elif delay:
-            time.sleep(delay)
+            nap(delay)
         b = factory()
         b.header.title = "%s · 第 %d 轮" % (b.header.title, n)
         return b
 
-    build.calls = calls
+    def cancel():
+        cancels[0] += 1
+        stop.set()
+
+    build.calls, build.cancels, build.cancel, build.reset = calls, cancels, cancel, stop.clear
     return build

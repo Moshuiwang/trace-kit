@@ -49,7 +49,10 @@
     count:<pat>     匹配 re.search(pat) 的行数（int）
 
 执行约定：每条命令 `bash -o pipefail -c <command>`、stdin=DEVNULL、独立进程组、显式超时（超时杀整个进程组，
-含挂死的 ssh）；非零退出 / 超时 / 无法启动 / 解析失败一律 ok=False 带 error，不抛异常、不给默认值。
+含挂死的 ssh）、cwd＝一次性临时目录（账本 R1-26：不在目标仓库里执行；命令本身不做沙箱——它是项目仓库经 PR 审阅的声明）；
+非零退出 / 超时 / 无法启动 / 解析失败一律 ok=False 带 error，不抛异常、不给默认值。
+error 只写失败类别（账本 A-1）：「非零退出 N」「超时 Ns」「无输出」「解析失败（<规则>）」「无法启动」——stderr / 输出片段常含主机名，
+会随 `--dump --why` 进公开面，所以只留在 `ShellProvider.last_stderr[<结果键>]`（不进快照、不渲染）。
 pipefail 意味着管道里任一环失败即失败（勿用 head 之类会提前关闭管道的命令）。
 结果键：ProviderResult.key = "config.<key>"（stages 的 key 即 staging / production）；三组之间 key 不得重复。
 ProviderResult.cmd 记录命令原文，会随 --record 写进 snapshot.json——含主机名的配置不要把快照提交进公开仓库。
@@ -60,7 +63,9 @@ import json
 import os
 import re
 import signal
+import shutil
 import subprocess
+import tempfile
 import tomllib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -358,39 +363,52 @@ def _tail(text: str) -> str:
 
 
 class ShellProvider:
-    """按 CommandSpec 执行只读 shell 命令；任何失败都落在 ProviderResult.ok=False，不抛异常。"""
+    """按 CommandSpec 执行只读 shell 命令；任何失败都落在 ProviderResult.ok=False，不抛异常。
+
+    `last_stderr[<结果键>]`：最近一次该键的 stderr 尾行 / 解析失败细节（可能含主机名），只供本机排障，不进快照、不渲染。"""
 
     def __init__(self, per_cmd_timeout: int = 25):
         self.per_cmd_timeout = per_cmd_timeout
+        self.last_stderr: dict[str, str] = {}
 
     def run(self, spec: CommandSpec, key: Optional[str] = None) -> ProviderResult:
         key = key or spec.result_key
         timeout = spec.timeout or self.per_cmd_timeout
         base = dict(key=key, cmd=spec.command, fetched_at=datetime.now(timezone.utc), grade=spec.grade)
+        self.last_stderr.pop(key, None)
+        workdir = tempfile.mkdtemp(prefix="board-cmd-")          # 账本 R1-26：一次性 cwd，不在目标仓库里执行
         try:
-            proc = subprocess.Popen(
-                ["bash", "-o", "pipefail", "-c", spec.command], stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="replace",
-                start_new_session=True,
-            )
-        except OSError as exc:
-            return ProviderResult(ok=False, error="无法启动 bash：%s" % exc, **base)
-        try:
-            out, err = proc.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            _kill_group(proc)
             try:
-                proc.communicate(timeout=5)
-            except (subprocess.TimeoutExpired, OSError, ValueError):
-                pass
-            return ProviderResult(ok=False, error="超时（%d 秒）" % timeout, **base)
+                proc = subprocess.Popen(
+                    ["bash", "-o", "pipefail", "-c", spec.command], stdin=subprocess.DEVNULL,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="replace",
+                    start_new_session=True, cwd=workdir,
+                )
+            except OSError as exc:
+                self.last_stderr[key] = str(exc)
+                return ProviderResult(ok=False, error="无法启动", **base)
+            try:
+                out, err = proc.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                _kill_group(proc)
+                try:
+                    proc.communicate(timeout=5)
+                except (subprocess.TimeoutExpired, OSError, ValueError):
+                    pass
+                return ProviderResult(ok=False, error="超时 %ds" % timeout, **base)
+        finally:
+            shutil.rmtree(workdir, ignore_errors=True)
+        if _tail(err):
+            self.last_stderr[key] = _tail(err)
         if proc.returncode != 0:
-            detail = _tail(err)
-            return ProviderResult(ok=False, error="退出码 %d%s" % (proc.returncode, "：" + detail if detail else ""), **base)
+            return ProviderResult(ok=False, error="非零退出 %d" % proc.returncode, **base)
         try:
             value = parse_output(spec.parse, out)
         except ParseError as exc:
-            return ProviderResult(ok=False, error="解析失败（%s）：%s" % (spec.parse, exc), **base)
+            self.last_stderr[key] = "解析失败（%s）：%s" % (spec.parse, exc)
+            if not (out or "").strip():
+                return ProviderResult(ok=False, error="无输出", **base)
+            return ProviderResult(ok=False, error="解析失败（%s）" % spec.parse, **base)
         return ProviderResult(ok=True, value=value, **base)
 
 

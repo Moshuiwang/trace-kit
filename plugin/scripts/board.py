@@ -77,6 +77,9 @@ def main(argv=None) -> int:
     else:
         source = collect.LiveSource(args.repo_root, round_timeout=args.timeout)
     if args.record:
+        rec, root = os.path.realpath(args.record), os.path.realpath(args.repo_root)
+        if rec == root or rec.startswith(root + os.sep):          # 账本 R1-27：引擎对目标仓库只读，不在里面创建文件
+            sys.exit("--record 目录不得在目标仓库内（%s 位于 --repo-root 之下）；请换一个仓库外的目录" % args.record)
         now = _now(args) or datetime.now(timezone.utc)
         snap = collect.collect(args.repo_root, args.trace, args.branch, conf, now, source)
         collect.write_snapshot(snap, args.record)
@@ -89,7 +92,7 @@ def main(argv=None) -> int:
         return 0
     size = shutil.get_terminal_size((150, 52))
     args.width, args.height = args.width or size.columns, args.height or size.lines
-    return tui.run(args, lambda: build_board(args, conf, source))
+    return tui.run(args, lambda: build_board(args, conf, source), source=source)   # source.cancel() 供看门狗取消旧轮（账本 R2-5）
 
 
 if __name__ == "__main__":
