@@ -125,6 +125,34 @@ def _strip_heading(text: str) -> str:
     return (text or "").lstrip("#*> ").strip()
 
 
+def _noted(val: Val, note: str) -> Val:
+    """给 Val 挂展示用 note（render 按 getattr 读；不改 model 字段）。"""
+    val.note = note
+    return val
+
+
+def _pick_batch_pr(cands: list, now: datetime) -> tuple[Optional[dict], str, str]:
+    """H-1：同分支多 PR 的批次 PR 身份。返回 (批次 PR 或 None, 规则说明, 其余 PR 的存疑文案)。"""
+    state_text = {"OPEN": "开放", "MERGED": "已合入", "CLOSED": "已关闭"}
+
+    def others(pick):
+        return " / ".join("#%d %s" % (p["number"], state_text[p["_state"]]) for p in cands if p is not pick)
+
+    if not cands:
+        return None, "", ""
+    if len(cands) == 1:
+        return cands[0], "唯一 PR", ""
+    merged = sorted([p for p in cands if p["_state"] == "MERGED"], key=lambda p: p["_merged"] or now)
+    if len(merged) == 1:
+        return merged[0], "规则①：恰一个 MERGED 到 base", others(merged[0])
+    if merged:
+        return merged[0], "规则②：多个 MERGED，取最早合并的（后续视为同分支收口 / 热修）", others(merged[0])
+    opens = sorted([p for p in cands if p["_state"] == "OPEN"], key=lambda p: p["_created"] or now)
+    if opens:
+        return opens[0], "规则③：无 MERGED，取最早创建的开放 PR（Draft 批次 PR）", others(opens[0])
+    return None, "规则④：全部关闭未合并", others(None)
+
+
 class _Ctx:
     """把快照整理成事件表；所有判定函数只读这里。"""
 
@@ -243,9 +271,10 @@ class _Ctx:
             self.prs_all.append(row)
         self.prs = [p for p in self.prs_all if self._is_trace_pr(p)]
         self.pr_by_number = {p["number"]: p for p in self.prs}
-        # 批次 PR（R1-11：只认唯一识别；多 PR 冲突 → None ＋ 记录冲突）
+        # 批次 PR（R1-11 / 热修 H-1）：同分支多个 PR 时——①恰一个 MERGED → 它；②多个 MERGED → 最早合并的；
+        # ③无 MERGED 且有 OPEN → 最早创建的（Draft 批次 PR）；④全部关闭未合并 → 未知。其余 PR 记入存疑「另有 PR #n …」
         self.batch_prs = [p for p in self.prs if self.snap.branch and p.get("headRefName") == self.snap.branch]
-        self.batch_pr = self.batch_prs[0] if len(self.batch_prs) == 1 else None
+        self.batch_pr, self.batch_rule, self.batch_others = _pick_batch_pr(self.batch_prs, now)
         self.runs: list[dict] = []
         heads = {p.get("headRefName") for p in self.prs if p.get("headRefName")}
         for r in self.val("gh.runs", []):
@@ -981,20 +1010,21 @@ def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
     elif not ctx.snap.branch:
         merged, merged_na = Val.unknown("gh.prs"), True
         why.append(_why("阶段·合入主干", "不适用", E.PR_STATE, "gh.prs", "无批次分支，无法识别批次 PR（不适用）", None, False))
-    elif len(ctx.batch_prs) > 1:
+    elif ctx.batch_prs and ctx.batch_pr is None:
         merged = Val.unknown("gh.prs")
-        why.append(_why("阶段·合入主干", "未知", E.PR_STATE, "gh.prs", "分支 %s 对应多个 PR（%s），身份冲突" % (
-            ctx.snap.branch, " ".join("#%d" % p["number"] for p in ctx.batch_prs)), None, False))
+        why.append(_why("阶段·合入主干", "未知", E.PR_STATE, "gh.prs", "分支 %s 对应 %d 个 PR（%s）但全部关闭未合并，无法判定批次 PR（规则④）" % (
+            ctx.snap.branch, len(ctx.batch_prs), " ".join("#%d" % p["number"] for p in ctx.batch_prs)), None, False))
     elif ctx.batch_pr is None:
         merged = Val(False, Grade.MEASURED, "gh.prs")
         why.append(_why("阶段·合入主干", "否", E.PR_STATE, "gh.prs", "分支 %s 尚无 PR" % ctx.snap.branch, None))
     else:
         bp = ctx.batch_pr
-        merged = Val(bp["_state"] == "MERGED", Grade.MEASURED, "gh.prs", bp["_merged"])
+        merged = Val(bp["_state"] == "MERGED", Grade.MEASURED if len(ctx.batch_prs) == 1 else Grade.INFERRED, "gh.prs", bp["_merged"])
         merged_at = bp["_merged"]
         merge_sha = (bp.get("mergeCommit") or "") if merged_at else ""
-        why.append(_why("阶段·合入主干", "是" if merged.value else "否", E.PR_STATE, "gh.prs", "批次 PR #%d %s%s" % (
-            bp["number"], bp["_state"], " → 合并提交 %s" % merge_sha[:7] if merge_sha else ""), bp["_merged"]))
+        why.append(_why("阶段·合入主干", "是" if merged.value else "否", E.PR_STATE, "gh.prs", "批次 PR #%d %s%s%s" % (
+            bp["number"], bp["_state"], " → 合并提交 %s" % merge_sha[:7] if merge_sha else "",
+            "；%s；另有 %s" % (ctx.batch_rule, ctx.batch_others) if ctx.batch_others else ""), bp["_merged"]))
     levels.append(StageLevel("merged", STAGE_LABEL["merged"], merged, configured=not merged_na))
 
     # 已发布（R1-12 / R1-13）：须有已证实的合并点；祖先关系优先 gh.compare，其次本地祖先（推），再次时间（推）
@@ -1046,9 +1076,12 @@ def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
     if merged.available and merged.value is False and not merged_na:
         published = Val(False, Grade.MEASURED, "gh.prs")
         why.append(_why("阶段·已发布", "否", E.TAG_REF, "gh.prs", "批次 PR 未合入，尚无合并点", None))
+    elif merged_na:
+        published = _noted(Val(False, Grade.INFERRED, "gh.prs"), "不适用")
+        why.append(_why("阶段·已发布", "不适用", E.TAG_REF, "gh.prs", "无批次分支 / 批次 PR，合入主干不适用 → 已发布不适用（结构性，不是阻塞）", None))
     elif merged_at is None:
         published = Val.unknown("gh.prs")
-        why.append(_why("阶段·已发布", "未知", E.TAG_REF, "gh.prs", "无已证实的合并点（合入主干 %s）" % ("不适用" if merged_na else "未知"), None, False))
+        why.append(_why("阶段·已发布", "未知", E.TAG_REF, "gh.prs", "无已证实的合并点（合入主干未知）", None, False))
     elif not ctx.ok("gh.tags"):
         published = Val.unknown("gh.tags")
         why.append(_why("阶段·已发布", "未知", E.TAG_REF, "gh.tags", "gh.tags 不可得：%s（本地 git.tags 参考：%s）" % (
@@ -1087,6 +1120,12 @@ def _stages(ctx: _Ctx) -> tuple[list[StageLevel], list[Why], Optional[str]]:
         if not published.available:
             val = Val.unknown(res.key, res.grade)
             why.append(_why("阶段·" + STAGE_LABEL[key], "未知", E.IMAGE_TAG, res.key, "已发布未知 → 本级未知（不沿用旧结论）", res.fetched_at, False))
+        elif getattr(published, "note", "") == "不适用":
+            val = _noted(Val(False, published.grade, res.key, res.fetched_at), "不适用")
+            why.append(_why("阶段·" + STAGE_LABEL[key], "不适用", E.IMAGE_TAG, res.key, "已发布不适用 → 本级不适用", res.fetched_at))
+        elif published.value is False:
+            val = _noted(Val(False, published.grade, res.key, res.fetched_at), "尚未发布")
+            why.append(_why("阶段·" + STAGE_LABEL[key], "尚未发布", E.IMAGE_TAG, res.key, "已发布为否（有合并点但无 tag / 发布 run）→ 本级尚未发布，不比对", res.fetched_at))
         else:
             val = _compare_tag(ctx, published_tag, res)
             why.append(_why("阶段·" + STAGE_LABEL[key], ("是" if val.value else "否") if val.available else "未知", E.IMAGE_TAG, res.key,
@@ -1230,6 +1269,8 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
                             sum(1 for r in p.get("reviews") or [] if (r.get("state") or "").upper() == "APPROVED")), p["_merged"] or p["_created"]))
     elif ctx.contract and ctx.ok("gh.prs"):
         why.append(_why("合同 PR", "未找到", E.PR_MERGED_BY, "git.contract", "合同.md 首次提交 %s 未对应任何 PR" % ctx.contract.get("sha", "")[:7], parse_ts(ctx.contract.get("at") or "")))
+    if ctx.batch_others:
+        doubt_parts.append("另有 PR %s" % ctx.batch_others)
     shared = ["#%d" % p["number"] for p in ctx.prs if len(p["_steps"]) >= 2]
     if shared:
         doubt_parts.append("共用 PR %s" % " ".join(shared[:3]) + ("…" if len(shared) > 3 else ""))

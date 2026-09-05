@@ -1,0 +1,346 @@
+{
+ "now": "2026-09-03T06:00:00+00:00",
+ "repo": "example/demo",
+ "trace_no": 11,
+ "trace_dir": "docs/traces/11-stage-demo",
+ "branch": "batch/11-demo",
+ "tasktable_path": "docs/traces/11-stage-demo/任务表.md",
+ "results": {
+  "git.log": {
+   "key": "git.log",
+   "ok": true,
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/11-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T01:40:00+00:00",
+      "committed": "2026-09-03T01:40:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#11): 三件套入库 (#30)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "at": "2026-09-03T02:20:00+00:00",
+      "committed": "2026-09-03T02:20:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#11): S-1 实现取数与解析",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+      "at": "2026-09-03T05:00:00+00:00",
+      "committed": "2026-09-03T05:00:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#11): S-1 实现取数与解析 (#31)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tasktable_history": {
+   "key": "git.tasktable_history",
+   "ok": true,
+   "value": {
+    "path": "docs/traces/11-stage-demo/任务表.md",
+    "commits": [
+     {
+      "ids": [
+       "S-0",
+       "S-1"
+      ],
+      "checked": [],
+      "quotes": [],
+      "sha": "e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0",
+      "at": "2026-09-03T01:30:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1"
+      ],
+      "checked": [
+       "S-0"
+      ],
+      "quotes": [],
+      "sha": "e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1",
+      "at": "2026-09-03T02:00:00+00:00"
+     },
+     {
+      "ids": [
+       "S-0",
+       "S-1"
+      ],
+      "checked": [
+       "S-0",
+       "S-1"
+      ],
+      "quotes": [],
+      "sha": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+      "at": "2026-09-03T05:05:00+00:00"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "inferred"
+  },
+  "git.worktrees": {
+   "key": "git.worktrees",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.tags": {
+   "key": "git.tags",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.branches": {
+   "key": "git.branches",
+   "ok": true,
+   "value": [
+    {
+     "name": "batch/11-demo",
+     "sha": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+     "at": "2026-09-03T05:00:00+00:00"
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "git.contract": {
+   "key": "git.contract",
+   "ok": true,
+   "value": {
+    "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+    "at": "2026-09-03T01:40:00+00:00",
+    "subject": "docs(#11): 三件套入库 (#30)",
+    "path": "docs/traces/11-stage-demo/合同.md"
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tasktable.quotes": {
+   "key": "tasktable.quotes",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "reported"
+  },
+  "gh.prs": {
+   "key": "gh.prs",
+   "ok": true,
+   "value": [
+    {
+     "number": 30,
+     "title": "docs(#11): 三件套入库",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-03T01:20:00+00:00",
+     "mergedAt": "2026-09-03T01:40:00+00:00",
+     "closedAt": "2026-09-03T01:40:00+00:00",
+     "mergedBy": "owner-x",
+     "author": "agent-a",
+     "reviews": [
+      {
+       "state": "APPROVED",
+       "author": "owner-x",
+       "submittedAt": "2026-09-03T01:39:00+00:00"
+      }
+     ],
+     "headRefName": "wt/11-contract",
+     "head_oid": "",
+     "baseRefName": "main",
+     "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+     "url": "https://github.com/example/demo/pull/30",
+     "body": "合同与授权终点；Trace #11。",
+     "checks": []
+    },
+    {
+     "number": 31,
+     "title": "feat(#11): S-1 实现取数与解析",
+     "state": "MERGED",
+     "isDraft": false,
+     "createdAt": "2026-09-03T02:30:00+00:00",
+     "mergedAt": "2026-09-03T05:00:00+00:00",
+     "closedAt": "2026-09-03T05:00:00+00:00",
+     "mergedBy": "owner-x",
+     "author": "agent-a",
+     "reviews": [
+      {
+       "state": "APPROVED",
+       "author": "owner-x",
+       "submittedAt": "2026-09-03T04:58:00+00:00"
+      }
+     ],
+     "headRefName": "batch/11-demo",
+     "head_oid": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+     "baseRefName": "main",
+     "mergeCommit": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+     "url": "https://github.com/example/demo/pull/31",
+     "body": "Trace #11 批次 PR。",
+     "checks": [
+      {
+       "name": "selfcheck",
+       "workflowName": "selfcheck",
+       "conclusion": "SUCCESS",
+       "status": "COMPLETED",
+       "startedAt": "",
+       "completedAt": ""
+      }
+     ]
+    },
+    {
+     "number": 32,
+     "title": "docs(#11): 收口回写",
+     "state": "OPEN",
+     "isDraft": true,
+     "createdAt": "2026-09-03T05:30:00+00:00",
+     "mergedAt": "",
+     "closedAt": "",
+     "mergedBy": "",
+     "author": "agent-a",
+     "reviews": [],
+     "headRefName": "batch/11-demo",
+     "head_oid": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+     "baseRefName": "main",
+     "mergeCommit": "",
+     "url": "https://github.com/example/demo/pull/32",
+     "body": "Trace #11 收口小 PR。",
+     "checks": []
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.issue": {
+   "key": "gh.issue",
+   "ok": true,
+   "value": {
+    "number": 11,
+    "title": "[tracking] 示例 Trace",
+    "state": "OPEN",
+    "createdAt": "2026-09-03T01:00:00+00:00",
+    "closedAt": "",
+    "url": "https://github.com/example/demo/issues/11",
+    "comments": [
+     {
+      "id": 7001,
+      "createdAt": "2026-09-03T05:40:00+00:00",
+      "author": "agent-a",
+      "first_line": "批次已合入主干，进入发布。",
+      "url": "https://github.com/example/demo/issues/11#issuecomment-7001"
+     }
+    ]
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.runs": {
+   "key": "gh.runs",
+   "ok": true,
+   "value": [
+    {
+     "id": 910,
+     "name": "selfcheck",
+     "workflowName": "selfcheck",
+     "conclusion": "success",
+     "status": "completed",
+     "createdAt": "2026-09-03T04:50:00+00:00",
+     "updatedAt": "2026-09-03T04:50:00+00:00",
+     "headSha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "headBranch": "batch/11-demo",
+     "event": "push",
+     "url": "https://github.com/example/demo/actions/runs/910"
+    }
+   ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.tags": {
+   "key": "gh.tags",
+   "ok": true,
+   "value": [],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.release_runs": {
+   "key": "gh.release_runs",
+   "ok": false,
+   "value": null,
+   "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": true,
+   "value": {
+    "base": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+    "results": {}
+   },
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "tmux.windows": {
+   "key": "tmux.windows",
+   "ok": false,
+   "value": null,
+   "error": "未配置编排 session",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  }
+ },
+ "config": {
+  "repo_slug": "example/demo",
+  "trace_branch": "batch/11-demo",
+  "tmux_configured": false,
+  "window_pattern": "",
+  "release_workflow": "",
+  "stages": [],
+  "budgets": [],
+  "evidence": []
+ }
+}
