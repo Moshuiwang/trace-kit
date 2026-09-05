@@ -31,6 +31,7 @@ claude plugin install trace-kit@trace-kit
 - **Trace 目录短名规则**：`docs/traces/<issue号>-<短名>/`，短名一词概括目标（如 `rc24正式上线`），不含空格与斜杠；目录名一旦建立不改（交接与收口评论都用它定位）。
 - **派发卡「六条款」第 3 条的门禁耗时**、报告格式的行数上限：按你的仓库填。
 - **证据等级口径**：验收模板引用项目《验证与门禁》文档；骨架见套件 `template/docs/`。
+- **合同路径的 CODEOWNERS**：在你的仓库建 `.github/CODEOWNERS`，把 `docs/traces/**/合同.md` 指给产品负责人，并在 main 分支规则集要求代码所有者审查——否则「合并即批准」只是约定，代理仍能自发自合（本仓 `.github/CODEOWNERS` 是样例）。
 
 ## 记录归属（三件套之外的内容放哪）
 
