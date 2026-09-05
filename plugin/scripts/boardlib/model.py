@@ -316,11 +316,26 @@ class Board:
     unparsed: list[tuple[int, str]] = field(default_factory=list)  # 任务表无法解析的行（行号, 原文）：复杂版画成灰色自由文本卡片（#12 v2 关卡 3）
 
     def validate(self) -> None:
-        """结构断言（https://github.com/Moshuiwang/lingxi/issues/582）：状态串 / 档位 / 角标 / 索引写错即报错，不静默。"""
+        """结构断言（https://github.com/Moshuiwang/lingxi/issues/582）：状态串 / 档位 / 角标 / 索引写错即报错，不静默。
+        账本 R1-25：递归到阶段 Val.grade、每条 Why 的 status / EvidenceType、Step.section 章节索引。"""
         n = len(self.modules)
+        sections = {mv.section.index for mv in self.modules if isinstance(getattr(mv, "section", None), Section)}
+
+        def check_why(owner: str, items) -> None:
+            for w in items:
+                if not isinstance(w, Why):
+                    raise ValueError("%s 的 Why 不是 Why：%r" % (owner, w))
+                if type(w.status) is not str:            # Status 枚举也不行：会渲染成 Status.DONE
+                    raise ValueError("%s 的 Why 状态不是字符串：%r" % (owner, w.status))
+                if not isinstance(w.evidence, EvidenceType):
+                    raise ValueError("%s 的 Why 证据类型不是 EvidenceType：%r" % (owner, w.evidence))
+
         for sv in self.steps:
             if not isinstance(sv.status, Status) or not isinstance(sv.chip_status, Status):
                 raise ValueError("StepView %s 状态不是 Status：%r" % (sv.step.id, sv.status))
+            if n and sv.step.section not in sections:
+                raise ValueError("StepView %s 章节索引越界：%r（模块章节 %s）" % (sv.step.id, sv.step.section, sorted(sections)))
+            check_why("StepView %s" % sv.step.id, sv.why)
         for mv in self.modules:
             if not isinstance(mv.status, Status):
                 raise ValueError("ModuleView %s 状态不是 Status：%r" % (mv.section.title, mv.status))
@@ -332,9 +347,11 @@ class Board:
             for k in mv.needs:
                 if not (0 <= k < n):
                     raise ValueError("ModuleView %s 依赖索引越界：%d" % (mv.section.title, k))
+            check_why("ModuleView %s" % mv.section.title, mv.why)
         for label, val, cap in self.header.budget:
             if not isinstance(val, Val) or not isinstance(val.grade, Grade):
                 raise ValueError("预算条 %s 不是 Val/Grade" % label)
         for st in self.header.stages:
-            if not isinstance(st.value, Val):
-                raise ValueError("阶段 %s 不是 Val" % st.key)
+            if not isinstance(st.value, Val) or not isinstance(st.value.grade, Grade):
+                raise ValueError("阶段 %s 不是 Val/Grade：%r" % (st.key, st.value))
+        check_why("Board", self.why)
