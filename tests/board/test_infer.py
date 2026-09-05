@@ -359,22 +359,32 @@ class CommentWindowTest(unittest.TestCase):
         b2 = board_of(table=table, results=res)
         self.assertEqual((b2.modules[0].rounds.review.value, b2.modules[1].rounds.review.value), (0, 1))
 
-    def test_regex_anchored_and_fixpack_needs_result(self):
-        """R1-3 / A-6：正则锚定首行开头（剥 # > * 空白）；「修」只计有结果的修复包评论；一条评论可同时计审＋外。"""
+    def test_regex_whole_first_line_with_negation_and_fixpack_needs_result(self):
+        """R1-3（r5 裁定）/ A-6：首行全文匹配，关键词前 6 字符内有否定词不计；「修」只计有结果；一条评论可同时计审＋外。"""
         comments = [
-            (ago(50), "## 审核①结论 S-1"),                              # 审
-            (ago(45), "## 这不是审核①结论，只是引用 codex 外审结论 S-1"),  # 不锚定 → 都不计
-            (ago(40), "## 修复包已派发（S-1）"),                          # 派发类不计
-            (ago(35), "> 修复包合入 S-1"),                               # 修
-            (ago(30), "codex 外审结论账本 S-1 · 审②结论并入"),            # 外（首行开头 codex）；审②不在开头 → 不计审
-            (ago(25), "审核②结论 ＋ codex 外审账本 S-1"),               # 审；外需首行开头 → 不计
+            (ago(50), "## 审核①结论 S-1"),                                                   # 审
+            (ago(45), "## 这不是审核①结论，只是引用 codex 外审结论 S-1"),                       # 否定 / 引用 → 都不计
+            (ago(44), "## 不算修复包合入，只是引用 agy 账本 S-1"),                                 # 不算 / 引用 → 都不计
+            (ago(40), "## 修复包已派发（S-1）"),                                               # 派发类不计
+            (ago(35), "> 修复包合入 S-1"),                                                    # 修
+            (ago(30), "## 唯一缺陷账本：审核①（Fable）＋ codex ＋ agy 三路结论并入 S-1"),      # 肯定形态在首行中段 → 审＋外
+            (ago(25), "## 复核②未出结论；外审取消 S-1"),                                       # 「未」在关键词后不算否定 → 审；外审前「取消」不在前 6 字符 → 但关键词后的「取消」不算 → 外无结论词 → 不计
         ]
         b = board_of(table="## W1\n- [ ] S-1 a\n", results={"gh.issue": ok("gh.issue", issue(comments))})
         m = b.modules[0]
-        self.assertEqual((m.rounds.review.value, m.rounds.external.value, m.rounds.fixpack.value), (2, 1, 1))
-        self.assertEqual(m.tier, Tier.TWO)
-        self.assertEqual(m.rounds_line, "审 2实 · 外 1实 · 修 1实 · CI 红0推 绿0推")
-        self.assertIn("评论 6实", m.evidence_line)
+        self.assertEqual((m.rounds.review.value, m.rounds.external.value, m.rounds.fixpack.value), (3, 1, 1))
+        self.assertEqual(m.tier, Tier.THREE)
+        self.assertEqual(m.rounds_line, "审 3实 · 外 1实 · 修 1实 · CI 红0推 绿0推")
+        self.assertIn("评论 7实", m.evidence_line)
+        self.assertEqual(infer._classify_comment("## 无审核①结论，取消 codex 外审的账本，不算修复包合入"), (False, False, False))
+        # r6：审 类命中须同一首行含 结论 / 账本 / 复核结论——#606 真实首行「…前一轮（并行审核①真库变异时）唯一失败…」→ 0
+        real = ("本机 full 补证（`ux-b1`，2026-09-05 13:13 北京）：对措辞修正后的候选（代码面＝`9692ace`，文档修正 `f1ce0a5`，任务表 `3aa3c8b`）"
+                "复跑 `scripts/dev/check.sh full`，这次把 check.sh 退出码单独写进日志：**`Ran 5947 tests / OK`、`CHECK_EXIT=0`**，临时真库容器已清。"
+                "前一轮（并行审核①真库变异时）唯一失败 `test_gateway_postgres` 已定位")
+        self.assertEqual(infer._classify_comment(real)[0], False)
+        self.assertEqual(infer._classify_comment("## 定向复核②：全部闭合")[0], False)
+        self.assertEqual(infer._classify_comment("## 定向复核②复核结论：全部闭合")[0], True)
+        self.assertEqual(infer._classify_comment("## 唯一缺陷账本：审核①（Fable）＋ codex ＋ agy 三路结论并入，编排者裁定"), (True, True, False))
 
     def test_ci_run_unique_attribution(self):
         """R1-5：CI run 唯一归属（headSha 提交 → PR 分支 → 最晚开始的重叠窗口），绝不重复计数。"""
