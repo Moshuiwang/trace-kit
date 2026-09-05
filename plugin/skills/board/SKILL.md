@@ -76,11 +76,11 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/board.py --repo-root . [--config docs/trac
 
 | 头部项 | 证据类型 |
 | --- | --- |
-| 阻塞（卡住步骤 / 暂停区间 / 最大空档） `block` | commit_time / pr_state / comment_title / tasktable_tag |
-| 下一步（首个未勾选 Step ＋ 编排窗口 / worktree 数） `next` | checkbox / tmux_window / worktree |
+| 阻塞（当前：卡住步骤 / 最近完成的 CI run 红 / 审核结论失效 / 阶段未知 / 编排窗口不在 / 暂停中） `block` | commit_time / pr_state / comment_title / ci_conclusion / sha_equal / tmux_window / tasktable_tag |
+| 下一步（首个未勾选 Step ＋ worktree 数） `next` | checkbox / worktree |
 | 预算（配置计数条；无配置只列 PR 数与 CI 次数） `budget` | config_command / pr_state / workflow_run |
-| 存疑（自述未证 / 合同 PR 自合零批准 / 共用 PR / PR 自合计数） `doubt` | checkbox / pr_merged_by / pr_state |
-| 轮数（审 / 外 / 修＝评论首行匹配；CI 红绿＝活动窗口内 run 结论） `rounds` | comment_title / ci_conclusion |
+| 存疑（自述未证 / 合同 PR 自合零批准 / 共用 PR / PR 自合计数 / 历史最大空档含暂停归因） `doubt` | checkbox / pr_merged_by / pr_state / commit_time / tasktable_tag |
+| 轮数（审 / 外 / 修＝评论首行匹配，归属 Step ID 实 → 活动窗口 推 → Trace 级；CI 红绿＝活动窗口内 run 结论） `rounds` | comment_title / ci_conclusion |
 | 最后外部证据 `evidence` | commit_time / pr_state / comment_title / ci_conclusion / worktree |
 
 ## 证据源配置（项目专属证据）
