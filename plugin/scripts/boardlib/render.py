@@ -55,6 +55,7 @@ SIMPLE_BOX_MAX, COMPLEX_BOX_MAX, BOX_MIN = 60, 34, 20
 CHIP_MIN, CHIP_MAX = 10, 46
 MARK_RE = re.compile(r"\d+[实报推]|未知")
 MIN_W, MIN_H = 20, 12                 # 小于此尺寸只显示单行「窗口过小」（账本 R2-13）
+TITLE_MIN = 20                        # 头部有告警时标题至少保留的列数（账本 R2-6）
 UNKNOWN_BORDER = "┌┄┐┆└┘"             # 轮数不可得：细虚线档（账本 R1-16；不改 Tier 枚举）
 _SEQ_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]|\x9b[0-?]*[ -/]*[@-~]|\x1b[\]P_^X][^\x07\x1b]*(?:\x07|\x1b\\\\)?")
 _NL_RE = re.compile(r"\r\n|[\r\n\t\u2028\u2029]")
@@ -829,18 +830,27 @@ def _legend_rows(W, view):
         tl, hz, tr = BORDER[tier][:3]
         segs.append((tl + hz + tr + ("⟲N " if tier == Tier.MORE else "") + TIER_LABEL[tier], INK, False))
     segs.append((UNKNOWN_BORDER[:3] + "未知", UNKNOWN_COLOR, False))
-    segs.append((("[ ]=机器证据 " if view == "complex" else "") + "连线=依赖", DIM, False))
-    rows, cur, width = [], [], 0
-    for seg in segs:
-        w = dw(seg[0])
-        if cur and width + 1 + w > W:
+    note = "[ ]=证据 " if view == "complex" else ""
+
+    def flow(tail):
+        rows, cur, width = [], [], 0
+        for seg in segs + [(tail, DIM, False)]:
+            w = dw(seg[0])
+            if cur and width + 1 + w > W:
+                rows.append(cur)
+                cur, width = [], 0
+            cur.append(seg)
+            width += w + (1 if len(cur) > 1 else 0)
+        if cur:
             rows.append(cur)
-            cur, width = [], 0
-        cur.append(seg)
-        width += w + (1 if len(cur) > 1 else 0)
-    if cur:
-        rows.append(cur)
-    return rows[:3]
+        return rows[:3]
+
+    rows = flow(note + "连线=依赖")
+    if len(rows) > 1 and note:                       # 放不下就省掉「[ ]=证据」注释，少占一行正文
+        shorter = flow("连线=依赖")
+        if len(shorter) < len(rows):
+            rows = shorter
+    return rows
 
 
 def _draw_legend(cv, rows, y0, anim):
@@ -862,9 +872,9 @@ def _draw_header(cv, board, view, W, scroll, limit, note, extra=()):
     avail = max(0, W - dw(right) - 1)
     title_full = "Trace 看板 · " + clean(h.title or "")
     warns = [clean(w) for w in list(h.warnings) + list(extra) if w]
-    if warns:                                        # 账本 R2-6：告警先占位（至少半行），标题让位并带 …(+N)
+    if warns:                                        # 账本 R2-6：告警优先占位，标题只保底 TITLE_MIN 列并带 …(+N)
         warn_full = "⚠ " + " · ".join(warns)
-        warn_room = max(0, min(dw(warn_full), max(avail // 2, avail - dw(title_full) - 2)))
+        warn_room = max(0, min(dw(warn_full), max(avail - TITLE_MIN - 2, avail // 2)))
         title = fit_mark(title_full, max(0, avail - warn_room - 2))
         cv.put(0, 0, title, INK, True)
         cv.put(dw(title) + 2, 0, fit_mark(warn_full, warn_room), WARN, True)
