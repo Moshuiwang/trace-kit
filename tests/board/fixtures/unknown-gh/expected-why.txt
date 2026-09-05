@@ -1,33 +1,33 @@
-Trace 看板 · Trace #7 simple-demo · batch/7-demo  ⚠ 窗口状态未知，需元守护核 · gh.prs 不可得：命令不可用：gh（FileNotFoundError） · gh.issu 更新 14:00
+Trace 看板 · Trace #7 simple-demo · batch/7-demo  ⚠ 窗口状态未知，需元守护核 · gh.prs 不可得：命令不可用 · gh.issue 不可得：命令不可用 · gh 更新 14:00
  视图 简易版 ═════════════════════════════════════════════════════════════════ v 视图  r 刷新  ↑↓ 逐行  PgUp/PgDn 翻页  Home/End 顶/底  a 动效  q 退出
-阶段      执行中 · Wave 2 实施（2/4实 勾选）
+阶段      未知（收口证据 gh.issue 不可得）· 2/4实 勾选
 五级阶段  合入主干 未知 · 已发布 未知 · 预发已升级 未配置 · 已上生产 未配置 · 收口 未知
 阻塞      阶段未知：合入主干 / 已发布 / 收口
-下一步    S-2 补边界与快照测试（未知） · worktree 1实
+下一步    未知（收口证据不可得） · worktree 1实
 预算      PR 未知   CI 次数 未知
-存疑      PR 存疑未知（gh） · 最大空档 87推 分钟 11:28→12:55
-外部证据  65实 分钟前 · wt S-2（S-2）· 09-03 12:55
+存疑      PR 存疑未知（gh.prs） · 空档 87推 分 11:28→12:55
+外部证据  65实 分钟前 · wt S-2（S-2）· 09-03 12:55 · 未知：gh.prs/gh.issue/gh.runs
 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                                              ┌─ 块 A 合同 · 未知 ───────────────────────────────── /15 ─┐
-                                             │ 块 A 合同 1/1                                            │
+                                             │ 块 A 合同 勾选 1/1 · 未知 1                              │
                                              │ 审 未知 · 外 未知 · 修 未知 · CI 红未知 绿未知           │
                                              │ PR 未知 · 评论 未知 · 最新 10:55                         │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ Wave 1 实施 · 完成 ───────────────────────────── 28/30 ─┐
-                                             │ Wave 1 实施 1/1                                          │
+                                             │ Wave 1 实施 勾选 1/1                                     │
                                              │ 审 未知 · 外 未知 · 修 未知 · CI 红未知 绿未知           │
                                              │ PR 未知 · 评论 未知 · 最新 11:28                         │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ Wave 2 实施 · 未知 ───────────────────────────── 65/45 ─┐
-                                             │ Wave 2 实施 0/1                                          │
+                                             │ Wave 2 实施 勾选 0/1 · 未知 1                            │
                                              │ 审 未知 · 外 未知 · 修 未知 · CI 红未知 绿未知           │
                                              │ PR 未知 · 评论 未知 · 最新 12:55                         │
                                              └──────────────────────────────────────────────────────────┘
                                                                            ▼
                                              ┌─ Wave 3 审核 · 未知 ─────────────────────────────── /20 ─┐
-                                             │ Wave 3 审核 0/1                                          │
+                                             │ Wave 3 审核 勾选 0/1 · 未知 1                            │
                                              │ 审 未知 · 外 未知 · 修 未知 · CI 红未知 绿未知           │
                                              │ PR 未知 · 评论 未知 · 最新 ?                             │
                                              └──────────────────────────────────────────────────────────┘
@@ -52,35 +52,43 @@ Trace 看板 · Trace #7 simple-demo · batch/7-demo  ⚠ 窗口状态未知，�
 节点 ■完成 ■自述未证 ┌──┐运行中 ■下一步 ┌──┐观察 ■卡住 ■待人类 ■待做 ■失效 ■未知 边框 ┌─┐未审 ╔═╗1轮 ┏━┓2轮 ┏╍┓3轮 ┏╍┓⟲N 3轮+ 连线=依赖
 
 证据链（--why）：对象 | 状态 | 证据类型 | 来源 | 取值 | 取值时间（UTC+8） | 可得
-块 A 合同 | 未知 | checkbox | 步骤聚合 | 1/1 勾选；步骤状态 S-0=未知 | 2026-09-03 10:55 | 是
-块 A 合同 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-块 A 合同 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-块 A 合同 | 边框 | comment_title | gh.issue | 审核轮数 未知 → 档位 0 | ? | 否
-Wave 1 实施 | 完成 | checkbox | 步骤聚合 | 1/1 勾选；步骤状态 S-1=完成 | 2026-09-03 11:28 | 是
-Wave 1 实施 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 1 实施 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 1 实施 | 边框 | comment_title | gh.issue | 审核轮数 未知 → 档位 0 | ? | 否
-Wave 2 实施 | 未知 | checkbox | 步骤聚合 | 0/1 勾选；步骤状态 S-2=未知 | 2026-09-03 12:55 | 是
-Wave 2 实施 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 2 实施 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 2 实施 | 边框 | comment_title | gh.issue | 审核轮数 未知 → 档位 0 | ? | 否
-Wave 3 审核 | 未知 | checkbox | 步骤聚合 | 0/1 勾选；步骤状态 S-3=未知 | ? | 是
-Wave 3 审核 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 3 审核 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Wave 3 审核 | 边框 | comment_title | gh.issue | 审核轮数 未知 → 档位 0 | ? | 否
-S-0 | 未知 | config_command | gh.prs / gh.issue | 已勾选，但制品证据不可得：gh.prs：命令不可用：gh（FileNotFoundError）；gh.issue：命令不可用：gh（FileNotFoundError） | ? | 否
+块 A 合同 | 未知 | checkbox | 步骤聚合 | 勾选 1/1 · 完成 0 · 未证 0 · 未知 1；步骤状态 S-0=未知 | 2026-09-03 10:55 | 是
+块 A 合同 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用 | ? | 否
+块 A 合同 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用 | ? | 否
+块 A 合同 | 边框 | comment_title | gh.issue | 审核轮数不可得 → 档位未知（画细虚线） | ? | 否
+Wave 1 实施 | 完成 | checkbox | 步骤聚合 | 勾选 1/1 · 完成 1 · 未证 0 · 未知 0；步骤状态 S-1=完成 | 2026-09-03 11:28 | 是
+Wave 1 实施 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用 | ? | 否
+Wave 1 实施 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用 | ? | 否
+Wave 1 实施 | 边框 | comment_title | gh.issue | 审核轮数不可得 → 档位未知（画细虚线） | ? | 否
+Wave 2 实施 | 未知 | checkbox | 步骤聚合 | 勾选 0/1 · 完成 0 · 未证 0 · 未知 1；步骤状态 S-2=未知 | 2026-09-03 12:55 | 是
+Wave 2 实施 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用 | ? | 否
+Wave 2 实施 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用 | ? | 否
+Wave 2 实施 | 边框 | comment_title | gh.issue | 审核轮数不可得 → 档位未知（画细虚线） | ? | 否
+Wave 3 审核 | 未知 | checkbox | 步骤聚合 | 勾选 0/1 · 完成 0 · 未证 0 · 未知 1；步骤状态 S-3=未知 | ? | 是
+Wave 3 审核 | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用 | ? | 否
+Wave 3 审核 | CI | ci_conclusion | gh.runs | run 不可得：命令不可用 | ? | 否
+Wave 3 审核 | 边框 | comment_title | gh.issue | 审核轮数不可得 → 档位未知（画细虚线） | ? | 否
+S-0 | 未知 | pr_state | gh.prs | 判定所需证据键 ok=False，或依赖不存在 / 成环，或候选 HEAD 不可得（不回落）｜已勾选，但制品证据不可得：gh.prs / gh.issue | ? | 否
+S-0 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
+S-0 | 未知 | comment_title | gh.issue | gh.issue 不可得：命令不可用 | ? | 否
 S-0 | 证据 | checkbox | git.tasktable_history | 1实 条：勾选 e1e1e1e | 2026-09-03 10:55 | 是
-S-1 | 完成 | commit_time | git.log | 已勾选 ＋ 独立制品 commit a1a1a1a / commit a2a2a2a | 2026-09-03 11:28 | 是
-S-1 | 证据 | commit_time | git.log / git.tasktable_history | 3实 条：commit a1a1a1a、勾选 e2e2e2e、commit a2a2a2a | 2026-09-03 11:28 | 是
-S-1 | 等待 | checkbox | git.log → git.tasktable_history | 20m00s（commit a1a1a1a 09-03 11:00:00 → 勾选 e2e2e2e 09-03 11:20:00） | 2026-09-03 11:20 | 是
-S-2 | 未知 | config_command | gh.prs / gh.issue / gh.runs | 最近证据 65实 分钟前，但 gh.prs / gh.issue / gh.runs 不可得，无法排除更新证据 | 2026-09-03 12:55 | 否
+S-1 | 完成 | commit_time | git.log | 已勾选且有独立制品（PR MERGED / 触及 Trace 目录外文件的提交 / 指针指向的评论）｜制品 commit a1a1a1a / commit a2a2a2a | 2026-09-03 11:28 | 是
+S-1 | 证据 | commit_time | git.log | 3实 条：commit a1a1a1a、勾选 e2e2e2e、commit a2a2a2a | 2026-09-03 11:28 | 是
+S-1 | 等待 | checkbox | git.tasktable_history | 20m00s（commit a1a1a1a 09-03 11:00:00 → 勾选 e2e2e2e 09-03 11:20:00） | 2026-09-03 11:20 | 是
+S-2 | 未知 | pr_state | gh.prs | 判定所需证据键 ok=False，或依赖不存在 / 成环，或候选 HEAD 不可得（不回落）｜最近证据 65实 分钟前，但 gh.prs / gh.issue / gh.runs 不可得，无法排除更新证据 | 2026-09-03 12:55 | 否
+S-2 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
+S-2 | 未知 | comment_title | gh.issue | gh.issue 不可得：命令不可用 | ? | 否
+S-2 | 未知 | ci_conclusion | gh.runs | gh.runs 不可得：命令不可用 | ? | 否
 S-2 | 证据 | worktree | git.worktrees | 1实 条：wt S-2 | 2026-09-03 12:55 | 是
-S-3 | 未知 | config_command | gh.prs / gh.issue / gh.runs | 无证据，且 gh.prs（命令不可用：gh（FileNotFoundError）） / gh.issue（命令不可用：gh（FileNotFoundError）） / gh.runs（命令不可用：gh（FileNotFoundError）） 不可得 | ? | 否
-阶段·合入主干 | 未知 | pr_state | gh.prs | 命令不可用：gh（FileNotFoundError） | ? | 否
-阶段·已发布 | 未知 | tag_ref | gh.tags | 命令不可用：gh（FileNotFoundError）（本地 git.tags 参考：无） | ? | 否
+S-3 | 未知 | pr_state | gh.prs | 判定所需证据键 ok=False，或依赖不存在 / 成环，或候选 HEAD 不可得（不回落）｜无证据，且 gh.prs / gh.issue / gh.runs 不可得 | ? | 否
+S-3 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
+S-3 | 未知 | comment_title | gh.issue | gh.issue 不可得：命令不可用 | ? | 否
+S-3 | 未知 | ci_conclusion | gh.runs | gh.runs 不可得：命令不可用 | ? | 否
+阶段·合入主干 | 未知 | pr_state | gh.prs | gh.prs 不可得：命令不可用 | ? | 否
+阶段·已发布 | 未知 | tag_ref | gh.prs | 无已证实的合并点（合入主干 未知） | ? | 否
 阶段·预发已升级 | 未配置 | config_command | config.staging | 证据源配置未声明 | ? | 否
 阶段·已上生产 | 未配置 | config_command | config.production | 证据源配置未声明 | ? | 否
-阶段·收口 | 未知 | issue_state | gh.issue | 命令不可用：gh（FileNotFoundError） | ? | 否
-空档 | 87推 分钟 | worktree | git.log → git.worktrees | commit a2a2a2a 09-03 11:28:00 → wt S-2 09-03 12:55:00 | 2026-09-03 12:55 | 是
-Trace | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用：gh（FileNotFoundError） | ? | 否
-Trace | CI | ci_conclusion | gh.runs | run 不可得：命令不可用：gh（FileNotFoundError） | ? | 否
+阶段·收口 | 未知 | issue_state | gh.issue | gh.issue 不可得：命令不可用 | ? | 否
+空档 | 87推 分钟 | worktree | git.worktrees | commit a2a2a2a 09-03 11:28:00 → wt S-2 09-03 12:55:00 | 2026-09-03 12:55 | 是
+Trace | 轮数 | comment_title | gh.issue | 评论不可得：命令不可用 | ? | 否
+Trace | CI | ci_conclusion | gh.runs | run 不可得：命令不可用 | ? | 否

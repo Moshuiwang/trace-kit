@@ -9,32 +9,45 @@
   "git.log": {
    "key": "git.log",
    "ok": true,
-   "value": [
-    {
-     "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
-     "at": "2026-09-03T01:30:00+00:00",
-     "authored": "2026-09-03T01:30:00+00:00",
-     "author": "agent-a",
-     "subject": "docs(#8): 三件套入库 (#20)",
-     "refs": ""
-    },
-    {
-     "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-     "at": "2026-09-03T02:10:00+00:00",
-     "authored": "2026-09-03T02:10:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A1 打包引擎目录",
-     "refs": ""
-    },
-    {
-     "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
-     "at": "2026-09-03T02:40:00+00:00",
-     "authored": "2026-09-03T02:40:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#8): S-A1 打包引擎目录 (#21)",
-     "refs": ""
-    }
-   ],
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/8-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T01:30:00+00:00",
+      "committed": "2026-09-03T01:30:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#8): 三件套入库 (#20)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "at": "2026-09-03T02:10:00+00:00",
+      "committed": "2026-09-03T02:10:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A1 打包引擎目录",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+      "at": "2026-09-03T02:40:00+00:00",
+      "committed": "2026-09-03T02:40:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#8): S-A1 打包引擎目录 (#21)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
    "error": "",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",
@@ -203,6 +216,7 @@
       }
      ],
      "headRefName": "wt/8-contract",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
      "url": "https://github.com/example/demo/pull/20",
@@ -221,6 +235,7 @@
      "author": "agent-a",
      "reviews": [],
      "headRefName": "batch/8-demo",
+     "head_oid": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
      "baseRefName": "main",
      "mergeCommit": "",
      "url": "https://github.com/example/demo/pull/29",
@@ -245,6 +260,7 @@
       }
      ],
      "headRefName": "wt/8-S-A1",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
      "url": "https://github.com/example/demo/pull/21",
@@ -346,6 +362,15 @@
    "ok": false,
    "value": null,
    "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": false,
+   "value": null,
+   "error": "无已证实的合并点（批次 PR 未合入或未识别）",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",
    "grade": "measured"

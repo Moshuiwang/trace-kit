@@ -9,16 +9,25 @@
   "git.log": {
    "key": "git.log",
    "ok": true,
-   "value": [
-    {
-     "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
-     "at": "2026-09-03T02:50:00+00:00",
-     "authored": "2026-09-03T02:50:00+00:00",
-     "author": "agent-a",
-     "subject": "docs(#7): 三件套入库 (#10)",
-     "refs": ""
-    }
-   ],
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/7-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T02:50:00+00:00",
+      "committed": "2026-09-03T02:50:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#7): 三件套入库 (#10)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
    "error": "",
    "cmd": "",
    "fetched_at": "2026-09-03T02:58:00+00:00",
@@ -135,6 +144,7 @@
      "author": "agent-a",
      "reviews": [],
      "headRefName": "wt/7-contract",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
      "url": "https://github.com/example/demo/pull/10",
@@ -195,6 +205,15 @@
    "ok": false,
    "value": null,
    "error": "未配置发布工作流",
+   "cmd": "",
+   "fetched_at": "2026-09-03T02:58:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": false,
+   "value": null,
+   "error": "无已证实的合并点（批次 PR 未合入或未识别）",
    "cmd": "",
    "fetched_at": "2026-09-03T02:58:00+00:00",
    "grade": "measured"

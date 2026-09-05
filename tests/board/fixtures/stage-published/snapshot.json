@@ -9,32 +9,45 @@
   "git.log": {
    "key": "git.log",
    "ok": true,
-   "value": [
-    {
-     "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
-     "at": "2026-09-03T01:40:00+00:00",
-     "authored": "2026-09-03T01:40:00+00:00",
-     "author": "agent-a",
-     "subject": "docs(#11): 三件套入库 (#30)",
-     "refs": ""
-    },
-    {
-     "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-     "at": "2026-09-03T02:20:00+00:00",
-     "authored": "2026-09-03T02:20:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#11): S-1 实现取数与解析",
-     "refs": ""
-    },
-    {
-     "sha": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
-     "at": "2026-09-03T05:00:00+00:00",
-     "authored": "2026-09-03T05:00:00+00:00",
-     "author": "agent-a",
-     "subject": "feat(#11): S-1 实现取数与解析 (#31)",
-     "refs": ""
-    }
-   ],
+   "value": {
+    "mode": "branch",
+    "refs": [
+     "batch/11-demo"
+    ],
+    "truncated": false,
+    "commits": [
+     {
+      "sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+      "at": "2026-09-03T01:40:00+00:00",
+      "committed": "2026-09-03T01:40:00+00:00",
+      "author": "agent-a",
+      "subject": "docs(#11): 三件套入库 (#30)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "at": "2026-09-03T02:20:00+00:00",
+      "committed": "2026-09-03T02:20:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#11): S-1 实现取数与解析",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     },
+     {
+      "sha": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+      "at": "2026-09-03T05:00:00+00:00",
+      "committed": "2026-09-03T05:00:00+00:00",
+      "author": "agent-a",
+      "subject": "feat(#11): S-1 实现取数与解析 (#31)",
+      "refs": "",
+      "docs_only": false,
+      "files_n": 1
+     }
+    ]
+   },
    "error": "",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",
@@ -174,6 +187,7 @@
       }
      ],
      "headRefName": "wt/11-contract",
+     "head_oid": "",
      "baseRefName": "main",
      "mergeCommit": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
      "url": "https://github.com/example/demo/pull/30",
@@ -198,6 +212,7 @@
       }
      ],
      "headRefName": "batch/11-demo",
+     "head_oid": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
      "baseRefName": "main",
      "mergeCommit": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
      "url": "https://github.com/example/demo/pull/31",
@@ -300,6 +315,18 @@
      "url": "https://github.com/example/demo/actions/runs/950"
     }
    ],
+   "error": "",
+   "cmd": "",
+   "fetched_at": "2026-09-03T06:00:00+00:00",
+   "grade": "measured"
+  },
+  "gh.compare": {
+   "key": "gh.compare",
+   "ok": true,
+   "value": {
+    "base": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+    "results": {}
+   },
    "error": "",
    "cmd": "",
    "fetched_at": "2026-09-03T06:00:00+00:00",

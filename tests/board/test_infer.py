@@ -525,8 +525,8 @@ class HeaderTest(unittest.TestCase):
         self.assertEqual(v.status, Status.DONE)
         self.assertEqual(v.chip, "PR #2 ✓合入 · 自合 · 零批准")
         self.assertEqual(v.chip_status, Status.DONEQ)
-        self.assertIn("合同 PR #2 自合 / 零批准", b.header.doubt)
-        self.assertIn("PR 自合 1/1实 · 零批准", b.header.doubt)
+        self.assertIn("合同 PR #2 自合/零批准", b.header.doubt)
+        self.assertIn("PR 自合 1/1实 零批准", b.header.doubt)
         prs2 = [pr(2, "合同", ago(300), ago(290), head="trace/7-kickoff", author="bot", merged_by="pm", reviews=("APPROVED",), merge_commit="a" * 40)]
         b2 = board_of(table=table, results=dict(res, **{"gh.prs": ok("gh.prs", prs2)}))
         self.assertEqual(view(b2, "S-0").chip, "PR #2 ✓合入 · 批准")
@@ -552,8 +552,8 @@ class HeaderTest(unittest.TestCase):
                "git.log": ok("git.log", log(commit("1" * 40, ago(320), "S-1 done"), commit("2" * 40, ago(40), "S-2 done"))),
                "tasktable.quotes": ok("tasktable.quotes", [quote], Grade.REPORTED)}
         b = board_of(table=table, results=res)
-        self.assertIn("最大空档 280推 分", b.header.doubt)
-        self.assertIn("（暂停 200报 分）", b.header.doubt)
+        self.assertIn("空档 280推 分", b.header.doubt)
+        self.assertIn("（暂停 200报）", b.header.doubt)
         self.assertEqual(b.header.block, "无")
         pause = next(w for w in b.why if w.subject == "暂停")
         self.assertEqual(pause.status, "200报 分钟")
@@ -571,8 +571,8 @@ class HeaderTest(unittest.TestCase):
         self.assertIn("S-2 200实 分钟无证据", b.header.block)
         self.assertIn("CI 红：Epic Full", b.header.block)
         self.assertIn("审核结论失效 S-3", b.header.block)
-        self.assertNotIn("最大空档", b.header.block)
-        self.assertIn("最大空档", b.header.doubt)
+        self.assertNotIn("空档", b.header.block)
+        self.assertIn("空档", b.header.doubt)
 
     def test_window_note_and_warnings(self):
         b = board_of(table="## W1\n- [ ] S-1 a\n- [ ] 无编号\n- [ ] S-2 " + "字" * 20 + "\n")

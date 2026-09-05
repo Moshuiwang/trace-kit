@@ -1209,7 +1209,7 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
         if p["_state"] == "MERGED" and not _pr_approved(p):
             flags.append("零批准")
         if flags:
-            doubt_parts.append("合同 PR #%d %s" % (p["number"], " / ".join(flags)))
+            doubt_parts.append("合同 PR #%d %s" % (p["number"], "/".join(flags)))
         why.append(_why("合同 PR #%d" % p["number"], "存疑" if flags else "正常", E.PR_MERGED_BY, "git.contract",
                         "首次加入 合同.md 的提交 %s；PR %s；mergedBy=%s author=%s；APPROVED review %d（gh.prs）" % (
                             (ctx.contract or {}).get("sha", "")[:7], p["_state"], p.get("mergedBy") or "-", p.get("author") or "-",
@@ -1227,7 +1227,7 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
             n_self = sum(1 for p in merged_prs if _pr_self_merged(p))
             n_appr = sum(1 for p in merged_prs if _pr_approved(p))
             tally = "PR 自合 %d/%s" % (n_self, _n(len(merged_prs)))
-            tally += " · 零批准" if n_appr == 0 else " · 批准 %s" % _n(n_appr)
+            tally += " 零批准" if n_appr == 0 else " 批准 %s" % _n(n_appr)
             doubt_parts.append(tally)
             why.append(_why("PR 合并方式", tally, E.PR_MERGED_BY, "gh.prs", "自合 %s" % " ".join("#%d" % p["number"] for p in merged_prs if _pr_self_merged(p)), None))
     else:
@@ -1242,9 +1242,9 @@ def _header(ctx: _Ctx, views: list[StepView], modules: list[ModuleView], levels:
                 lo, hi = max(a.at, p["start"]), min(b.at, p["end"] or now)
                 if hi > lo:
                     paused += hi - lo
-            text = "最大空档 %s 分 %s→%s" % (_n(_mins(gap), Grade.INFERRED), beijing(a.at), beijing(b.at))
+            text = "空档 %s 分 %s→%s" % (_n(_mins(gap), Grade.INFERRED), beijing(a.at), beijing(b.at))
             if paused:
-                text += "（暂停 %s 分）" % _n(_mins(paused), Grade.REPORTED)
+                text += "（暂停 %s）" % _n(_mins(paused), Grade.REPORTED)
             doubt_parts.append(text)
             why.append(_why("空档", "%s 分钟" % _n(_mins(gap), Grade.INFERRED), b.etype, b.source,
                             "%s %s → %s %s%s" % (a.label, beijing(a.at, "%m-%d %H:%M:%S"), b.label, beijing(b.at, "%m-%d %H:%M:%S"),
