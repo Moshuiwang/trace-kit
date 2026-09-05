@@ -377,6 +377,13 @@ class CommentWindowTest(unittest.TestCase):
         self.assertEqual(m.rounds_line, "审 3实 · 外 1实 · 修 1实 · CI 红0推 绿0推")
         self.assertIn("评论 7实", m.evidence_line)
         self.assertEqual(infer._classify_comment("## 无审核①结论，取消 codex 外审的账本，不算修复包合入"), (False, False, False))
+        # r6：审 类命中须同一首行含 结论 / 账本 / 复核结论——#606 真实首行「…前一轮（并行审核①真库变异时）唯一失败…」→ 0
+        real = ("本机 full 补证（`ux-b1`，2026-09-05 13:13 北京）：对措辞修正后的候选（代码面＝`9692ace`，文档修正 `f1ce0a5`，任务表 `3aa3c8b`）"
+                "复跑 `scripts/dev/check.sh full`，这次把 check.sh 退出码单独写进日志：**`Ran 5947 tests / OK`、`CHECK_EXIT=0`**，临时真库容器已清。"
+                "前一轮（并行审核①真库变异时）唯一失败 `test_gateway_postgres` 已定位")
+        self.assertEqual(infer._classify_comment(real)[0], False)
+        self.assertEqual(infer._classify_comment("## 定向复核②：全部闭合")[0], False)
+        self.assertEqual(infer._classify_comment("## 定向复核②复核结论：全部闭合")[0], True)
         self.assertEqual(infer._classify_comment("## 唯一缺陷账本：审核①（Fable）＋ codex ＋ agy 三路结论并入，编排者裁定"), (True, True, False))
 
     def test_ci_run_unique_attribution(self):

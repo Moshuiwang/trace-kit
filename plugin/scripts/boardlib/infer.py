@@ -12,7 +12,7 @@
 - 候选失效（K-2 / K-3 / R1-7）：`t:review` / `t:gate` 且指针含 SHA 的步骤，无论是否勾选，SHA ≠ 分支 HEAD → `stale`；
   HEAD 以 `gh.prs` 批次 PR 远端 head OID 为准，本地 `git.branches` 备用；都不可得 → `unknown`。
 - 依赖（R1-6）：依赖不存在 / 成环 → `unknown`＋告警；依赖满足＝依赖状态 ∈ {完成, 自述未证}（自述未证视为满足＝现场裁定）。
-- 轮数（R1-3 r5 / A-6）：评论首行**全文**匹配（首行即标题），关键词前 6 字符内有否定词（不是 / 非 / 未 / 无 / 取消 / 引用 / 不算）不计；「修」只计有结果的修复包评论；
+- 轮数（R1-3 r5 / A-6）：评论首行**全文**匹配（首行即标题），关键词前 6 字符内有否定词（不是 / 非 / 未 / 无 / 取消 / 引用 / 不算）不计；「审」须同一首行含结论 / 账本 / 复核结论（r6）；「修」只计有结果的修复包评论；
   归属 Step ID（实）→ 活动窗口回落（推，重叠取最晚开始）→ Trace 级。CI run 唯一归属（R1-5）：headSha 提交信息 → PR 分支 → 窗口 → Trace 级。
 - 五级阶段（R1-11…15）：合入主干只认唯一识别的批次 PR（无批次分支＝不适用）；已发布须有已证实的合并点，祖先关系优先 `gh.compare`；
   已发布未知 → 预发 / 生产未知；合入 / 收口不可得 → 阶段行「未知」。
@@ -54,6 +54,7 @@ FAIL_CATEGORY_RE = re.compile(r"^(超时|退出码 \d+|解析失败|无输出|�
 # R1-3 r5 裁定：不锚定行首，只排除否定形态：关键词前 6 个字符内出现「不是 / 非 / 未 / 无 / 取消 / 引用 / 不算」不计）
 REVIEW_RE = re.compile(r"审核[①②③④⑤]|审[①②③④⑤]|审核\s*[1-5]\s*轮|独立审核.*?结论|定向复核.*?结论|复核[①②③④⑤]")
 EXTERNAL_RE = re.compile(r"外审|codex|agy", re.IGNORECASE)
+REVIEW_RESULT_RE = re.compile(r"结论|账本|复核结论")  # r6：审 类命中额外要求同一首行含结论 / 账本 / 复核结论（与 外 / 修 口径对齐）
 EXTERNAL_RESULT_RE = re.compile(r"结论|账本")
 FIXPACK_RE = re.compile(r"修复包")
 FIXPACK_RESULT_RE = re.compile(r"合入|完成|已落|结论")
@@ -767,7 +768,7 @@ def _affirmed(pattern: "re.Pattern[str]", text: str) -> bool:
 
 def _classify_comment(first_line: str) -> tuple[bool, bool, bool]:
     text = _strip_heading(first_line)
-    review = _affirmed(REVIEW_RE, text)
+    review = _affirmed(REVIEW_RE, text) and bool(REVIEW_RESULT_RE.search(text))
     external = _affirmed(EXTERNAL_RE, text) and bool(EXTERNAL_RESULT_RE.search(text))
     fixpack = _affirmed(FIXPACK_RE, text) and bool(FIXPACK_RESULT_RE.search(text))
     return review, external, fixpack
