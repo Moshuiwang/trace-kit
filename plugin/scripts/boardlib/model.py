@@ -313,6 +313,7 @@ class Board:
     modules: list[ModuleView]
     generated_at: datetime
     why: list[Why] = field(default_factory=list)
+    unparsed: list[tuple[int, str]] = field(default_factory=list)  # 任务表无法解析的行（行号, 原文）：复杂版画成灰色自由文本卡片（#12 v2 关卡 3）
 
     def validate(self) -> None:
         """结构断言（https://github.com/Moshuiwang/lingxi/issues/582）：状态串 / 档位 / 角标 / 索引写错即报错，不静默。"""
