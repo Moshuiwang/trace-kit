@@ -32,8 +32,10 @@ from .model import Grade, ProviderResult, Snapshot, TaskTable, parse_ts, utc
 SEP = "\x1f"
 BUILTIN_KEYS = (
     "git.log", "git.tasktable_history", "git.worktrees", "git.tags", "git.branches", "git.contract",
-    "tasktable.quotes", "gh.prs", "gh.issue", "gh.runs", "gh.release_runs", "tmux.windows",
+    "tasktable.quotes", "gh.prs", "gh.issue", "gh.runs", "gh.release_runs", "gh.tags", "tmux.windows",
 )
+GH_TAGS_LIMIT = 30      # gh api repos/<slug>/tags 取前 30
+GH_TAG_DATES = 5        # 前 5 个 tag 再查 commits/<sha> 取提交时刻（发布 tag 一定在最前）
 GIT_LOG_MAX = 5000
 PR_FIELDS = ("number,title,state,isDraft,createdAt,mergedAt,closedAt,mergedBy,author,reviews,headRefName,"
              "baseRefName,mergeCommit,url,body,statusCheckRollup")
@@ -298,6 +300,14 @@ def _parse_runs(out: str) -> list[dict]:
     return rows
 
 
+def _parse_gh_tags(out: str) -> list[dict]:
+    rows = []
+    for t in json.loads(out or "[]"):
+        commit = t.get("commit") or {}
+        rows.append({"name": t.get("name") or "", "sha": commit.get("sha") or "", "at": ""})
+    return rows
+
+
 def _parse_tasktable_blob(text: str) -> dict:
     """任务表某一版本 → 出现的 Step ID、已勾选 ID、含时刻与「暂停」的引用块行（暂停区间原料）。"""
     ids, checked, quotes = [], [], []
@@ -535,6 +545,25 @@ def _job_release_runs(src: LiveSource, slug: str, workflow: str):
     return _inner
 
 
+def _job_gh_tags(src: LiveSource, slug: str, deadline: float):
+    """已发布 tag 的权威来源：远端 tag 列表（前 30）＋ 前 5 个 tag 的提交时刻（引擎不 fetch，本地 tag 可能滞后）。"""
+    def _inner():
+        if not slug:
+            return ProviderResult("gh.tags", False, None, "仓库 slug 未知")
+        res = src.run("gh.tags", ["gh", "api", "repos/%s/tags?per_page=%d" % (slug, GH_TAGS_LIMIT)], parse=_parse_gh_tags)
+        if not res.ok:
+            return res
+        for t in (res.value or [])[:GH_TAG_DATES]:
+            if time.monotonic() > deadline or not t["sha"]:
+                break
+            d = src.run("gh.tags", ["gh", "api", "repos/%s/commits/%s" % (slug, t["sha"]), "-q", ".commit.committer.date"])
+            if d.ok and (d.value or "").strip():
+                t["at"] = d.value.strip()
+        res.cmd = "gh api repos/<repo>/tags?per_page=%d ＋ 前 %d 个 tag 的 repos/<repo>/commits/<sha>" % (GH_TAGS_LIMIT, GH_TAG_DATES)
+        return res
+    return _inner
+
+
 def _job_tmux(src: LiveSource, session: str):
     def _inner():
         if not session:
@@ -573,23 +602,51 @@ def _spec_key(spec, fallback: str) -> str:
     return fallback
 
 
-def config_meta(conf) -> dict:
-    """把 conf 里推断要用的声明抄进 snapshot.config（不含 session 名等机器事实），夹具回放时以此为准。"""
+def config_specs(conf) -> list[tuple[str, str, str, Any]]:
+    """conf 声明的全部命令 → [(kind, key, result_key, spec)]。优先 S-4 的 `conf.specs()`（result_key＝`config.<key>`）；
+    没有 specs() 的最小假 conf 退回按 stages / budgets / evidence 属性拼。"""
+    out: list[tuple[str, str, str, Any]] = []
+    specs = getattr(conf, "specs", None)
+    if callable(specs):
+        try:
+            for sp in specs() or []:
+                key = _spec_key(sp, "")
+                out.append((getattr(sp, "kind", "evidence") or "evidence", key, getattr(sp, "result_key", None) or ("config." + key), sp))
+            return out
+        except Exception:  # noqa: BLE001 — 假 conf 的 specs 不可用时退回属性拼法
+            out = []
     stages = getattr(conf, "stages", None) or {}
-    budgets = getattr(conf, "budgets", None) or []
-    evidence = getattr(conf, "evidence", None) or []
+    if isinstance(stages, dict):
+        for k, sp in stages.items():
+            out.append(("stage", k, getattr(sp, "result_key", None) or ("config." + k), sp))
+    for i, sp in enumerate(getattr(conf, "budgets", None) or []):
+        k = _spec_key(sp, "budget%d" % i)
+        out.append(("budget", k, getattr(sp, "result_key", None) or ("config." + k), sp))
+    for i, sp in enumerate(getattr(conf, "evidence", None) or []):
+        k = _spec_key(sp, "evidence%d" % i)
+        out.append(("evidence", k, getattr(sp, "result_key", None) or ("config." + k), sp))
+    return out
+
+
+def config_meta(conf) -> dict:
+    """把 conf 里推断要用的声明抄进 snapshot.config（不含 session 名 / 命令原文等机器事实），夹具回放时以此为准。"""
     meta = {
         "repo_slug": getattr(conf, "repo_slug", None) or "",
         "trace_branch": getattr(conf, "trace_branch", None) or "",
         "tmux_configured": bool(getattr(conf, "tmux_session", None)),
         "window_pattern": getattr(conf, "window_pattern", None) or "",
         "release_workflow": getattr(conf, "release_workflow", None) or "",
-        "stages": [{"key": k, "label": getattr(s, "label", "") or "", "grade": str(getattr(getattr(s, "grade", ""), "value", getattr(s, "grade", "")) or "")}
-                   for k, s in (stages.items() if isinstance(stages, dict) else [])],
-        "budgets": [{"key": _spec_key(b, "budget%d" % i), "label": getattr(b, "label", "") or _spec_key(b, ""), "cap": getattr(b, "cap", None)}
-                    for i, b in enumerate(budgets)],
-        "evidence": [{"key": _spec_key(e, "evidence%d" % i), "label": getattr(e, "label", "") or _spec_key(e, "")} for i, e in enumerate(evidence)],
+        "stages": [], "budgets": [], "evidence": [],
     }
+    for kind, key, result_key, sp in config_specs(conf):
+        row = {"key": key, "result_key": result_key, "label": getattr(sp, "label", "") or key}
+        if kind == "stage":
+            meta["stages"].append(row)
+        elif kind == "budget":
+            row["cap"] = getattr(sp, "cap", None)
+            meta["budgets"].append(row)
+        else:
+            meta["evidence"].append(row)
     return meta
 
 
@@ -608,18 +665,11 @@ def build_jobs(src: LiveSource, conf, trace_no: int, trace_dir: str, tasktable_p
             ("gh.prs", _job_prs(src, slug, trace_no, branch)),
             ("gh.issue", _job_issue(src, slug, trace_no)),
             ("gh.release_runs", _job_release_runs(src, slug, getattr(conf, "release_workflow", None) or "")),
+            ("gh.tags", _job_gh_tags(src, slug, deadline)),
             ("tmux.windows", _job_tmux(src, getattr(conf, "tmux_session", None) or "")),
         ]
-        stages = getattr(conf, "stages", None) or {}
-        if isinstance(stages, dict):
-            for k, spec in stages.items():
-                jobs.append(("config.stages.%s" % k, _job_config(conf, spec, "config.stages.%s" % k, src.per_cmd_timeout)))
-        for i, spec in enumerate(getattr(conf, "budgets", None) or []):
-            k = _spec_key(spec, "budget%d" % i)
-            jobs.append(("config.budget.%s" % k, _job_config(conf, spec, "config.budget.%s" % k, src.per_cmd_timeout)))
-        for i, spec in enumerate(getattr(conf, "evidence", None) or []):
-            k = _spec_key(spec, "evidence%d" % i)
-            jobs.append(("config.evidence.%s" % k, _job_config(conf, spec, "config.evidence.%s" % k, src.per_cmd_timeout)))
+        for _kind, _key, result_key, spec in config_specs(conf):
+            jobs.append((result_key, _job_config(conf, spec, result_key, src.per_cmd_timeout)))
     else:
         jobs += [
             ("git.worktrees", _job_worktrees(src, branch, deadline)),
@@ -662,6 +712,8 @@ def collect(repo_root, trace_no, branch, conf, now, source) -> Snapshot:
         )
 
     src: LiveSource = source
+    if getattr(conf, "tmux_session", None) and not getattr(src, "session", ""):
+        src.session = str(conf.tmux_session)
     round_timeout = getattr(src, "round_timeout", None)
     deadline = time.monotonic() + max(0.0, float(60 if round_timeout is None else round_timeout))
     n, trace_dir, tt_rel = resolve_trace(repo_root, trace_no)

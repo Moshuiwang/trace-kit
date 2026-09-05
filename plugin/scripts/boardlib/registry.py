@@ -25,18 +25,20 @@ EVIDENCE_REGISTRY: dict[Status, tuple[E, ...]] = {
 
 STAGE_REGISTRY: dict[str, tuple[str, tuple[E, ...]]] = {
     "merged": ("合入主干", (E.PR_STATE,)),
-    "published": ("已发布", (E.WORKFLOW_RUN, E.TAG_REF)),
+    "published": ("已发布", (E.WORKFLOW_RUN, E.TAG_REF)),  # tag 以 gh.tags 为权威，git.tags 只作参考
     "staging": ("预发已升级", (E.IMAGE_TAG, E.CONFIG_COMMAND)),
     "production": ("已上生产", (E.IMAGE_TAG, E.CONFIG_COMMAND)),
     "closed": ("收口", (E.ISSUE_STATE,)),
 }
 
 HEADER_REGISTRY: dict[str, tuple[str, tuple[E, ...]]] = {
-    "block": ("阻塞（卡住步骤 / 暂停区间 / 最大空档）", (E.COMMIT_TIME, E.PR_STATE, E.COMMENT_TITLE, E.TASKTABLE_TAG)),
-    "next": ("下一步（首个未勾选 Step ＋ 编排窗口 / worktree 数）", (E.CHECKBOX, E.TMUX_WINDOW, E.WORKTREE)),
+    "block": ("阻塞（当前：卡住步骤 / 最近完成的 CI run 红 / 审核结论失效 / 阶段未知 / 编排窗口不在 / 暂停中）",
+              (E.COMMIT_TIME, E.PR_STATE, E.COMMENT_TITLE, E.CI_CONCLUSION, E.SHA_EQUAL, E.TMUX_WINDOW, E.TASKTABLE_TAG)),
+    "next": ("下一步（首个未勾选 Step ＋ worktree 数）", (E.CHECKBOX, E.WORKTREE)),
     "budget": ("预算（配置计数条；无配置只列 PR 数与 CI 次数）", (E.CONFIG_COMMAND, E.PR_STATE, E.WORKFLOW_RUN)),
-    "doubt": ("存疑（自述未证 / 合同 PR 自合零批准 / 共用 PR / PR 自合计数）", (E.CHECKBOX, E.PR_MERGED_BY, E.PR_STATE)),
-    "rounds": ("轮数（审 / 外 / 修＝评论首行匹配；CI 红绿＝活动窗口内 run 结论）", (E.COMMENT_TITLE, E.CI_CONCLUSION)),
+    "doubt": ("存疑（自述未证 / 合同 PR 自合零批准 / 共用 PR / PR 自合计数 / 历史最大空档含暂停归因）",
+              (E.CHECKBOX, E.PR_MERGED_BY, E.PR_STATE, E.COMMIT_TIME, E.TASKTABLE_TAG)),
+    "rounds": ("轮数（审 / 外 / 修＝评论首行匹配，归属 Step ID 实 → 活动窗口 推 → Trace 级；CI 红绿＝活动窗口内 run 结论）", (E.COMMENT_TITLE, E.CI_CONCLUSION)),
     "evidence": ("最后外部证据", (E.COMMIT_TIME, E.PR_STATE, E.COMMENT_TITLE, E.CI_CONCLUSION, E.WORKTREE)),
 }
 

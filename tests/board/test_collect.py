@@ -27,8 +27,9 @@ def _bin_dir(tmp, *tools):
     os.makedirs(d, exist_ok=True)
     for name in tools:
         real = shutil.which(name)
-        if real:
-            os.symlink(real, os.path.join(d, name))
+        link = os.path.join(d, name)
+        if real and not os.path.lexists(link):
+            os.symlink(real, link)
     return d
 
 
@@ -153,7 +154,7 @@ class CollectTest(unittest.TestCase):
             self.assertIn(key, snap.results, key)
         for key in ("git.log", "git.tasktable_history", "git.worktrees", "git.tags", "git.branches", "git.contract", "tasktable.quotes"):
             self.assertTrue(snap.results[key].ok, (key, snap.results[key].error))
-        for key in ("gh.prs", "gh.issue", "gh.runs"):
+        for key in ("gh.prs", "gh.issue", "gh.runs", "gh.tags"):
             self.assertFalse(snap.results[key].ok)
             self.assertIn("命令不可用：gh", snap.results[key].error)
         self.assertEqual(snap.results["tmux.windows"].error, "未配置编排 session")
@@ -220,6 +221,28 @@ class CollectTest(unittest.TestCase):
         self.assertEqual(collect.resolve_branch([], 5, None, branches=[{"name": "origin/batch/5-y"}]), "batch/5-y")
         self.assertEqual(collect.resolve_branch(prs, 5, types.SimpleNamespace(trace_branch="cfg/b")), "cfg/b")
         self.assertEqual(collect.resolve_branch(prs, 5, None, override="ov"), "ov")
+
+    def test_config_specs_result_keys(self):
+        """S-4 Config：结果键 config.<key>；budget 走 ShellProvider（bash 只读 printf），阶段未配置。"""
+        from boardlib import config as cfg
+        toml = os.path.join(self.tmp, "board.toml")
+        with open(toml, "w", encoding="utf-8") as fh:
+            fh.write('[release]\nworkflow = "Publish"\n[budget.full_gate]\nlabel = "完整门禁"\ncap = 5\ncommand = "printf 3"\nparse = "int"\n'
+                     '[[evidence]]\nkey = "hosts"\nlabel = "主机"\ncommand = "printf \'a\\nb\\n\'"\nparse = "lines"\n')
+        conf = cfg.load(toml)
+        self.assertEqual([k for _, k, _, _ in collect.config_specs(conf)], ["full_gate", "hosts"])
+        meta = collect.config_meta(conf)
+        self.assertEqual(meta["budgets"][0]["result_key"], "config.full_gate")
+        self.assertEqual(meta["release_workflow"], "Publish")
+        env = _env(self.tmp, "python3", "git", "bash", "printf")
+        src = collect.LiveSource(self.repo, per_cmd_timeout=10, round_timeout=20, env=env)
+        snap = collect.collect(self.repo, None, None, conf, None, src)
+        self.assertIn("config.full_gate", snap.results)
+        self.assertIn("config.hosts", snap.results)
+        self.assertEqual(snap.results["gh.release_runs"].error[:5], "命令不可用")
+        board = infer.infer(snap, conf)
+        labels = [(l, cap) for l, _v, cap in board.header.budget]
+        self.assertEqual(labels, [("完整门禁", 5)])
 
     def test_missing_trace_dir_does_not_crash(self):
         src = collect.LiveSource(self.repo, per_cmd_timeout=5, round_timeout=10, env=self.env)
