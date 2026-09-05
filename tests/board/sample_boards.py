@@ -48,8 +48,8 @@ def rounds_line(r):
 
 
 def step(sid, title, checked, section, status, *, stype=StepType.IMPL, needs=(), owner="", est=None, actual=None, elapsed=None,
-         chip="", chip_status=None, rework=False, started=None, last=None, why=()):
-    st = Step(sid, title, checked, section, 0, stype, list(needs), owner, est, [], [], [], [], "")
+         chip="", chip_status=None, rework=False, started=None, last=None, why=(), prs=(), comments=(), shas=(), line_no=0):
+    st = Step(sid, title, checked, section, line_no, stype, list(needs), owner, est, list(prs), list(shas), list(comments), [], "")
     return StepView(st, status, started, last, actual, elapsed, est, chip, chip_status or status, rework, list(why))
 
 
@@ -99,7 +99,7 @@ def board_complex():
     a3 = step("S-A3", "examples 示例清单", True, 0, Status.DONE, est=45, actual=41, chip="PR #21 ✓ 自测✓ CI✓ 26s", chip_status=Status.DONE, owner="impl_c")
     a4 = step("S-A4", "deploy 骨架", False, 0, Status.RUNNING, est=60, elapsed=38, chip="PR #24 打开 · CI 跑 3m", chip_status=Status.RUNNING, owner="impl_d")
     k = step("K-1", "候选冻结", True, 1, Status.STALE, stype=StepType.GATE, needs=["S-A1", "S-A2", "S-A3", "S-A4"], chip="候选 dd53ec 冻结 → 已变 8c58a7", chip_status=Status.STALE)
-    r1 = step("R-1", "独立审核（子代理 · 第 1 轮）", True, 1, Status.STALE, stype=StepType.REVIEW, needs=["K-1"], est=60, actual=25, chip="结论 0 P0 / 2 P1 / 3 P2 · 已失效", chip_status=Status.STALE)
+    r1 = step("R-1", "独立审核（子代理 · 第 1 轮）", True, 1, Status.STALE, stype=StepType.REVIEW, needs=["K-1"], est=60, actual=25, chip="结论 0 P0 / 2 P1 / 3 P2 · 已失效", chip_status=Status.STALE, shas=["dd53ecf0a1b2"], comments=[1])
     f1 = step("F-1", "统一修复包", False, 1, Status.READY, needs=["R-1"], est=30, rework=True, owner="impl_a", chip="修复包 PR 待", chip_status=Status.TODO)
     r2 = step("R-2", "定向复核（同一审核者 · 第 2 轮）", False, 1, Status.TODO, stype=StepType.REVIEW, needs=["F-1"], est=15, chip="复核结论 待", chip_status=Status.TODO)
     g = step("G-1", "完整门禁", False, 2, Status.TODO, stype=StepType.GATE, needs=["R-2"], est=8, chip="CI run 待", chip_status=Status.TODO)
@@ -148,7 +148,7 @@ def board_six():
     S += [step("A-1", "输入 Issue 与裁定给齐", True, 0, Status.DONE, actual=5, chip="评论 ✓ 13:5x", chip_status=Status.DONE)]
     S += [step("W0-1", "接管登记与只读盘点", True, 1, Status.DONE, needs=["A-1"], est=30, actual=26, chip="评论 ✓ 14:20", chip_status=Status.DONE),
           step("W0-2", "简易版真实快照", True, 1, Status.DONEQ, needs=["W0-1"], est=45, chip="无 commit · 无 PR", chip_status=Status.DONEQ)]
-    S += [step("S-1", "小修包与 CODEOWNERS", True, 2, Status.DONE, needs=["W0-2"], est=45, actual=41, chip="PR #19 ✓ CI✓ 24s", chip_status=Status.DONE, owner="impl_a"),
+    S += [step("S-1", "小修包与 CODEOWNERS", True, 2, Status.DONE, needs=["W0-2"], est=45, actual=41, chip="PR #19 ✓ CI✓ 24s", chip_status=Status.DONE, owner="impl_a", prs=[19], comments=[5507202948, 5507202949]),
           step("S-2", "解析与状态推断", False, 2, Status.RUNNING, needs=["W0-2"], est=120, elapsed=38, chip="worktree S-2 · 3 commits", chip_status=Status.RUNNING, owner="impl_b"),
           step("S-3", "渲染与 TUI", False, 2, Status.RUNNING, needs=["W0-2"], est=120, elapsed=35, chip="worktree S-3 · 1 commit", chip_status=Status.RUNNING, owner="impl_c"),
           step("S-4", "证据源配置", False, 2, Status.WATCH, needs=["W0-2"], est=60, elapsed=70, chip="worktree S-4 · 70m 前", chip_status=Status.WATCH, owner="impl_d"),
@@ -182,7 +182,8 @@ def board_six():
                "S-6 等 S-2 / S-3 / S-4 / S-5 · 编排窗口 1 · worktree 5 · 窗口状态未知，需元守护核",
                "自述未证 1（W0-2）· 合同 PR #18 由发起人自合、零批准", "12 分钟前 · commit 8c58a7（S-2）", warnings=["未解析 1 行", "超限 2 行"])
     whys = [why("阶段 merged", "否", EvidenceType.PR_STATE, "gh.prs", "OPEN"), why("阶段 closed", "否", EvidenceType.ISSUE_STATE, "gh.issue", "OPEN")]
-    return Board(h, S, M, NOW, whys)
+    unparsed = [(12, "- [ ] 这一行没有编号所以解析不了，正文故意写得很长用来验证只截十八个汉字"), (40, "- [x] 另一行 写坏的 复选框")]
+    return Board(h, S, M, NOW, whys, unparsed)
 
 
 BOARDS = {"simple": board_simple, "complex": board_complex, "tiers": board_tiers, "unknown": board_unknown, "six": board_six}

@@ -17,6 +17,8 @@
     - 复杂版：节点＝Step 卡片（5 行）＋证据小节点（1 行方括号），沿用样稿层间 3 行（竖线 / 箭头 / 空行），允许滚动。
     - 边框四档（D-1）：未审 ┌─┐│└┘；1 轮 ╔═╗║╚╝；2 轮 ┏━┓┃┗┛；3 轮 ┏╍┓┇┗┛；3 轮以上同 3 轮＋标题 ⟲N（208 色加粗）。
     - 颜色表示状态；来源角标（实 / 报 / 推）240 色；「未知」245 色斜体；卡片文字超宽只裁不加省略号（超限由头部计数）。
+    - `dump()` 没有颜色，模块 / 步骤标题行追加「 · 状态词」（登记表 STATUS_LABEL 同源）；TUI 帧不加（颜色即状态）。
+    - 预算条：有上限画 ▰▱ 条，无上限只写「标签 N角标」。`Board.unparsed` 在复杂版画成灰色「? 自由文本」卡片，不连线，放图末。
 """
 from __future__ import annotations
 
@@ -24,6 +26,7 @@ import re
 import unicodedata
 
 from .model import GRADE_MARK, Grade, Status, Tier, beijing
+from .registry import STATUS_LABEL
 
 # ---------- 颜色与常量（沿用样稿 C 表） ----------
 C = {
@@ -273,7 +276,7 @@ def budget_text(label, val, cap):
         k = max(0, min(6, round(6 * n / cap)))
         over = n / cap >= 0.8 and val.grade != Grade.REPORTED
         return "%s %s%s %d%s/%d" % (label, "▰" * k, "▱" * (6 - k), n, mark, cap), (HOT if over else INK)
-    return "%s ▰▰▰▰▰▰ %d%s 次" % (label, n, mark), INK
+    return "%s %d%s" % (label, n, mark), INK
 
 
 # ---------- 图：节点、分层、排版 ----------
@@ -308,6 +311,10 @@ def _nodes_complex(board):
                 continue
             needs.append("E:" + pid if ("E:" + pid) in nodes else pid)
         nodes[sid]["needs"] = needs
+    for k, (line_no, raw) in enumerate(getattr(board, "unparsed", None) or []):
+        fid = "?:%d:%d" % (line_no, k)
+        nodes[fid] = dict(id=fid, kind="free", status=Status.TODO, needs=[], line_no=line_no, raw=raw)
+        order.append(fid)
     return nodes, order
 
 
@@ -329,6 +336,11 @@ def _layers(nodes, order):
 
     for i in order:
         L(i)
+    frees = [i for i in order if nodes[i]["kind"] == "free"]
+    if frees:
+        last = max((layer[i] for i in order if nodes[i]["kind"] != "free"), default=-1)
+        for i in frees:
+            layer[i] = last + 1
     return layer
 
 
@@ -341,7 +353,7 @@ def _wrap_rows(nodes, order, layer, per_row):
         ids = [i for i in order if layer[i] == lv]
         chunk, cards = [], 0
         for i in ids:
-            is_card = nodes[i]["kind"] in ("step", "module")
+            is_card = nodes[i]["kind"] in ("step", "module", "free")
             if is_card and cards >= per_row:
                 rows.append(chunk)
                 chunk, cards = [], 0
@@ -401,14 +413,14 @@ def layout(nodes, order, W, compact):
 
     def w0(i, bw):
         kind = nodes[i]["kind"]
-        if kind in ("step", "module"):
+        if kind in ("step", "module", "free"):
             return bw
         if kind == "chip":
             return min(max(dw(nodes[i]["title"]) + 2, CHIP_MIN), CHIP_MAX)
         return 1
 
     box_w = SIMPLE_BOX_MAX if compact else COMPLEX_BOX_MAX
-    card_rows = [ids for ids in rows if any(nodes[i]["kind"] in ("step", "module") for i in ids)]
+    card_rows = [ids for ids in rows if any(nodes[i]["kind"] in ("step", "module", "free") for i in ids)]
     while box_w > BOX_MIN and any(sum(w0(i, box_w) for i in ids) + GAP * (len(ids) - 1) > W - 2 for ids in card_rows):
         box_w -= 1
     chip_cap = {}
@@ -424,7 +436,7 @@ def layout(nodes, order, W, compact):
     def width_of(i):
         return min(w0(i, box_w), chip_cap[i]) if i in chip_cap else w0(i, box_w)
 
-    row_h = [max([5 if nodes[i]["kind"] in ("step", "module") else 1 for i in ids] + [1]) for ids in rows]
+    row_h = [max([5 if nodes[i]["kind"] in ("step", "module", "free") else 1 for i in ids] + [1]) for ids in rows]
     geo = {}
     for r, ids in enumerate(rows):
         real = [i for i in ids if nodes[i]["kind"] != "dummy"]
@@ -582,7 +594,23 @@ def _text_style(status):
     return INK, False
 
 
-def draw_module(cv, x, y, w, mv, anim):
+def _head(text, status, plain, room=None, short=None):
+    """标题行文字：dump（plain）追加「 · 状态词」，TUI 不加（颜色即状态）。
+    room 为标题可用列数：带状态词放不下时先退到 short（如去掉类型词的编号），再由 _title_row 裁。"""
+    if not plain:
+        return text
+    full = "%s · %s" % (text, STATUS_LABEL[status])
+    if room is not None and short is not None and dw(full) > room:
+        return "%s · %s" % (short, STATUS_LABEL[status])
+    return full
+
+
+def _title_room(w, dur, tag=""):
+    right = (" " + dur + " ─┐") if dur else "┐"
+    return w - (4 + dw(right) + (dw(tag) + 1 if tag else 0))
+
+
+def draw_module(cv, x, y, w, mv, anim, plain=False):
     st, tier = mv.status, mv.tier
     col = C[st]
     tl, hz, tr, vt, bl, br = BORDER[tier]
@@ -591,7 +619,8 @@ def draw_module(cv, x, y, w, mv, anim):
     dur = dur_text(mv.actual_min, mv.elapsed_min, mv.est_min, st)
     dur_color = 250 if (st in ANIM or st == Status.STALLED) else DIM
     border_top = [] if st in ANIM else None
-    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, short_title(mv.section.title), tag, dur, col, bold, dur_color, border_top)
+    name = short_title(mv.section.title)
+    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, _head(name, st, plain, _title_room(w, dur, tag), name), tag, dur, col, bold, dur_color, border_top)
     tcol, ital = _text_style(st)
     inner = w - 4
     lines = (mv.what or "", mv.rounds_line or rounds_text(mv.rounds), mv.evidence_line or "")
@@ -605,7 +634,20 @@ def draw_module(cv, x, y, w, mv, anim):
         _box_anim(cv, x, y, w, border_top, col, dur_cells, anim)
 
 
-def draw_step(cv, x, y, w, sv, anim):
+def pointer_summary(step) -> str:
+    """步骤第三行的指针摘要：PR #n · 评论 N · sha · owner（芯片之外的指针）。"""
+    parts = ["PR #%s" % n for n in list(getattr(step, "prs", []) or [])[:2]]
+    if getattr(step, "comments", None):
+        parts.append("评论 %d" % len(step.comments))
+    shas = list(getattr(step, "shas", []) or [])
+    if shas:
+        parts.append(str(shas[0])[:7])
+    if getattr(step, "owner", ""):
+        parts.append(step.owner)
+    return " · ".join(parts)
+
+
+def draw_step(cv, x, y, w, sv, anim, plain=False, section_names=None):
     st = sv.status
     col = C[st]
     tl, hz, tr, vt, bl, br = BORDER[Tier.NONE]
@@ -615,7 +657,7 @@ def draw_step(cv, x, y, w, sv, anim):
     dur = dur_text(sv.actual_min, sv.elapsed_min, sv.est_min, st)
     dur_color = 250 if (st in ANIM or st == Status.STALLED) else DIM
     border_top = [] if st in ANIM else None
-    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, head, "", dur, col, bold, dur_color, border_top)
+    _, dur_cells = _title_row(cv, x, y, w, tl, hz, tr, _head(head, st, plain, _title_room(w, dur), step.id), "", dur, col, bold, dur_color, border_top)
     tcol, ital = _text_style(st)
     inner = w - 4
     t1, t2 = wrap2(step.title, inner)
@@ -626,7 +668,8 @@ def draw_step(cv, x, y, w, sv, anim):
         cv.put(x + w - 1, y + k, vt, col)
     cv.put(x, y + 3, vt, col)
     cv.put(x + 1, y + 3, " " * (w - 2), None)
-    sub = " · ".join(s for s in (getattr(step, "owner", ""),) if s)
+    sec = (section_names or {}).get(getattr(step, "section", None), "")
+    sub = " · ".join(s for s in (sec, pointer_summary(step)) if s)
     cx = x + 2
     if sub:
         sub = fit(sub, inner)
@@ -641,29 +684,51 @@ def draw_step(cv, x, y, w, sv, anim):
         _box_anim(cv, x, y, w, border_top, col, dur_cells, anim)
 
 
+def draw_free(cv, x, y, w, node, plain=False):
+    """任务表无法解析的行：灰色「? 自由文本」卡片，正文＝原文截 18 汉字（36 列），不连线。"""
+    col = C[Status.TODO]
+    tl, hz, tr, vt, bl, br = BORDER[Tier.NONE]
+    _title_row(cv, x, y, w, tl, hz, tr, _head("? 自由文本", Status.TODO, plain), "", "", col, False, DIM, None)
+    inner = w - 4
+    t1, t2 = wrap2(fit(re.sub(r"^- \[[ xX]\]\s*", "", node["raw"].strip()), 36), inner)
+    for k, line in ((1, t1), (2, t2)):
+        cv.put(x, y + k, vt, col)
+        cv.put(x + 1, y + k, " " * (w - 2), None)
+        cv.put(x + 2, y + k, line, DIM)
+        cv.put(x + w - 1, y + k, vt, col)
+    cv.put(x, y + 3, vt, col)
+    cv.put(x + 1, y + 3, " " * (w - 2), None)
+    cv.put(x + 2, y + 3, fit("任务表第 %s 行 · 未解析" % node["line_no"], inner), DIM)
+    cv.put(x + w - 1, y + 3, vt, col)
+    cv.put(x, y + 4, bl + hz * (w - 2) + br, col)
+
+
 def draw_chip(cv, x, y, w, node):
     st = node["status"]
     cv.put(x, y, "[" + pad(fit(node["title"], w - 2), w - 2) + "]", C[st], st in (Status.STALLED, Status.RUNNING, Status.WATCH), st == Status.UNKNOWN)
 
 
-def draw_graph(board, view, W):
-    """正文画布：返回 (Canvas, anim, 正文高度)。"""
+def draw_graph(board, view, W, plain=False):
+    """正文画布：返回 (Canvas, anim, 正文高度)。plain=True 为 dump：标题行带状态词。"""
     compact = view == "simple"
     nodes, order = _nodes_simple(board) if compact else _nodes_complex(board)
     edges, rows, geo, strips, H = layout(nodes, order, W, compact)
     cv, ln, anim = Canvas(W, max(H, 1)), Lines(), []
+    section_names = {mv.section.index: short_title(mv.section.title) for mv in board.modules}
     for i, (x, y, w, h, cx) in geo.items():
         n = nodes[i]
         if n["kind"] == "module":
-            draw_module(cv, x, y, w, n["mv"], anim)
+            draw_module(cv, x, y, w, n["mv"], anim, plain)
         elif n["kind"] == "step":
-            draw_step(cv, x, y, w, n["sv"], anim)
+            draw_step(cv, x, y, w, n["sv"], anim, plain, section_names)
+        elif n["kind"] == "free":
+            draw_free(cv, x, y, w, n, plain)
         elif n["kind"] == "chip":
             draw_chip(cv, x, y, w, n)
 
     def bottom(s):
         kind = nodes[s]["kind"]
-        return geo[s][1] + (5 if kind in ("step", "module") else 1 if kind == "chip" else geo[s][3])
+        return geo[s][1] + (5 if kind in ("step", "module", "free") else 1 if kind == "chip" else geo[s][3])
 
     for (y0, es, groups, lanes, straight) in strips:
         ybot = y0 + len(lanes)
@@ -799,12 +864,12 @@ def _check_view(view):
     return view
 
 
-def _compose(board, view, W, H, scroll, phase, note):
-    """整帧画布：返回 (Canvas, anim, avail, scroll, limit)。"""
+def _compose(board, view, W, H, scroll, phase, note, plain=False):
+    """整帧画布：返回 (Canvas, anim, avail, scroll, limit)。plain=True 为 dump（标题行带状态词）。"""
     board.validate()
     view = _check_view(view)
     W, H = max(20, int(W)), max(HEADER_ROWS + 2, int(H))
-    body, banim, body_h = draw_graph(board, view, W)
+    body, banim, body_h = draw_graph(board, view, W, plain)
     legend = _legend_rows(W, view)
     avail = max(1, H - HEADER_ROWS - len(legend))
     limit = max(0, body_h - avail)
@@ -863,7 +928,7 @@ def why_table(board) -> str:
 
 
 def dump(board, view, W=150, H=52, why=False) -> str:
-    cv, _, _, _, _ = _compose(board, view, W, H, 0, 0, "")
+    cv, _, _, _, _ = _compose(board, view, W, H, 0, 0, "", plain=True)
     lines = cv.plain()
     while lines and not lines[-1]:
         lines.pop()

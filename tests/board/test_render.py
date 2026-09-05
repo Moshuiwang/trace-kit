@@ -72,7 +72,7 @@ class DumpShapeTest(unittest.TestCase):
 class BorderAndMarksTest(unittest.TestCase):
     def test_four_tiers_and_more_mark(self):
         text = render.dump(sample_boards.board_tiers(), "simple", 150, 52)
-        for sample in ("┌─ 块 A", "╔═ Wave 0", "┏━ Wave 1", "┏╍ Wave 2", "┏╍ 收口 ⟲5"):
+        for sample in ("┌─ 块 A · 完成", "╔═ Wave 0 · 完成", "┏━ Wave 1 · 运行中", "┏╍ Wave 2 · 观察", "┏╍ 收口 · 待做 ⟲5"):
             self.assertIn(sample, text)
         self.assertIn("┇", text)
         self.assertIn("╚", text)
@@ -88,8 +88,10 @@ class BorderAndMarksTest(unittest.TestCase):
 
     def test_marks_unknown_unconfigured(self):
         text = render.dump(sample_boards.board_six(), "simple", 150, 52)
-        self.assertIn("3实/10", text)
-        self.assertIn("6报/14", text)
+        self.assertIn("完整门禁 ▰▰▱▱▱▱ 3实/10", text)
+        self.assertIn("人次 ▰▰▰▱▱▱ 6报/14", text)
+        self.assertIn("PR 4推   人次", text)               # 无上限：只写数字＋角标，不画条
+        self.assertNotIn("PR ▰", text)
         self.assertIn("审 2实 · 外 1实", text)
         self.assertIn("预发已升级 未配置", text)
         self.assertIn("合入主干 否", text)
@@ -107,6 +109,45 @@ class BorderAndMarksTest(unittest.TestCase):
         self.assertEqual(render.dur_text(None, None, 40, Status.TODO), "/40")
         self.assertEqual(render.dur_text(None, None, 30, Status.DONEQ), "?/30")
         self.assertEqual(render.dur_text(None, 12, None, Status.RUNNING), "12/─")
+
+    def test_status_words_only_in_dump(self):
+        board = sample_boards.board_six()
+        text = render.dump(board, "simple", 150, 52)
+        for word in ("块 A · 完成", "Wave 0 · 自述未证", "Wave 1 · 卡住", "Wave 2 · 待做", "收口 · 待做"):
+            self.assertIn(word, text)
+        text = render.dump(board, "complex", 150, 300)
+        for pat in (r"S-1( 实施)? · 完成", r"S-2( 实施)? · 运行中", r"S-4( 实施)? · 观察", r"S-5( 实施)? · 卡住", "S-8b 人工 · 待人类", "S-9c 实施 · 待做"):
+            self.assertRegex(text, pat)                    # 28 列窄卡放不下类型词时退成「编号 · 状态词」，状态词不裁
+        self.assertNotIn(" · 完 ", text)
+        self.assertNotIn(" · 运行 ", text)
+        for view in ("simple", "complex"):
+            lines, _, _ = render.frame(board, view, 150, 300, 0, 0)
+            plain = ANSI.sub("", "\n".join(lines))
+            self.assertNotIn(" · 完成", plain)
+            self.assertNotIn(" · 运行中", plain)
+        self.assertIn("节点 ■完成", text)                   # 图例在 dump 里保留
+
+    def test_free_text_cards_and_third_line(self):
+        board = sample_boards.board_six()
+        text = render.dump(board, "complex", 150, 300)
+        self.assertIn("? 自由文本 · 待做", text)
+        self.assertIn("这一行没有编号所以解析不", text)                       # 去掉复选框标记后截 18 汉字（卡宽 28 折两行）
+        self.assertIn("了，正文故意", text)
+        self.assertNotIn("写得很", text)
+        self.assertIn("任务表第 12 行 · 未解析", text)
+        self.assertIn("任务表第 40 行 · 未解析", text)
+        self.assertNotIn("…", text)
+        self.assertNotIn("自由文本", render.dump(board, "simple", 150, 52))
+        self.assertIn("│ Wave 1 · PR #19 · 评论 2", text)                    # 第三行：章节名 · 指针摘要（28 列卡内只裁不省略）
+        self.assertIn("│ Wave 1 · impl_b", text)
+        self.assertEqual(render.pointer_summary(board.steps[3].step), "PR #19 · 评论 2 · impl_a")
+        lines = text.splitlines()
+        self.assertTrue(any(ln.strip("│ ").startswith("Wave 3") and "↺重审来源" not in ln for ln in lines))
+        self.assertEqual(text.count("? 自由文本 · 待做"), 2)   # 两张并排在同一行
+        idx = text.index("? 自由文本")
+        self.assertGreater(idx, text.index("S-9c 实施"), "自由文本卡放图末")
+        text2 = render.dump(sample_boards.board_complex(), "complex", 150, 200)
+        self.assertIn("Wave 2 · 评论 1 · dd53ecf", text2)
 
     def test_complex_view_rework_stale_unknown_chips(self):
         text = render.dump(sample_boards.board_complex(), "complex", 150, 200)
