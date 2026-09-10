@@ -6,7 +6,7 @@
 
 | 件 | 是什么 | 谁用 |
 | --- | --- | --- |
-| `METHOD.md` | 执行方法正文（= lingxi Issue #147 v16 原样搬运，带版本头） | 规划者读它生成 Trace；编排者只执行获批 Trace |
+| `METHOD.md` | 执行方法正文（= lingxi Issue #678 v19 原样搬运，带版本头） | 规划者读它生成 Trace；编排者只执行获批 Trace |
 | `plugin/` | Claude Code 插件：`kickoff` / `takeover` / `handoff` / `guardian` / `dispatch-card` / `board` 六个 skill + 三件套与派发卡模板 + 看板证据源配置示例 | 每个 Trace 都要重复做的六件事 |
 | `template/` | 新项目骨架：代理约定、产品文档骨架、Issue / PR 模板、分层 CI 与风险分级器、通用检查、本机=CI 同构的 `check.sh`、部署骨架、可运行的最小 `app` | 新仓库开工第一天 |
 | `examples/lingxi/` | G3 档：lingxi 特有实现只作示例（只链接、不复制） | 对照骨架看一个真实项目怎么填 |
@@ -105,7 +105,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 | 路径 | 是什么 | 何时读 / 能改什么 |
 | --- | --- | --- |
-| `METHOD.md` | 方法正文 v16（源 lingxi #147） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
+| `METHOD.md` | 方法正文 v19（源 lingxi #678） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
 | `plugin/README.md` | 六个 skill 何时用、怎么装、换什么、出处表 | 用插件前 |
 | `plugin/skills/*/SKILL.md` | 各 skill 正文 | 改 skill 行为时；每文件头带出处 |
 | `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` 空白模板 + `board.toml` 看板证据源配置示例 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |
@@ -149,7 +149,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 2. **分档**：G1 通用直接搬；G2 通用模式参数化——去产品名词，扩展点只写一句「这里换成你的 ×××」，**不写抽象层、不写配置 DSL**；G3 项目特有只进 `examples/`。宁少勿多。
 3. **禁词**：`template/` 与 `plugin/` 不得出现 lingxi 产品名词（只允许「出处」行里的 lingxi 链接与 `examples/lingxi/` 路径引用）；全仓不得出现本机路径、主机名、用户名、凭据形态。`scripts/kit/check_no_lingxi.sh` 兜底，CI 必跑。
 4. **日落条款**：采用本套件的项目在一个 Trace 里一次都没用到的机制，列为下一版删除候选；修订默认净减法，新增须同时提名删除候选。
-5. **`METHOD.md` 不在本仓修订**：只随 lingxi #147 的版本升级原样同步（版本头写清源版本与搬运时间），`diff` 必须零差异。
+5. **`METHOD.md` 不在本仓修订**：只随 lingxi #678 的版本升级原样同步（版本头写清源版本与搬运时间），`diff` 必须零差异。
 6. **改 `template/` 后必跑**：`scripts/kit/smoke.sh --strict <临时目录>`（把套件当模板起空项目 → `init.sh` → 全部本机门禁）、`scripts/kit/check_no_lingxi.sh`、`python3 scripts/kit/check_links.py`、`claude plugin validate --strict plugin` 与 `claude plugin validate --strict .`；`kit-selfcheck` 工作流在每次 PR 上跑前三项。
 7. **版本**：SemVer；发布打 `v<版本>` tag，同步 `plugin/.claude-plugin/plugin.json` 与 `.claude-plugin/marketplace.json` 的版本号，CHANGELOG 按发布批次维护并写明证据等级与未验证层级。
 8. **自回灌**：`scripts/kit/refill_diff.sh <lingxi 仓路径> [提交]` 生成 template ⟷ lingxi 的 diff 报告，lingxi 侧差异行必须是 G3 或改写；关键词分类只是导航，结论要人工复核（报告样本见 `docs/traces/1-trace-kit-v0.1.0/`）。
@@ -173,4 +173,4 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 ## 十一、出处
 
-方法与全部资产来自公开仓库 [Moshuiwang/lingxi](https://github.com/Moshuiwang/lingxi)（方法正文 [Issue #147](https://github.com/Moshuiwang/lingxi/issues/147)）；分级清单与逐项出处见 [Trace #1](https://github.com/Moshuiwang/trace-kit/issues/1) 与 `CHANGELOG.md`。
+方法与全部资产来自公开仓库 [Moshuiwang/lingxi](https://github.com/Moshuiwang/lingxi)（方法正文 [Issue #678](https://github.com/Moshuiwang/lingxi/issues/678)；旧源 [#147](https://github.com/Moshuiwang/lingxi/issues/147) 已降为历史正文，只保留 v17 及更早）；分级清单与逐项出处见 [Trace #1](https://github.com/Moshuiwang/trace-kit/issues/1) 与 `CHANGELOG.md`。
