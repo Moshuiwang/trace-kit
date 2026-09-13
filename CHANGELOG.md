@@ -10,6 +10,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `METHOD.md` 同步到 **v20 r1**（源 lingxi #678，2026-09-13；正文逐字搬运，版本头按实读值更新）：产品负责人追加「规划前核本机能力与额度、外审调用须实机测试、外审频率按额度定」条款（第三节预算段 + 第六节 Ready 门），第四节外审一句去掉具体工具名 — 出处 [v20 r1 发布评论](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5653777117) — 验证：正文区与取源字节级一致；`check_links.py` 绿。插件版本号不动（`METHOD.md` 不在插件内）。
+
 ## [0.2.2] - 2026-09-13
 
 随 lingxi #678 方法正文 **v20**（2026-09-13 发布）的同步版（[PR #23](https://github.com/Moshuiwang/trace-kit/pull/23) + 本发布 PR）。证据等级 4（`kit-selfcheck` 绿：禁词 / 链接 / 看板单测 209 ＋ 夹具 49 / 空项目冒烟）；**未验证**：v20 正文与改后的 `guardian` skill 尚未在真实 Trace 上跑过，lingxi 2.5.0 将是第一个绑 v20 的 Trace。不动引擎行为、不加 CI 门禁。
