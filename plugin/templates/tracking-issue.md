@@ -1,4 +1,4 @@
-<!-- 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（§八「给产品负责人」段）+ https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md（瘦指针）；验证：#328 起 8 个 Trace 的 [tracking] Issue -->
+<!-- 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（§八「给产品负责人」段；现 https://github.com/Moshuiwang/lingxi/issues/678 v20 §七「可复制的最小结构」）+ https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md（瘦指针）；验证：#328 起 8 个 Trace 的 [tracking] Issue -->
 # [tracking] YYYY-MM-DD 长期计划：一句话目标
 
 ## 给产品负责人

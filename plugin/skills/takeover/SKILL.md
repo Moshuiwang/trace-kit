@@ -3,7 +3,7 @@ name: takeover
 description: 新会话接管编排——读取 Trace 最新交接评论、核实现场与文档一致、登记接管合并权后继续工作。在新开会话接手一个进行中的 Execution Trace 时使用（通常是接手 prompt 的第一步）。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）+ https://github.com/Moshuiwang/lingxi/issues/147（§6.8 接管登记）；验证：#203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）+ https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8 接管登记；现 https://github.com/Moshuiwang/lingxi/issues/678 v20 §五「跨任务接力」）；验证：#203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管
 
 # 编排者接管程序
 

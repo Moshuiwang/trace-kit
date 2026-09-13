@@ -9,7 +9,7 @@
 | `/kickoff` | 规划新 `[tracking]` Trace、产品负责人说「开工 / 立项 / 下一个 Trace」 | `docs/traces/<issue号>-<短名>/` 三件套（走 PR，合并即批准）+ `[tracking]` Issue 瘦指针 |
 | `/takeover` | 新会话接手一个进行中的 Trace（接手 prompt 的第一步） | 现场核实结论 + 接管登记评论 |
 | `/handoff` | 上下文接近上限、编排者换班、产品负责人说「交接」 | 七节交接评论（含一句话接手 prompt） |
-| `/guardian` | 合同指定本会话转任元守护、产品负责人说「你转元守护 / 守着」 | 判活记录、失联取证评论、继任窗口 |
+| `/guardian` | 合同指定本会话转任守望者、产品负责人说「你转守望者 / 守着」 | 判活记录、失联取证评论、继任窗口 |
 | `/dispatch-card` | 编排者要派发实施、修复或审查子代理 | 一张派发卡（六条款 + 实测附加条款 + 审查小节） |
 | `/board` | 产品负责人或编排者要看当前 Trace 做到哪 / 堵在哪 / 轮了几轮 / 花了多少分钟；收口要归档一帧快照 | tmux 里的只读 TUI（简易 / 复杂两视图），或 `--dump` 一帧纯文本 |
 
@@ -27,7 +27,7 @@ claude plugin install trace-kit@trace-kit
 
 ## 换什么
 
-- **模型配比**：写进每个 Trace 合同 §5（编排 / 实施 / 唯一审核 / 元守护各一档），Trace 成形时经产品负责人确认。套件不预设；一个真实项目的取值见 `examples/lingxi/`。
+- **模型配比**：写进每个 Trace 合同 §5（编排 / 实施 / 唯一审核 / 守望者各一档），Trace 成形时经产品负责人确认。套件不预设；一个真实项目的取值见 `examples/lingxi/`。
 - **tmux session 名与批次代号**：合同 §6 与任务表头部填写；`guardian` skill 的拉起命令只用占位符 `<session>` / `<批次代号>` / `<仓库目录>`。
 - **Trace 目录短名规则**：`docs/traces/<issue号>-<短名>/`，短名一词概括目标（如 `rc24正式上线`），不含空格与斜杠；目录名一旦建立不改（交接与收口评论都用它定位）。
 - **派发卡「六条款」第 3 条的门禁耗时**、报告格式的行数上限：按你的仓库填。
@@ -45,13 +45,13 @@ claude plugin install trace-kit@trace-kit
 | 资产 | 出处 | 验证口径 |
 | --- | --- | --- |
 | `skills/kickoff` | [复盘 #330](https://github.com/Moshuiwang/lingxi/issues/330) P0 | #358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 合同均按此起草 |
-| `skills/takeover` | 复盘 #330 P0；[#147](https://github.com/Moshuiwang/lingxi/issues/147) v14/v16 §6.8 接管登记 | #203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管 |
+| `skills/takeover` | 复盘 #330 P0；[#147](https://github.com/Moshuiwang/lingxi/issues/147) v14/v16 §6.8 接管登记（现 [#678](https://github.com/Moshuiwang/lingxi/issues/678) v20 §五「跨任务接力」） | #203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管 |
 | `skills/handoff` | 复盘 #330 P0 | 同上，六任编排者交接 |
-| `skills/guardian` | #147 v16 §6.8；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
-| `skills/dispatch-card` | #147 §6.4（[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
+| `skills/guardian` | #147 v16 §6.8（现 #678 v20 §一角色表「守望者」+ §四「通用编排纪律」）；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
+| `skills/dispatch-card` | #147 §6.4（现 #678 v20 §四「派发、审核与验证」；[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
 | `skills/board`、`scripts/board.py` 与 `scripts/boardlib/`、`templates/board.toml` | [trace-kit #12](https://github.com/Moshuiwang/trace-kit/issues/12) v3 修订段；[lingxi #577](https://github.com/Moshuiwang/lingxi/issues/577) 子清单（#578 / #579 / #580 / #581 / #582 / #589） | `tests/board/` 夹具在 `kit-selfcheck` 上绿（含 Trace #1 真实历史回放）；[lingxi #606](https://github.com/Moshuiwang/lingxi/issues/606) 真实试穿 |
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |
-| `templates/tracking-issue.md` | #147 §八「给产品负责人」段 + docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
+| `templates/tracking-issue.md` | #147 §八「给产品负责人」段（现 #678 v20 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
 | 「记录归属」一节 | 源项目 `docs/README.md` 归属表（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230)） | 两次纠正后固化 |
