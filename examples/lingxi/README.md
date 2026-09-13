@@ -94,7 +94,7 @@
 
 ## 五、lingxi 方法沿革（[#147](https://github.com/Moshuiwang/lingxi/issues/147) v9 → v16；v17 起见 [#678](https://github.com/Moshuiwang/lingxi/issues/678)）
 
-套件的 `METHOD.md` 是 v19 原文（源 = lingxi [#678](https://github.com/Moshuiwang/lingxi/issues/678)；#147 已降为历史正文，只保留 v17 及更早）。下表记到 v16 为止，说明它是**怎么长出来的**：每一版新增条款都能追到一次复盘或事故，且 v13 起有日落条款——新增须同时提名删除候选，正文体量不得超过上一版。
+套件的 `METHOD.md` 是 v20 原文（源 = lingxi [#678](https://github.com/Moshuiwang/lingxi/issues/678)；#147 已降为历史正文，只保留 v17 及更早）。下表记到 v16 为止，说明它是**怎么长出来的**：每一版新增条款都能追到一次复盘或事故，且 v13 起有日落条款——新增须同时提名删除候选，正文体量不得超过上一版。
 
 | 版本 | 日期 | 主要新增 |
 | --- | --- | --- |

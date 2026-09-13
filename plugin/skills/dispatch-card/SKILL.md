@@ -3,7 +3,7 @@ name: dispatch-card
 description: 从模板生成实施 / 审查子代理的派发卡（六条款 + 实测附加条款 + 编排者侧兜底观察 + 审查派发小节）。在编排者要派发实施、修复或审查子代理时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（§6.4，源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v20 §四「派发、审核与验证」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
 
 # 派发卡生成
 
@@ -18,7 +18,7 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 5. 派出后按下节自挂兜底观察，记下预计时长与到点要查的外部证据。
 6. 可选留痕：派出后在 Trace Issue 评论或任务表引用块留一行含 Step ID 与时刻，供看板取开工时刻（不留则该步骤的开工时刻显示 `?`）。
 
-## 六条款（`METHOD.md` §6.4；第 3 条的项目门禁耗时括注已参数化）
+## 六条款（源自 `METHOD.md` v16 §6.4，现 v20 §四「派发、审核与验证」；第 3 条的项目门禁耗时括注已参数化）
 
 1. **一路做到底**：按自己列的顺序做完再报，不逐步向编排者确认；只有需要产品取舍、扩大范围、或不同意编排者裁定时才停下。
 2. **不得派发任何子代理。**
@@ -29,7 +29,7 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 
 ## 实测附加条款（每条一句，带出处）
 
-- 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（`METHOD.md` §6.4 第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
+- 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（六条款第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
 - 预计 >2 分钟的命令一律后台或显式超时；等待用 until 循环，禁 sleep 串联（https://github.com/Moshuiwang/lingxi/issues/330）。
 - 每个代理独立 worktree（Agent 工具 `isolation: worktree`），同一工作树同一时刻只允许一个写入者（https://github.com/Moshuiwang/lingxi/issues/203 事故实证）。
 - 临时文件只放私有 scratchpad 子目录，不与其他代理共用文件名——共用目录使一批变异静默跑空（https://github.com/Moshuiwang/lingxi/issues/521）。
@@ -46,7 +46,7 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 
 ## 审查派发
 
-- 一个固定候选只允许一名独立审核者；只读、不修、不参与实现；候选 SHA 改变后旧结论失效（`METHOD.md` §6.6）。
+- 一个固定候选只允许一名独立审核者；只读、不修、不参与实现；候选 SHA 改变后旧结论失效（`METHOD.md` §四「派发、审核与验证」）。
 - 编排者先用 grep / git diff 自己坐实机械性与文档类发现（通常占一半以上），只把行为面 / 合同面的发现派对抗验证（https://github.com/Moshuiwang/lingxi/issues/203 期实测省约 85%）。
 - 给外部审查收敛线：按威胁模型裁——会真的废掉产品负责人窗口的必修；需要刻意环境操纵才能触发的明确接受，写进代码或文档「已知边界」并说明为什么接受。
 - 批量审查从关键测试抽 3–5 个独立复做变异实测，在审核者自己的 worktree 内做（https://github.com/Moshuiwang/lingxi/issues/521）。
