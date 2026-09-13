@@ -87,7 +87,7 @@ def board_simple():
     m0 = module(0, "Wave 1（实施）", Status.DONE, Tier.NONE, 1, 1, rounds(green=1), "PR #31 MERGED · 评论 1 · 最新 13:10", actual=28, est=30, steps=[s1])
     m1 = module(1, "Wave 2", Status.WATCH, Tier.NONE, 0, 1, rounds(), "commit 1f2e3d · 评论 0 · 最新 12:55", needs=[0], elapsed=65, est=45, steps=[s2])
     m2 = module(2, "Wave 3", Status.TODO, Tier.NONE, 0, 1, rounds(), "无", needs=[0], est=20, steps=[s3])
-    h = header("简单用例 · batch/30-demo", "Executing · W1（1/3 完成）", "S-2 65 分钟无外部证据（观察；90 分钟转卡住）", "S-3 等 S-2 · 窗口状态未知，需元守护核",
+    h = header("简单用例 · batch/30-demo", "Executing · W1（1/3 完成）", "S-2 65 分钟无外部证据（观察；90 分钟转卡住）", "S-3 等 S-2 · 窗口状态未知，需守望者核",
                "合同 PR #30 由发起人自合、零批准", "65 分钟前 · commit 1f2e3d（S-2）")
     return Board(h, [s1, s2, s3], [m0, m1, m2], NOW, [why("阶段 merged", "否", EvidenceType.PR_STATE, "gh.prs", "OPEN")])
 
@@ -110,7 +110,7 @@ def board_complex():
     m0 = module(0, "Wave 1（四路并行）", Status.STALLED, Tier.NONE, 2, 4, rounds(green=2, red=1), "PR #21 MERGED · PR #24 OPEN · 评论 3 · 最新 12:25", elapsed=130, est=225, steps=steps[:4])
     m1 = module(1, "Wave 2", Status.READY, Tier.ONE, 2, 4, rounds(review=1, fixpack=0), "评论 2 · 最新 11:40", needs=[0], actual=25, est=105, steps=steps[4:8])
     m2 = module(2, "Wave 3", Status.HUMAN, Tier.NONE, 0, 4, rounds(), "无", needs=[1], est=18, steps=steps[8:])
-    h = header("演示 · batch/20-demo", "Executing · W1→W2（5/17 步骤完成）", "S-A1 95 分钟无外部证据；R-1 审核结论失效", "F-1 可立即做 · 窗口状态未知，需元守护核",
+    h = header("演示 · batch/20-demo", "Executing · W1→W2（5/17 步骤完成）", "S-A1 95 分钟无外部证据；R-1 审核结论失效", "F-1 可立即做 · 窗口状态未知，需守望者核",
                "自述未证 1（S-A2）· 合同 PR #20 由发起人自合、零批准", "12 分钟前 · commit 8c58a7（S-A4）", warnings=["超限 1 行"])
     return Board(h, steps, [m0, m1, m2], NOW, [why("阶段 merged", "否", EvidenceType.PR_STATE, "gh.prs", "OPEN")])
 
@@ -179,7 +179,7 @@ def board_six():
         module(5, "收口", Status.TODO, Tier.NONE, 0, 3, rounds(), "无", needs=[4], est=35, steps=by[5]),
     ]
     h = header("Trace #17 · batch/17-board", "Executing · Wave 1（5/21 步骤完成）", "S-5 95 分钟无外部证据；S-4 70 分钟观察",
-               "S-6 等 S-2 / S-3 / S-4 / S-5 · 编排窗口 1 · worktree 5 · 窗口状态未知，需元守护核",
+               "S-6 等 S-2 / S-3 / S-4 / S-5 · 编排窗口 1 · worktree 5 · 窗口状态未知，需守望者核",
                "自述未证 1（W0-2）· 合同 PR #18 由发起人自合、零批准", "12 分钟前 · commit 8c58a7（S-2）", warnings=["未解析 1 行", "超限 2 行"])
     whys = [why("阶段 merged", "否", EvidenceType.PR_STATE, "gh.prs", "OPEN"), why("阶段 closed", "否", EvidenceType.ISSUE_STATE, "gh.issue", "OPEN")]
     unparsed = [(12, "- [ ] 这一行没有编号所以解析不了，正文故意写得很长用来验证只截十八个汉字"), (40, "- [x] 另一行 写坏的 复选框")]
