@@ -10,6 +10,10 @@
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-09-13
+
+随 lingxi #678 方法正文 **v20**（2026-09-13 发布）的同步版（[PR #23](https://github.com/Moshuiwang/trace-kit/pull/23) + 本发布 PR）。证据等级 4（`kit-selfcheck` 绿：禁词 / 链接 / 看板单测 209 ＋ 夹具 49 / 空项目冒烟）；**未验证**：v20 正文与改后的 `guardian` skill 尚未在真实 Trace 上跑过，lingxi 2.5.0 将是第一个绑 v20 的 Trace。不动引擎行为、不加 CI 门禁。
+
 ### Changed
 
 - `METHOD.md` 同步到 **v20**（源 lingxi #678，2026-09-13 发布；正文逐字搬运，版本头按实读值更新）— 出处 [v20 草案评论](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5651545771)、[发布评论](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5651559724）— 验证：正文区与两次独立取源字节级一致；`check_links.py` / `check_no_lingxi.sh` 绿。
@@ -17,10 +21,10 @@
 - `skills/guardian`「判活」一节改为「判活与值守机制」——按 v20 §四同时挂事件型 + 定时型两类机制、不得声称无机制支撑的巡检频率、机制上线前先跑一遍有效性判据；「再通知编排者窗口」改为「用运行时的会话间消息通知编排者（注入按键不构成已转达）」— 出处 [守望者机制候选](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5604645419)、[#732 复盘](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335)、[会话消息候选](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5632774273)。
 - 章节号引用对齐 v20：v16 的 §3.2 / §3.3 / §4.6 / §4.8 / §6.2 / §6.3 / §6.4 / §6.6 / §6.7 / §6.8 / §八 在 v20 已不存在（v18 r2 精简重构了章节），`skills/kickoff` / `dispatch-card` / `takeover`、`templates/合同.md` / `派发卡.md` / `tracking-issue.md`、`plugin/README.md` 出处表与根 `README.md` 上手指引逐条改指 v20 章节；出处行保留 #147 原始出处并加「现 #678 v20 §…」。合同模板「切换规则按 §3.3 不变」改为「切换规则写在本段（v20 不规定模型配比与切换）」— 验证：`grep -rn '§[0-9]\.[0-9]' plugin README.md` 只剩出处行里的历史引用。
 - 日落条款第 1 条「与 `METHOD.md` §九日落条款同构」改指 v20 §八「修订规则」（v19 起正文无 §九）。
+- 版本 0.2.1 → 0.2.2（`plugin/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json`）；`template/docs/协作/执行方法.md` 入口由「trace-kit v0.1.0 / 方法 v16」改指 **v0.2.2 tag / 方法 v20**（PR #22 与 #23 留待发布时一步替换的那一行）— 验证：`claude plugin validate --strict` 双绿；tag 随合 main 后打。
 
 ### 未改（有理由）
 
-- `template/docs/协作/执行方法.md:7` 仍绑 trace-kit `v0.1.0` tag 与方法 v16：尚无带 v20 的发布版本，等发布时连同 tag 与 URL 一步替换（同 [PR #22](https://github.com/Moshuiwang/trace-kit/pull/22) 理由）。
 - `docs/traces/` 三件套与快照、`tests/board/fixtures/trace1-replay/snapshot.json`、本文件历史条目里的「元守护」与「#147 §6.x」：历史留痕不改。
 
 ## [0.2.1] - 2026-09-05
