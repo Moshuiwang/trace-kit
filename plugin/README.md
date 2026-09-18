@@ -36,7 +36,7 @@ claude plugin install trace-kit@trace-kit
 
 ## 记录归属（三件套之外的内容放哪）
 
-本机事实（路径、主机、容器、凭据坐标）→ 本机记忆，不进仓库；批次方法与踩坑 → 当前 Trace 的收口 / 复盘评论；方法修订 → `METHOD.md` 的源 Issue 候选；底线 → 仓库 `AGENTS.md`，且须重复验证后才固化。
+本机事实（路径、主机、容器、凭据坐标）→ 本机记忆，不进仓库；批次方法与踩坑 → 当前 Trace 的收口 / 复盘评论；方法修订 → 当前版本的修订 Issue（候选归档，守望者退场前落）；底线 → 仓库 `AGENTS.md`，且须重复验证后才固化。
 
 ## 出处表
 
@@ -45,13 +45,13 @@ claude plugin install trace-kit@trace-kit
 | 资产 | 出处 | 验证口径 |
 | --- | --- | --- |
 | `skills/kickoff` | [复盘 #330](https://github.com/Moshuiwang/lingxi/issues/330) P0 | #358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 合同均按此起草 |
-| `skills/takeover` | 复盘 #330 P0；[#147](https://github.com/Moshuiwang/lingxi/issues/147) v14/v16 §6.8 接管登记（现 [#678](https://github.com/Moshuiwang/lingxi/issues/678) v20 §五「跨任务接力」） | #203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管 |
+| `skills/takeover` | 复盘 #330 P0；[#147](https://github.com/Moshuiwang/lingxi/issues/147) v14/v16 §6.8 接管登记（现 [#678](https://github.com/Moshuiwang/lingxi/issues/678) v22 §五「跨任务接力」） | #203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管 |
 | `skills/handoff` | 复盘 #330 P0 | 同上，六任编排者交接 |
-| `skills/guardian` | #147 v16 §6.8（现 #678 v20 §一角色表「守望者」+ §四「通用编排纪律」）；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
-| `skills/dispatch-card` | #147 §6.4（现 #678 v20 §四「派发、审核与验证」；[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
+| `skills/guardian` | #147 v16 §6.8（现 #678 v22 §一角色表「守望者」+ §四「通用编排纪律」）；[rc22 复盘](https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188) | #469、#521 两次（+ #328 接力试验） |
+| `skills/dispatch-card` | #147 §6.4（现 #678 v22 §四「派发、审核与验证」；[#203 复盘](https://github.com/Moshuiwang/lingxi/issues/203)）；[#521](https://github.com/Moshuiwang/lingxi/issues/521)（scratchpad / 非 editable venv） | #203 / #304 / #328 / #373 / #469 / #521 派发卡沿用；否决裁定 6 例 6 对 |
 | `skills/board`、`scripts/board.py` 与 `scripts/boardlib/`、`templates/board.toml` | [trace-kit #12](https://github.com/Moshuiwang/trace-kit/issues/12) v3 修订段；[lingxi #577](https://github.com/Moshuiwang/lingxi/issues/577) 子清单（#578 / #579 / #580 / #581 / #582 / #589） | `tests/board/` 夹具在 `kit-selfcheck` 上绿（含 Trace #1 真实历史回放）；[lingxi #606](https://github.com/Moshuiwang/lingxi/issues/606) 真实试穿 |
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |
-| `templates/tracking-issue.md` | #147 §八「给产品负责人」段（现 #678 v20 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
+| `templates/tracking-issue.md` | #147 §八「给产品负责人」段（现 #678 v22 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
 | 「记录归属」一节 | 源项目 `docs/README.md` 归属表（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230)） | 两次纠正后固化 |

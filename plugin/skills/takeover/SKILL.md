@@ -3,7 +3,7 @@ name: takeover
 description: 新会话接管编排——读取 Trace 最新交接评论、核实现场与文档一致、登记接管合并权后继续工作。在新开会话接手一个进行中的 Execution Trace 时使用（通常是接手 prompt 的第一步）。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）+ https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8 接管登记；现 https://github.com/Moshuiwang/lingxi/issues/678 v20 §五「跨任务接力」）；验证：#203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）+ https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8 接管登记；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §五「跨任务接力」与「复盘规则」）；#812 接管核实漏项实证 https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5713420401；验证：#203（3 任）/ #304（4 批）/ #373（4 批接力）/ #469 / #521 继任接管
 
 # 编排者接管程序
 
@@ -16,9 +16,11 @@ description: 新会话接管编排——读取 Trace 最新交接评论、核实
    - git：main SHA、分支、未合并 PR 是否与交接一致；`git worktree list` 对照第 5 节盘点；
    - 若项目有部署面：环境健康态与制品标识；
    - 在途任务：交接列出的子代理/后台任务现在的真实状态（完成了？死了？还在跑？）——**判活只信外部证据**；
-   - 硬期限：重算距今剩余时间，过期的立即上报。
+   - 硬期限：重算距今剩余时间，过期的立即上报；
+   - 裁定附带动作：逐条读产品负责人的裁定评论，每条附带的只读核对或动作是否有回执；没有回执的列入在途，不当作已做；
+   - 在途系统链路：批次、排队任务或逐对象处理链的终态先从系统回读再登记，不采信交接里写的预期终态。
 3. **差异处置**：现场与交接不一致的逐条列出；能自行解释的（如任务自然完成）记录即可，解释不了的（如多出的改动、消失的分支）先查因再动手。
-4. **登记接管**：在 Trace Issue 评论登记「本会话接管编排与唯一合并权」，附核实结论摘要。
+4. **登记接管**：在 Trace Issue 评论登记「本会话接管编排与唯一合并权」，附核实结论摘要与当任上下文起点；下一次换人在批次收口点按上下文 ≥ 50% 判（`METHOD.md` v22 §五）。
 5. **恢复值守**：交接里的监控/观察哨若已随旧会话死亡，按其描述重建。
 6. 从交接第 7 节指定的下一步开始工作；待裁清单原样保留，不重新问已裁定过的问题。
 

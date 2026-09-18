@@ -3,7 +3,7 @@ name: dispatch-card
 description: 从模板生成实施 / 审查子代理的派发卡（六条款 + 实测附加条款 + 编排者侧兜底观察 + 审查派发小节）。在编排者要派发实施、修复或审查子代理时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v20 §四「派发、审核与验证」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
 
 # 派发卡生成
 
@@ -12,13 +12,13 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 ## 步骤
 
 1. 读模板 `${CLAUDE_PLUGIN_ROOT}/templates/派发卡.md`（模板头部出处注释不进卡面）。
-2. 填「现场」：worktree 绝对路径与分支、私有 scratchpad 子目录、文件归属范围（只许改哪些）、模型 / 档位（合同 §5）。
+2. 填「现场」：worktree 绝对路径与分支、私有 scratchpad 子目录、文件归属范围（只许改哪些）、并行组与文件边界（同批并行卡边界不重叠，越界即停）、模型 / 档位（合同 §5）。
 3. 填「必做项」：按 Step 的动作与可观察产物写，细到能直接开工，不细到逐条命令；写明验证命令、超时口径与完成标准。
 4. 六条款与附加条款原样保留；审查卡另填「审查派发」小节。
 5. 派出后按下节自挂兜底观察，记下预计时长与到点要查的外部证据。
 6. 可选留痕：派出后在 Trace Issue 评论或任务表引用块留一行含 Step ID 与时刻，供看板取开工时刻（不留则该步骤的开工时刻显示 `?`）。
 
-## 六条款（源自 `METHOD.md` v16 §6.4，现 v20 §四「派发、审核与验证」；第 3 条的项目门禁耗时括注已参数化）
+## 六条款（源自 `METHOD.md` v16 §6.4，现 v22 §四「派发、审核与验证」；第 3 条的项目门禁耗时括注已参数化）
 
 1. **一路做到底**：按自己列的顺序做完再报，不逐步向编排者确认；只有需要产品取舍、扩大范围、或不同意编排者裁定时才停下。
 2. **不得派发任何子代理。**
@@ -37,12 +37,17 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 - 先确认被测模块的 `__file__` 在源码树——非 editable 安装的 venv 改源码不生效，全绿是假绿（https://github.com/Moshuiwang/lingxi/issues/521）。
 - 改完先 commit 再汇报，工作树上不留未提交改动；进等待必须上报（https://github.com/Moshuiwang/lingxi/issues/330）。
 - 报告逐条「已改 / 未改 + 原因」，与卡面裁定不一致处给证据（https://github.com/Moshuiwang/lingxi/issues/203）。
+- 禁令与已裁定取消项逐条写进卡面与接手指令，不依赖中途转达——长回合里的代理读不到队列消息（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5702976511）。
+- 审核者工作树保留到该批次合并，修复包的定向复核需要原上下文（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5708280359）。
+- 一次性运维脚本卡面写死：体量上限、只读探针先行、自带清理子命令、到终态预计时长（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）。
+- 同批并行卡各用独立 worktree 与 scratchpad 子目录、文件边界不重叠；并行实施、串行整合——多张卡完成后先冻结一个整合候选，再跑一次完整门禁与一次审核（`METHOD.md` v22 §四「并行纪律」）。
 
 ## 编排者侧
 
 - 每次派发自挂兜底观察：预计时长 + 到点查外部证据（worktree HEAD、进程表、CI API），不信代理的沉默。
 - 收到「在等 X」当场给 X 挂自己的观察（后台 `until <目标达成> || 超时`），到点无动静主动介入；绝不裸等。
 - 子代理因传输错误中断时，用原任务续跑可零返工恢复（https://github.com/Moshuiwang/lingxi/issues/304）。
+- 多路并行时每路各挂兜底观察；本机完整门禁独占期间不派任何测试类任务；编排者只派发与回收、不亲自实施（`METHOD.md` v22 §四「并行纪律」）。
 
 ## 审查派发
 
@@ -50,4 +55,6 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 - 编排者先用 grep / git diff 自己坐实机械性与文档类发现（通常占一半以上），只把行为面 / 合同面的发现派对抗验证（https://github.com/Moshuiwang/lingxi/issues/203 期实测省约 85%）。
 - 给外部审查收敛线：按威胁模型裁——会真的废掉产品负责人窗口的必修；需要刻意环境操纵才能触发的明确接受，写进代码或文档「已知边界」并说明为什么接受。
 - 批量审查从关键测试抽 3–5 个独立复做变异实测，在审核者自己的 worktree 内做（https://github.com/Moshuiwang/lingxi/issues/521）。
+- 外审台账先记输入载荷（候选 SHA、读入字节数或文件数）、模型与调用姿势，再记发现；退出码为零、报告非空不算已审（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703195634）。
+- 变异验红与门禁绿都以日志原文的实际运行数为准（Ran N，N > 0）；环境错误导致的零用例红不计验红（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397）。
 - 卡面写死刹车句：只报影响正确性或既定需求的缺口，其余标可选；审核者天生会报问题，追着每条改会过度工程（https://github.com/Moshuiwang/lingxi/issues/162 审核—修复循环预算超标；Claude Code 最佳实践 https://code.claude.com/docs/en/best-practices ）。
