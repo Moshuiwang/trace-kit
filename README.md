@@ -6,12 +6,12 @@
 
 | 件 | 是什么 | 谁用 |
 | --- | --- | --- |
-| `METHOD.md` | 执行方法正文（= lingxi Issue #678 v20 原样搬运，带版本头） | 规划者读它生成 Trace；编排者只执行获批 Trace |
+| `METHOD.md` | 执行方法正文（= lingxi Issue #678 v22 原样搬运，带版本头） | 规划者读它生成 Trace；编排者只执行获批 Trace |
 | `plugin/` | Claude Code 插件：`kickoff` / `takeover` / `handoff` / `guardian` / `dispatch-card` / `board` 六个 skill + 三件套与派发卡模板 + 看板证据源配置示例 | 每个 Trace 都要重复做的六件事 |
 | `template/` | 新项目骨架：代理约定、产品文档骨架、Issue / PR 模板、分层 CI 与风险分级器、通用检查、本机=CI 同构的 `check.sh`、部署骨架、可运行的最小 `app` | 新仓库开工第一天 |
 | `examples/lingxi/` | G3 档：lingxi 特有实现只作示例（只链接、不复制） | 对照骨架看一个真实项目怎么填 |
 
-当前版本 **v0.2.2**（`0.x` = 尚未稳定；v0.1.0 → v0.2.0 新增 Trace 看板，v0.2.1 热修试穿缺陷，v0.2.2 方法正文同步到 v20 并改名守望者）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
+当前版本 **v0.3.0**（`0.x` = 尚未稳定；v0.1.0 → v0.2.0 新增 Trace 看板，v0.2.1 热修试穿缺陷，v0.2.2 方法正文同步到 v20 并改名守望者，v0.3.0 方法正文同步到 v22：里程碑分诊、守望者汇报五项、复盘规则、并行纪律与每版一个修订 Issue）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
 
 ---
 
@@ -105,7 +105,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 
 | 路径 | 是什么 | 何时读 / 能改什么 |
 | --- | --- | --- |
-| `METHOD.md` | 方法正文 v20（源 lingxi #678） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
+| `METHOD.md` | 方法正文 v22（源 lingxi #678） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
 | `plugin/README.md` | 六个 skill 何时用、怎么装、换什么、出处表 | 用插件前 |
 | `plugin/skills/*/SKILL.md` | 各 skill 正文 | 改 skill 行为时；每文件头带出处 |
 | `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` 空白模板 + `board.toml` 看板证据源配置示例 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |

@@ -10,8 +10,22 @@
 
 ## [Unreleased]
 
+（空）
+
+## [0.3.0] - 2026-09-18
+
+随 lingxi #678 方法正文 **v22**（2026-09-18 发布，修订 Issue [#840](https://github.com/Moshuiwang/lingxi/issues/840)）的同步版。证据等级：`kit-selfcheck` 本机三项（禁词 / 链接 / 看板单测）绿，CI 待本 PR 回读；**未验证**：v22 新增的里程碑分诊、守望者汇报五项、复盘规则、并行纪律与改后的五个 skill 尚未在真实 Trace 上跑过，下一个 Trace 是第一个绑 v22 的。不动看板引擎、不加 CI 门禁。
+
 ### Changed
 
+- `METHOD.md` 同步到 **v22**（源 lingxi #678，2026-09-18 发布；正文逐字搬运，版本头按实读值更新）：新增 §三「里程碑分诊」、§四「守望者汇报固定五项」与「并行纪律」、§五「复盘规则」（含规划者 / 守望者复盘职责）、§八「每个版本一个修订 Issue」；角色表改 4 行；额度停派线 2%、收口点上下文 ≥ 50% 换人、身份 / 数据形态类修法先做真实样本统计、每个入口规划期真机 dry、外审台账记输入载荷、门禁绿与变异红以 Ran N 为准 — 出处 [v22 变更表与 #812 候选归档](https://github.com/Moshuiwang/lingxi/issues/840#issuecomment-5724253737)、[发布记录](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5724287367) — 验证：正文区与 #678 读回逐字一致（去末尾空行）；`check_links.py` / `check_no_lingxi.sh` 绿。
+- `skills/guardian`：新增「汇报固定五项」（总体进度 / 预计完成时点 / 当前堵点 / 下次需要人类决策的时点 / 可提前给的裁定与收口预批）与「批次收口序列、换人与退场」（核收口评论 → 复盘评论 → 交接评论 → 释放租约；收口点上下文 ≥ 50% 换人；退场前写机制对账复盘并把方法候选归档到修订 Issue）；失联判定补「不因上下文余量拉继任」；有效性判据补第四种结局「观察哨自身被终止」；待裁项一节补「待办与讨论分开置顶、一次一条、先出就绪自检」— 出处 v22 §四 / §五、[#812 守望者排期对账](https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738)。
+- `skills/handoff`：新增「交接前：批次收口序列与复盘评论」（六项复盘内容、顺序不能反、复盘落地才算退场）；描述改为「批次收口序列 / 失联继任」触发，不再写「上下文接近上限」— 出处 v22 §五。
+- `skills/takeover`：核实清单 +2（裁定附带动作是否有回执；在途系统链路终态先回读再登记）；接管登记写当任上下文起点 — 出处 [#812 812-w2 复盘](https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5713420401)。
+- `skills/dispatch-card` 与 `templates/派发卡.md`：现场加「并行组 / 文件边界」；附加条款加禁令逐条写死、审核者工作树保留至批次合并、一次性运维脚本四要素、同批并行卡独立 worktree + 并行实施串行整合；审查派发加外审输入载荷、变异验红以 Ran N 为准；编排者侧加多路并行各挂兜底观察 — 出处 v22 §四、[#812 夜班复盘](https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397)。
+- `skills/kickoff` 与 `templates/合同.md` / `任务表.md` / `tracking-issue.md`：步骤 0「里程碑分诊与结清」（四项、反向扫描、分诊表进开工快照、建下一版修订 Issue）；Step 写并行组与文件边界、串行 / 并行两个估时、并行上限；合同 §5 加额度停派线 2%、触点次数与在线时段、并行段；§6 收口序列加复盘评论与 ≥ 50% 换人、「重检查默认串行」改指「并行纪律」；任务表加 S-Z-4 复盘评论与候选归档；tracking Issue 瘦指针加方法版本 / 下一版修订 Issue — 出处 v22 §三 / §四 / §五 / §七。
+- 章节引用 v20 → v22：`plugin/README.md` 出处表、根 `README.md`、`template/docs/协作/执行方法.md` 入口（trace-kit v0.3.0 / 方法 v22）。
+- 版本 0.2.2 → 0.3.0（`plugin/.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json`）— 验证：`claude plugin validate --strict` 双绿；tag 随合 main 后打。
 - `METHOD.md` 同步到 **v20 r1**（源 lingxi #678，2026-09-13；正文逐字搬运，版本头按实读值更新）：产品负责人追加「规划前核本机能力与额度、外审调用须实机测试、外审频率按额度定」条款（第三节预算段 + 第六节 Ready 门），第四节外审一句去掉具体工具名 — 出处 [v20 r1 发布评论](https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5653777117) — 验证：正文区与取源字节级一致；`check_links.py` 绿。插件版本号不动（`METHOD.md` 不在插件内）。
 
 ## [0.2.2] - 2026-09-13
