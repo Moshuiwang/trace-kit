@@ -3,7 +3,7 @@ name: dispatch-card
 description: 从模板生成实施 / 审查子代理的派发卡（六条款 + 实测附加条款 + 编排者侧兜底观察 + 审查派发小节）。在编排者要派发实施、修复或审查子代理时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203；留痕值粘贴与逐处证红出自 #843 复盘 https://github.com/Moshuiwang/lingxi/issues/843）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对
 
 # 派发卡生成
 
@@ -29,8 +29,8 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 
 ## 实测附加条款（每条一句，带出处）
 
-- 留痕里的评论号 / SHA / 时刻一律由命令输出粘贴、不手写（出处：lingxi #843 w1 / w2 复盘 §6-1）。
-- 修复包每处改动各自证红，不用一次总跑证明多处（出处：lingxi #843 w1 复盘 §6-3）。
+- 留痕里的评论号 / SHA / 时刻一律由命令输出粘贴、不手写。
+- 修复包每处改动各自证红，不用一次总跑证明多处。
 
 - 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（六条款第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
 - 预计 >2 分钟的命令一律后台或显式超时；等待用 until 循环，禁 sleep 串联（https://github.com/Moshuiwang/lingxi/issues/330）。

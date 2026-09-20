@@ -3,7 +3,7 @@ name: kickoff
 description: 开新 Execution Trace 时起草六段式开工合同与三件套（合同 / 任务表 / 验收）并生成 [tracking] Issue 瘦指针。在规划新 [tracking] Trace、或产品负责人说「开工 / 立项 / 下一个 Trace」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）
 
 # 六段式开工合同起草
 
@@ -18,7 +18,7 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
    - 每条 Step 的依赖：这条依赖传什么制品？一句话说不清就是假依赖，去掉或合并；
    - 每条实施 Step 写并行组与文件 / 模块边界（不重叠）；同批实施 Step 默认并行、整合 Step 串行；估算给串行与并行两个时长；并行上限（机器内存、额度速率、编排者回收能力）写进开工快照（`METHOD.md` v22 §四「并行纪律」）；
    - 授权终点只写产品负责人**已经说过**的授权；没说过的写进「显式除外」。
-   - 时间窗里的日期与星期由 `date -d` 实取生成，不手写（出处：lingxi #843 合同「09-19（周五）」实为周六）；面向产品负责人的时刻 UTC + 北京双标注且两个值都实读。
+   - 时间窗里的日期与星期由 `date -d` 实取生成，不手写；面向产品负责人的时刻 UTC + 北京双标注且两个值都实读。
 3. 产出物：三件套（合同.md / 任务表.md / 验收.md）落 `docs/traces/<issue号>-<短名>/`，走 PR，**合并即批准**；`[tracking]` Issue 正文只留「给产品负责人」段与瘦指针（按 `tracking-issue.md`；`METHOD.md` §二、§七）。
 4. 合同末尾附「批准时需一并裁定」编号清单（把所有开放决策点收拢成可单字回复的编号项，每项带默认值）。
 5. **合同未获产品负责人批准前，不派发任何实施工作。**

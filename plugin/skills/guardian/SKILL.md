@@ -3,7 +3,7 @@ name: guardian
 description: 守望者（v19 及更早叫「元守护」）——常驻 tmux session 的守望角色：拉起各批次编排者窗口、只以外部证据判活、失联时取证后拉继任、承接产品负责人裁定并转发、按固定五项汇报进度与堵点、退场前归档复盘候选；不实施、不持合并权。在合同指定本会话转任守望者、或产品负责人说「你转守望者 / 守着」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；现行 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；现行 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）、#843 观察哨只在变化时输出与 30 分钟汇报节奏（https://github.com/Moshuiwang/lingxi/issues/843）
 
 # 守望者值守程序
 
@@ -28,7 +28,7 @@ description: 守望者（v19 及更早叫「元守护」）——常驻 tmux ses
 - **事件型**（管「死没死」）：常驻轮询，只用本地证据（窗口输出、工作树提交），不依赖网络；查询失败须显式重试并声明，不得把「查不到」读成「没事」。
 - **定时型**（管「做到哪」）：按周期给自己一个完整回合，查外部留痕并对照任务表判断进展；自带收尾条件，编排者收口后自删。
 
-观察哨只在状态变化时输出、首轮基线不输出；等产品负责人的无信号时段用长间隔观察哨，不叠前台等待（出处：lingxi #843 w2 复盘 §6-2 / §6-6）。两类机制都是会话级，窗口关闭即失效，合同须写明失效后由谁接手。不得声称任何未被机制支撑的巡检频率；声称时给出机制标识与启动证据。**机制上线前，先对机制本身跑一遍有效性判据**：能区分「目标达成」与「查询本身失败」，覆盖成功、失败、超时与观察哨自身被终止四种结局——「挂了观察哨」不等于「观察哨会叫醒我」。
+观察哨只在状态变化时输出、首轮基线不输出；等产品负责人的无信号时段用长间隔观察哨，不叠前台等待。两类机制都是会话级，窗口关闭即失效，合同须写明失效后由谁接手。不得声称任何未被机制支撑的巡检频率；声称时给出机制标识与启动证据。**机制上线前，先对机制本身跑一遍有效性判据**：能区分「目标达成」与「查询本身失败」，覆盖成功、失败、超时与观察哨自身被终止四种结局——「挂了观察哨」不等于「观察哨会叫醒我」。
 
 ## 失联判定与继任
 
