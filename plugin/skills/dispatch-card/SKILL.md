@@ -29,6 +29,9 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 
 ## 实测附加条款（每条一句，带出处）
 
+- 留痕里的评论号 / SHA / 时刻一律由命令输出粘贴、不手写（出处：lingxi #843 w1 / w2 复盘 §6-1）。
+- 修复包每处改动各自证红，不用一次总跑证明多处（出处：lingxi #843 w1 复盘 §6-3）。
+
 - 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（六条款第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
 - 预计 >2 分钟的命令一律后台或显式超时；等待用 until 循环，禁 sleep 串联（https://github.com/Moshuiwang/lingxi/issues/330）。
 - 每个代理独立 worktree（Agent 工具 `isolation: worktree`），同一工作树同一时刻只允许一个写入者（https://github.com/Moshuiwang/lingxi/issues/203 事故实证）。
