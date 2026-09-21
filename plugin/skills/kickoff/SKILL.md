@@ -3,7 +3,7 @@ name: kickoff
 description: 开新 Execution Trace 时起草六段式开工合同与三件套（合同 / 任务表 / 验收）并生成 [tracking] Issue 瘦指针。在规划新 [tracking] Trace、或产品负责人说「开工 / 立项 / 下一个 Trace」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）
 
 # 六段式开工合同起草
 
@@ -18,6 +18,9 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
    - 每条 Step 的依赖：这条依赖传什么制品？一句话说不清就是假依赖，去掉或合并；
    - 每条实施 Step 写并行组与文件 / 模块边界（不重叠）；同批实施 Step 默认并行、整合 Step 串行；估算给串行与并行两个时长；并行上限（机器内存、额度速率、编排者回收能力）写进开工快照（`METHOD.md` v22 §四「并行纪律」）；
    - 授权终点只写产品负责人**已经说过**的授权；没说过的写进「显式除外」。
+   - 上一 Trace 收口评论的「未验证清单」与守望者建的输入 Issue 是首要输入：逐条落到某个 Step 或不做清单，不得遗漏；
+   - 整合 Step 独立成卡（不由编排者亲手），端到端暴露的缺口先出「整合前修复包」再冻结给最终审核；同批依赖链用「首提交只含领域类型」接力排进并行上限；
+   - 涉及真实外部读 / 写的 Step 在执行步骤表里单列授权级别（只读 / 隔离环境写 / 生产读 / 生产写）与对应触点；未获批的保持 Pre-ready。
    - 时间窗里的日期与星期由 `date -d` 实取生成，不手写；面向产品负责人的时刻 UTC + 北京双标注且两个值都实读。
 3. 产出物：三件套（合同.md / 任务表.md / 验收.md）落 `docs/traces/<issue号>-<短名>/`，走 PR，**合并即批准**；`[tracking]` Issue 正文只留「给产品负责人」段与瘦指针（按 `tracking-issue.md`；`METHOD.md` §二、§七）。
 4. 合同末尾附「批准时需一并裁定」编号清单（把所有开放决策点收拢成可单字回复的编号项，每项带默认值）。

@@ -2,6 +2,18 @@
 
 本文件记录 trace-kit 套件的变化，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)；版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)（`0.x` = 尚未稳定，字段与目录可能变）。**每个资产条目都带出处**（形成它的 lingxi Issue / 复盘 / 事故链接）与验证口径；没有出处的资产不进套件。
 
+## v0.5.0 — 2026-09-21
+
+另一项目（startimes-bi/dvb-sales-reporting）首个 Trace 用 v0.4.0 跑完三批（9 h、3 路并行、审核 r1–r3 抓出 P0 1 / P1 7）后的程序性候选，守望者归档评论 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442；方法正文候选留 lingxi #857（v24），本版不动 `METHOD.md`。证据等级：`kit-selfcheck` 本机四项（禁词 / 链接 / 看板单测 / 插件校验）绿；**未验证**：新增条款尚未在第二个 Trace 上跑过，该项目的下一个 Trace 是第一个绑 v0.5.0 的。
+
+- 派发卡模板与 dispatch-card：同批并行卡各建独立 `tests/support/fake_<模块>.py`（合并交错 55 例红）；命名类值唯一真源 = 登记文件、依赖卡等其首提交；「`gh` 读 Issue 不算联网」口令；验证以退出码判绿不以末行；集成卡正路径必须含真实数据形态行；文档抄源码用 `dataclasses.fields()` 实取；报告固定含「接口冻结需要的字段表」与「自报取舍」— 出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625。
+- dispatch-card 审查派发：审查卡固定结构（威胁模型逐项复攻 + 假证据六型 + 独立变异 ≥ N 半数与实施者不同 + 实施者自报取舍请定级）；修复卡把审核者探针复制进修复者 scratchpad、复核者用改写版再攻 — 出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342。
+- guardian：事件型观察哨只留窗口死亡 / 静止 ≥ 15 分钟 / 查询失败三类，去掉「新提交」事件（9 h 值守零误报零漏报）；定时汇报 30 分钟为默认、产品负责人可裁定降到 60 分钟；预测外推基准 = 已完成批次实测墙钟并留痕对账；额度从本机数据源自读；退场前建好下一个 Trace 的输入 Issue 并接入未验证清单 — 出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755770442、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755676104、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755682445、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761712608。
+- kickoff：上一 Trace 未验证清单 + 输入 Issue 为首要输入逐条落 Step；整合 Step 独立成卡 + 整合前修复包；真实外部读 / 写 Step 单列授权级别与触点 — 出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157。
+- 验收模板头部：判据数值一律由程序写出，不认手填 passed（该项目 `验收.md` 头部条款，三批沿用）。
+- 版本 0.4.0 → 0.5.0（`plugin/.claude-plugin/plugin.json`；`.claude-plugin/marketplace.json` 在 v0.4.0 漏升，本版一并对齐）；根 README 版本行补 v0.4.0 / v0.5.0。
+- 体量：`plugin/` 净增约 30 行，理由 = 以上每条都在同一 Trace 的 ≥ 2 个批次复用或由事故实证（出处逐条附）。**下一版删除候选**（该 Trace 一次未用 / 未填）：合同模板 §5「外部审查配额与指定位置」、§2「部署预发环境 □」、派发卡「一次性运维脚本（命中才填）」——第二个 Trace 仍未命中则删。
+
 ## v0.4.0 — 2026-09-20
 
 - `METHOD.md` 同步方法 v23（源 lingxi #678，2026-09-20 发布）：模板只供 Claude Code 使用（删执行者中立表述与两条外部执行者候选）；新增触点纪律、实施卡不跑完整门禁、批次链估法三条；变更表见 lingxi #842。
