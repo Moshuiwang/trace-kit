@@ -3,7 +3,7 @@ name: kickoff
 description: 开新 Execution Trace 时起草六段式开工合同与三件套（合同 / 任务表 / 验收）并生成 [tracking] Issue 瘦指针。在规划新 [tracking] Trace、或产品负责人说「开工 / 立项 / 下一个 Trace」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v24 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；触点预列、自动外审实查、生产主机运维记录、守望者独立拉起的出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068
 
 # 六段式开工合同起草
 
@@ -22,6 +22,9 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
    - 整合 Step 独立成卡（不由编排者亲手），端到端暴露的缺口先出「整合前修复包」再冻结给最终审核；同批依赖链用「首提交只含领域类型」接力排进并行上限；
    - 涉及真实外部读 / 写的 Step 在执行步骤表里单列授权级别（只读 / 隔离环境写 / 生产读 / 生产写）与对应触点；未获批的保持 Pre-ready。
    - 时间窗里的日期与星期由 `date -d` 实取生成，不手写；面向产品负责人的时刻 UTC + 北京双标注且两个值都实读。
+   - 触点清单预列仓库规则强制产生的批准（代码所有者审查等，例如发布同步 PR 必含上一版验收记录时）；PR 自动外审若声称启用，先实查它在本仓库确有评论，再写「等其通过才可合并」。
+   - 碰生产主机的 Trace：开工前读该主机的运维操作记录，把生产与仓库不一致的已知手工改动列入开工快照。
+   - 合同 §6 写明守望者形态（默认规划者拉起独立会话 + 压缩 / 日间 / 夜间三类规则；产品负责人点名才转任）。
 3. 产出物：三件套（合同.md / 任务表.md / 验收.md）落 `docs/traces/<issue号>-<短名>/`，走 PR，**合并即批准**；`[tracking]` Issue 正文只留「给产品负责人」段与瘦指针（按 `tracking-issue.md`；`METHOD.md` §二、§七）。
 4. 合同末尾附「批准时需一并裁定」编号清单（把所有开放决策点收拢成可单字回复的编号项，每项带默认值）。
 5. **合同未获产品负责人批准前，不派发任何实施工作。**

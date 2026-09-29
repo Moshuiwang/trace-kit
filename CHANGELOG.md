@@ -2,6 +2,13 @@
 
 本文件记录 trace-kit 套件的变化，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)；版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)（`0.x` = 尚未稳定，字段与目录可能变）。**每个资产条目都带出处**（形成它的 lingxi Issue / 复盘 / 事故链接）与验证口径；没有出处的资产不进套件。
 
+## v0.6.0 — 2026-09-29
+
+- `METHOD.md` 同步方法 **v24**（源 lingxi #678，2026-09-29 发布）：结清 v23 删除侧欠账（删 8 并 5，角色 7 → 6），新增守望者独立拉起与压缩 / 日夜规则、PR 自动外审通过才合并、临时授权、生产手工修补当天补登记等；变更表 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5881542037 。
+- guardian：新增「规划者拉起独立守望者」一节（`--autocompact`、三类规则写死）；拉起姿势改为启动脚本 + `"$(cat 文件)"`、验活看界面状态行 — 出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5748076981 ；自身被拒的动作不转手 — 出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5770687973 。
+- kickoff：触点预列规则强制批准、自动外审先实查、碰生产主机先读运维记录、合同 §6 写守望者形态 — 出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 。
+- 版本 0.5.0 → 0.6.0。证据等级：`kit-selfcheck`（见 PR）；**未验证**：守望者独立拉起形态首次在 lingxi 2.6.2 Trace 实跑。
+
 ## v0.5.0 — 2026-09-21
 
 另一项目（startimes-bi/dvb-sales-reporting）首个 Trace 用 v0.4.0 跑完三批（9 h、3 路并行、审核 r1–r3 抓出 P0 1 / P1 7）后的程序性候选，守望者归档评论 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442；方法正文候选留 lingxi #857（v24），本版不动 `METHOD.md`。证据等级：`kit-selfcheck` 本机四项（禁词 / 链接 / 看板单测 / 插件校验）绿；**未验证**：新增条款尚未在第二个 Trace 上跑过，该项目的下一个 Trace 是第一个绑 v0.5.0 的。

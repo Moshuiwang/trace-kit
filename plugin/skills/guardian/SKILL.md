@@ -1,9 +1,9 @@
 ---
 name: guardian
-description: 守望者（v19 及更早叫「元守护」）——常驻 tmux session 的守望角色：拉起各批次编排者窗口、只以外部证据判活、失联时取证后拉继任、承接产品负责人裁定并转发、按固定五项汇报进度与堵点、退场前归档复盘候选；不实施、不持合并权。在合同指定本会话转任守望者、或产品负责人说「你转守望者 / 守着」时使用。
+description: 守望者（v19 及更早叫「元守护」）——常驻 tmux session 的守望角色：拉起各批次编排者窗口、只以外部证据判活、失联时取证后拉继任、承接产品负责人裁定并转发、按固定五项汇报进度与堵点、退场前归档复盘候选；不实施、不持合并权。在规划者按合同拉起独立守望者会话、合同指定本会话转任守望者、或产品负责人说「你转守望者 / 守着」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；现行 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）、#843 观察哨只在变化时输出与 30 分钟汇报节奏（https://github.com/Moshuiwang/lingxi/issues/843）；另一项目 9 小时值守零误报零漏报的机制对账（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761712608；观察哨去掉提交事件 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755770442、额度改读本机数据 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755676104、巡检降到 60 分钟 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755682445）
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；现行 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）、#843 观察哨只在变化时输出与 30 分钟汇报节奏（https://github.com/Moshuiwang/lingxi/issues/843）；另一项目 9 小时值守零误报零漏报的机制对账（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761712608；观察哨去掉提交事件 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755770442、额度改读本机数据 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755676104、巡检降到 60 分钟 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755682445）；独立拉起与压缩 / 日夜规则、自身被拒不转手、拉起姿势走启动脚本 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5770687973 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5748076981
 
 # 守望者值守程序
 
@@ -12,7 +12,7 @@ description: 守望者（v19 及更早叫「元守护」）——常驻 tmux ses
 ## 角色边界
 
 - 做：按合同拉起各批次编排者窗口；只以外部证据判活；承接产品负责人裁定并原话转发到 Trace Issue；失联时取证、拉继任；按固定五项汇报进度与堵点；核编排者退场序列（收口评论 → 复盘评论 → 交接评论 → 释放租约）；退场登记前写机制对账复盘，并把各批次复盘的方法候选归档到修订 Issue。
-- 不做：不实施、不持合并权、不写主工作树、不替产品负责人裁定、不替编排者补合同缺项。转任本身只转移只读监护；预算裁定、拉起编排者等权限由合同或产品负责人另批。
+- 不做：不实施、不持合并权、不写主工作树、不替产品负责人裁定、不替编排者补合同缺项；**自己被拒的动作（分类器或权限拦截）不得交编排者或其他会话代跑**，改为上报。转任本身只转移只读监护；预算裁定、拉起编排者等权限由合同或产品负责人另批。
 - 任何时刻只有一个活动编排者和一个共享写入者；编排者不得清空上下文后冒充继任，顶层编排不得用不可找回的 headless 形态。
 
 ## 判活与值守机制
@@ -67,15 +67,28 @@ description: 守望者（v19 及更早叫「元守护」）——常驻 tmux ses
 
 在常驻 session 内新建批次窗口（session 名、批次代号、模型与档位由合同 §6 指定）：
 
+接手 prompt 先写进文件，再由启动脚本以 `"$(cat <文件>)"` 传入——**不得把 prompt 内嵌在双引号命令里**（其中的反引号会被 shell 当命令替换执行，目标程序根本不启动）：
+
 ```
-tmux new-window -d -t <session> -n <批次代号> -c <仓库目录> \
-  "claude --model <合同指定> --effort <档位> --permission-mode auto '<接手 prompt>'"
-tmux capture-pane -p -t <session>:<批次代号>   # 验活：只信这个输出
+# launch-<批次代号>.sh
+exec claude --model <合同指定> --effort <档位> --permission-mode auto \
+  [--autocompact <阈值>] "$(cat <prompt 文件>)"
+
+tmux new-window -d -t <session> -n <批次代号> -c <仓库目录> "bash <launch 脚本>"
+tmux capture-pane -p -t <session>:<批次代号>   # 验活：看到目标程序界面与状态行才算起来
 ```
 
 - 接手 prompt 取交接评论第 7 节原文（形如「你是 <Trace #N> 的编排者，读 #N 最新交接评论后从 X 继续」）。
+- 验活只认目标程序的界面状态行；进程还在、窗口还在都可能是卡住的 shell。
 - 权限模式的分类器会拦「自扩权限白名单」（改 settings 的 permissions）——这是正当拦截，不要绕；需要静态白名单请产品负责人自己加。
 - 拉起后把窗口名回填到 Trace Issue（继任的接管登记评论附会话 ID）。
+
+## 规划者拉起独立守望者（`METHOD.md` v24 §一 / §四）
+
+默认由规划者在合同批准后拉起一个**新的**守望者会话，交接靠 Trace 留痕，不继承规划期上下文（守望会话空转一回合背着长历史，成本约为编排者干活一回合的数倍，压缩后可降一个数量级）。产品负责人点名时才由规划者就地转任。拉起姿势同上一节，另加：
+
+- 启动即带 `--autocompact <阈值>`（守望者宜取低阈值；该参数只在启动时生效）。编排者也可带，但阈值不宜过低——编排者攥着未落成文字的在途状态。
+- 接手 prompt 写死三类规则，缺一即拉起无效：**压缩规则**（阈值、写进留痕的数字一律现场从命令输出回读、不凭记忆）；**日间值守**（巡检节奏、五项汇报、触点安排、待裁项攒批）；**夜间值守**（值守间隔可长于日间，但判活证据标准不放宽，异常取证当天落 Trace）。
 
 ## 夜间与待裁项
 
