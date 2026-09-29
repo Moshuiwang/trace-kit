@@ -56,3 +56,4 @@ claude plugin install trace-kit@trace-kit
 | `templates/时间校准.md` | 产品负责人 2026-09-29 点名；首版样本来自 采用方项目 A #18 评论 5888591772（复盘） | 未验证（v0.7.0 新增） |
 | `templates/tracking-issue.md` | #147 §八「给产品负责人」段（迁移前在 #678 v22 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
 | 「记录归属」一节 | 源项目 `docs/README.md` 归属表（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230)） | 两次纠正后固化 |
+<!-- ruleset test, do not merge -->
