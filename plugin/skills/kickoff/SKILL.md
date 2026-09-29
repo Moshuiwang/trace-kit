@@ -3,7 +3,7 @@ name: kickoff
 description: 开新 Execution Trace 时起草六段式开工合同与三件套（合同 / 任务表 / 验收）并生成 [tracking] Issue 瘦指针。在规划新 [tracking] Trace、或产品负责人说「开工 / 立项 / 下一个 Trace」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；现 https://github.com/Moshuiwang/lingxi/issues/678 v24 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；触点预列、自动外审实查、生产主机运维记录、守望者独立拉起的出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v24 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；触点预列、自动外审实查、生产主机运维记录、守望者独立拉起的出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
 
 # 六段式开工合同起草
 
@@ -11,12 +11,12 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
 
 ## 步骤
 
-0. **里程碑分诊与结清**（`METHOD.md` v22 §三）：对目标里程碑内每张 Issue 核四项——事实（已核并写回正文，已生效裁定整理进正文）、验收标准（可观察、值由谁写入）、标签（类型 / 状态 / 优先级 / 风险）、里程碑归属（留 / 移出 / 顺延 + 理由）；再反向扫其他里程碑与无里程碑的 open Issue（含 P0 / P1 无里程碑的）判「提前并入 / 不动」。分诊表进开工快照；改标签 / 里程碑 / 正文的写动作经产品负责人裁定后执行；四项未齐的 Issue 保持 Pre-ready。同时结清上一 Trace 的方法候选（上一版修订 Issue 已关或写明不修订理由），并建下一版修订 Issue，链接写进合同「给产品负责人」段。分诊与前提核实可派只读子代理并行做。
+0. **里程碑分诊与结清**（`METHOD.md` v25 §三）：对目标里程碑内每张 Issue 核四项——事实（已核并写回正文，已生效裁定整理进正文）、验收标准（可观察、值由谁写入）、标签（类型 / 状态 / 优先级 / 风险）、里程碑归属（留 / 移出 / 顺延 + 理由）；再反向扫其他里程碑与无里程碑的 open Issue（含 P0 / P1 无里程碑的）判「提前并入 / 不动」。分诊表进开工快照；改标签 / 里程碑 / 正文的写动作经产品负责人裁定后执行；四项未齐的 Issue 保持 Pre-ready。同时结清上一 Trace 的方法候选（上一版修订 Issue 已关或写明不修订理由），并在 trace-kit 仓库查下一版修订 Issue（两个以上项目共用同一个，已存在则复用，没有才建），链接写进合同「给产品负责人」段。分诊与前提核实可派只读子代理并行做。
 1. 读模板：`${CLAUDE_PLUGIN_ROOT}/templates/合同.md`（六段结构与每段的既定条款）、`${CLAUDE_PLUGIN_ROOT}/templates/任务表.md`、`${CLAUDE_PLUGIN_ROOT}/templates/验收.md`、`${CLAUDE_PLUGIN_ROOT}/templates/tracking-issue.md`、`${CLAUDE_PLUGIN_ROOT}/templates/时间校准.md`（项目已有 `docs/traces/时间校准.md` 则读项目的）。模板头部的出处注释与「用法」段不进产出物。
 2. 从当前对话与相关 Issue 收集素材，逐段填实——**每段都不允许留空**：
    - 空不出来的段写「未知 + Owner + 补齐时点」（`METHOD.md` §三第 5 问的 Pre-ready 形态），不编建议值；成本段的上限（人次 / 完整门禁次数 / 时间窗）例外，必须写数字；
    - 每条 Step 的依赖：这条依赖传什么制品？一句话说不清就是假依赖，去掉或合并；
-   - 每条实施 Step 写并行组与文件 / 模块边界（不重叠）；同批实施 Step 默认并行、整合 Step 串行；估算给串行与并行两个时长，编码类按上一 Trace 实测单元（实施卡 / 审核 / 修复轮分钟数）估、不按人类开发节奏，机器等待（外部任务、CI、固定时点、逐项发送节奏）分项列出；并行上限（机器内存、额度速率、编排者回收能力）写进开工快照（`METHOD.md` v22 §四「并行纪律」）；
+   - 每条实施 Step 写并行组与文件 / 模块边界（不重叠）；同批实施 Step 默认并行、整合 Step 串行；估算给串行与并行两个时长，编码类按上一 Trace 实测单元（实施卡 / 审核 / 修复轮分钟数）估、不按人类开发节奏，机器等待（外部任务、CI、固定时点、逐项发送节奏）分项列出；并行上限（机器内存、额度速率、编排者回收能力）写进开工快照（`METHOD.md` v25 §四「并行纪律」）；
    - 授权终点只写产品负责人**已经说过**的授权；没说过的写进「显式除外」。
    - 上一 Trace 收口评论的「未验证清单」与守望者建的输入 Issue 是首要输入：逐条落到某个 Step 或不做清单，不得遗漏；
    - 整合 Step 独立成卡（不由编排者亲手），端到端暴露的缺口先出「整合前修复包」再冻结给最终审核；同批依赖链用「首提交只含领域类型」接力排进并行上限；
@@ -48,6 +48,6 @@ description: 开新 Execution Trace 时起草六段式开工合同与三件套�
 ## 底线
 
 - 未写进合同的授权不存在；执行中不得自行扩权。
-- 成本段必须含：完整门禁次数上限与时间窗、模型配比与「角色与配置」表、时间预估、额度停派线（任一家周额度剩余 ≤ 2%）、产品负责人触点次数与在线时段安排。模型配比项目自定，写进合同 §5（一个真实项目的取值见套件 `examples/lingxi/`）。
+- 成本段必须含：完整门禁次数上限与时间窗、模型配比与「角色与配置」表、时间预估、额度停派线（平时 98% 停派；重置前 3 小时内可到接近 100%，限不中断、无需交接的工作）、产品负责人触点次数与在线时段安排。模型配比项目自定，写进合同 §5（一个真实项目的取值见套件 `examples/lingxi/`）。
 - 合同只认产品负责人裁定与卡面完成标准；上一任执行者自设的约束不继承。证据只认 GitHub / 仓库留痕。
 - 主线声明必须能回答「任何新发现是否立项」的默认答案（默认登记不立项，`METHOD.md` §四「派发、审核与验证」）。

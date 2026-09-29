@@ -1,6 +1,21 @@
 # Changelog
 
-本文件记录 trace-kit 套件的变化，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)；版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)（`0.x` = 尚未稳定，字段与目录可能变）。**每个资产条目都带出处**（形成它的 lingxi Issue / 复盘 / 事故链接）与验证口径；没有出处的资产不进套件。
+本文件记录 trace-kit 套件的变化，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)；版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)（`0.x` = 尚未稳定，字段与目录可能变）。**每个资产条目都带出处**（形成它的采用项目 Issue / 复盘 / 事故链接）与验证口径；没有出处的资产不进套件。
+
+## v0.8.0 — 2026-09-30
+
+**方法 v25：方法正文从 lingxi 独立，由本仓持有**（产品负责人 2026-09-29「从 lingxi 中独立出来」，同日批准迁移方案全部推荐项）。以后改方法 = 在本仓提 PR，产品负责人以代码所有者审批合并即发布；不再「先改 lingxi #678、再逐字抄进本仓」——手工同步已漂移 ≥ 3 次（v21 从未同步、骨架入口停在 v22、`marketplace.json` 在 v0.4.0 漏升）。版本号照旧往下数（方法 v25 = 套件 v0.8.0，两套号并存）。证据等级：本机 `kit-selfcheck` 全项（项目中立守卫 / 版本一致性 / 链接 / 脚本语法与 ShellCheck / 行尾空白 / 看板单测与夹具 / 空项目冒烟）与 `claude plugin validate --strict` 绿，CI 见 PR；**未验证**：两条新规则与新修订流程尚未在下一个 Trace 实跑；代码所有者审批对 `METHOD.md` 的技术强制要到本版合并后的下一个方法 PR 才生效（GitHub 按基准分支的 CODEOWNERS 判定）。
+
+- `METHOD.md` → 方法 **v25**：文件头与版本头改为「唯一源、修订走本仓 PR」；§三 额度停派线改为「平时 98% 停派；重置前 3 小时内可到接近 100%，只派不中断、无需交接的工作」；§五 换人条件改为「上下文 > 60% 且当前工作单元已收口，两条同时满足才换」（工作单元 = 一个 Step 从派发到合并，含审核与修复，且手上没有在跑的子代理），接力点随之改为「工作单元收口点或失联判定」，复盘规则的时机同步拆开（每个批次收口写收口与复盘评论，换人时再接交接评论与释放租约；批中换人时收口评论写该工作单元的结果与在途）；落点改为只把「方法正文 / trace-kit 程序」两类候选归档到本仓修订 Issue、公开仓库只写方法层面结论，项目工作项与本机事实留原处；§七 方法行改指 trace-kit；§八 修订 Issue 建在本仓、已存在则复用、正文走 PR（修订 Issue 不再收「草案」，草案即 PR）；末行不再指向 lingxi 自己的验证与门禁。v24 及更早条目与 lingxi 出处链接原样保留（历史证据）。两条规则均为产品负责人 2026-09-29 裁定 — 出处 https://github.com/Moshuiwang/lingxi/issues/912#issuecomment-5895404261 。其余 lingxi #912 候选（方法正文 8 条、工具 8 条 + 1 条守卫改进）迁到 v26 修订 Issue https://github.com/Moshuiwang/trace-kit/issues/31 ；v24 新增条款的删除侧复核交给 v26（v24 下只实跑 1 批）。
+- 插件同步两条新规则与修订 Issue 位置：kickoff（额度线、修订 Issue 在本仓查、有则复用）、guardian（换人条件两处）、takeover、handoff（触发描述、归档落点与公开仓库纪律）、合同模板（额度线、换人、修订 Issue 行）、tracking-issue 模板、插件 README；kickoff / takeover / handoff / guardian / 合同与派发卡模板里「`METHOD.md` v22 / v24 §…」过期版本标签统一改为 v25（节号逐一核对仍对应）；出处行里「现 / 现行 lingxi #678 v22」改为「迁移前在 …」（链接保留）；guardian 归档口径与 handoff 对齐（只归档两类、公开仓库纪律）。
+- 新项目骨架 `template/docs/协作/执行方法.md`：入口从 trace-kit v0.3.0 / 方法 v22 改为 v0.8.0 / v25。
+- `init.sh`：版本号解析兼容 v0.4.0 起的 `## vX.Y.Z — 日期` 标题（此前用 v0.7.0 新建项目会显示 0.3.0）。
+- 守卫：`check_no_lingxi.sh` 改名 `check_project_neutral.sh`（项目中立守卫），扫描范围加 `METHOD.md`，出处链接放行扩到两个采用项目；**私有采用项目的名词表不进公开仓库**，从本机不入库文件读取（`TRACE_KIT_PRIVATE_TERMS_FILE`，缺省 `~/.config/trace-kit/private-terms.txt`；读不到只跑公开表并在输出里明示），命中范围为全仓含未跟踪文件、不区分大小写；既有命中 1 处暂列豁免（`docs/traces/1-trace-kit-v0.1.0/自回灌报告-附录.txt`，是否清理公开仓库既有内容待产品负责人决定）；机器事实扫描加 `--untracked`；不在 git 仓库里运行时拒绝判绿（此前 `git grep` 失败被吞、会假绿）。
+- 新增 `scripts/kit/check_versions.py`（挂进 `kit-selfcheck`）：方法版本五处（标题 / 版本头 / 状态行 / 版本史最新条目 / 骨架方法入口）一致、套件版本三处（`plugin.json` / `marketplace.json` / CHANGELOG 最新标题）一致、版本头引用的套件版本在 CHANGELOG 有条目；取代「与 #678 零差异」手工步骤。
+- `.github/CODEOWNERS` 加 `/METHOD.md` 与 `/.github/CODEOWNERS`（现有 main 规则集要求代码所有者审批）。
+- README：套件四件表、版本行、目录导览、第八节规则 3（项目中立）与规则 5（`METHOD.md` 是唯一源、在本仓修订）、第十一节出处。
+- 体量：`plugin/skills` + `plugin/templates` 77,855 → 78,917 字节（+1.4%），理由 = 两条已裁定规则的同步、修订 Issue 位置与归档口径说明；`template/` +93 字节（入口版本）。
+- 版本 0.7.0 → 0.8.0。
 
 ## v0.7.0 — 2026-09-29
 
@@ -46,7 +61,7 @@
 
 - 每个资产必须可追溯到出处；采用本套件的项目在一个 Trace 里一次都没用到、没填写的机制，列为下一版删除候选（与 `METHOD.md` §八「修订规则」同构；v19 起正文无 §九）。
 - 修订默认净减法：新增资产须同时提名删除候选；`template/` 与 `plugin/` 的体量不得超过上一版，除非 CHANGELOG 写明理由。
-- `METHOD.md` 正文只随 lingxi #678 的版本升级同步，不在本仓单独修订（#147 已降为历史正文，只保留 v17 及更早）。
+- `METHOD.md` 是方法唯一源，在本仓修订（v25 起；v18–v24 历史在 lingxi #678，v17 及更早在 #147）：每个方法版本一个修订 Issue（建在本仓，已存在则复用）；改动走 PR，产品负责人以代码所有者审批合并即发布；方法发版 = 套件次版本升级。
 
 ## [0.3.0] - 2026-09-18
 
