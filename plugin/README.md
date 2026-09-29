@@ -53,6 +53,6 @@ claude plugin install trace-kit@trace-kit
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |
-| `templates/时间校准.md` | 产品负责人 2026-09-29 点名；首版样本来自 [dvb-sales-reporting #18 复盘](https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5888591772) | 未验证（v0.7.0 新增） |
+| `templates/时间校准.md` | 产品负责人 2026-09-29 点名；首版样本来自 采用方项目 A #18 评论 5888591772（复盘） | 未验证（v0.7.0 新增） |
 | `templates/tracking-issue.md` | #147 §八「给产品负责人」段（迁移前在 #678 v22 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
 | 「记录归属」一节 | 源项目 `docs/README.md` 归属表（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230)） | 两次纠正后固化 |
