@@ -11,7 +11,7 @@
 | `template/` | 新项目骨架：代理约定、产品文档骨架、Issue / PR 模板、分层 CI 与风险分级器、通用检查、本机=CI 同构的 `check.sh`、部署骨架、可运行的最小 `app` | 新仓库开工第一天 |
 | `examples/lingxi/` | G3 档：lingxi 特有实现只作示例（只链接、不复制） | 对照骨架看一个真实项目怎么填 |
 
-当前版本 **v0.6.0**（`0.x` = 尚未稳定；v0.1.0 → v0.2.0 新增 Trace 看板，v0.2.1 热修试穿缺陷，v0.2.2 方法正文同步到 v20 并改名守望者，v0.3.0 方法正文同步到 v22：里程碑分诊、守望者汇报五项、复盘规则、并行纪律与每版一个修订 Issue，v0.4.0 方法正文同步到 v23，v0.5.0 纳入另一项目首个 Trace 三批实证的派发 / 审查 / 守望条款，v0.6.0 方法正文同步到 v24 并加守望者独立拉起）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
+当前版本 **v0.7.0**（`0.x` = 尚未稳定；v0.1.0 → v0.2.0 新增 Trace 看板，v0.2.1 热修试穿缺陷，v0.2.2 方法正文同步到 v20 并改名守望者，v0.3.0 方法正文同步到 v22：里程碑分诊、守望者汇报五项、复盘规则、并行纪律与每版一个修订 Issue，v0.4.0 方法正文同步到 v23，v0.5.0 纳入另一项目首个 Trace 三批实证的派发 / 审查 / 守望条款，v0.6.0 方法正文同步到 v24 并加守望者独立拉起，v0.7.0 纳入另一项目 Trace #18 复盘条款与产品负责人点名的角色配置表、时间校准、自动清理、外部路径检查）。每个资产的出处链接、验证口径与**未验证层级**在 [`CHANGELOG.md`](CHANGELOG.md) 逐条列出。
 
 ---
 
@@ -108,7 +108,7 @@ init 之后你的仓库根就是原 `template/` 的内容。开工第一天按�
 | `METHOD.md` | 方法正文 v24（源 lingxi #678） | 规划新 Trace 时读；**本仓不单独修订**，只随源 Issue 版本升级同步 |
 | `plugin/README.md` | 六个 skill 何时用、怎么装、换什么、出处表 | 用插件前 |
 | `plugin/skills/*/SKILL.md` | 各 skill 正文 | 改 skill 行为时；每文件头带出处 |
-| `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` 空白模板 + `board.toml` 看板证据源配置示例 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |
+| `plugin/templates/` | `合同.md` / `任务表.md` / `验收.md` / `派发卡.md` / `tracking-issue.md` / `时间校准.md` 空白模板 + `board.toml` 看板证据源配置示例 | skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 读取 |
 | `template/README.md` | 骨架的「是什么 / 怎么用 / 换什么」表 | init 后即新仓库根 README |
 | `template/AGENTS.md`、`CLAUDE.md` | 代理工作约定：按需读取路由表 + 工作底线 + Code Review Rules | 每次任务开头 |
 | `template/docs/` | `README.md`（内容归属表）、`产品合同.md`、`当前能力.md`、`协作约定.md`、`协作/执行方法.md`（方法入口，pin 套件版本）、`决策记录/`、`参考证据/`、`技术设计/验证与门禁.md`、`技术设计/验收矩阵.md`、`traces/README.md` | 按 `AGENTS.md` 路由表按需读 |

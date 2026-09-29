@@ -3,7 +3,7 @@ name: dispatch-card
 description: 从模板生成实施 / 审查子代理的派发卡（六条款 + 实测附加条款 + 编排者侧兜底观察 + 审查派发小节）。在编排者要派发实施、修复或审查子代理时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203；留痕值粘贴与逐处证红出自 #843 复盘 https://github.com/Moshuiwang/lingxi/issues/843）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对；三批实证条款出自另一项目 Trace 的复盘 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；现 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203；留痕值粘贴与逐处证红出自 #843 复盘 https://github.com/Moshuiwang/lingxi/issues/843）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对；三批实证条款出自另一项目 Trace 的复盘 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0；v0.7.0 起条款正文只留模板，原本 skill 里逐条附的出处合并于此：https://github.com/Moshuiwang/lingxi/issues/330 、https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188 、https://github.com/Moshuiwang/lingxi/issues/521 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703195634 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5708280359 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738 、https://github.com/Moshuiwang/lingxi/issues/162
 
 # 派发卡生成
 
@@ -12,60 +12,27 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 ## 步骤
 
 1. 读模板 `${CLAUDE_PLUGIN_ROOT}/templates/派发卡.md`（模板头部出处注释不进卡面）。
-2. 填「现场」：worktree 绝对路径与分支、私有 scratchpad 子目录、文件归属范围（只许改哪些）、并行组与文件边界（同批并行卡边界不重叠，越界即停）、模型 / 档位（合同 §5）。
-3. 填「必做项」：按 Step 的动作与可观察产物写，细到能直接开工，不细到逐条命令；写明验证命令、超时口径与完成标准（以退出码判绿）；写明命名类值的唯一真源文件与依赖卡的等待点；同批并行卡各自独立的测试支撑文件名。
+2. 填「现场」：worktree 绝对路径与分支、私有 scratchpad 子目录、文件归属范围（只许改哪些）、碰运行路径时从真实入口到改动点的调用链（只读核对范围；需改动才能接线的文件列进归属）、并行组与文件边界（同批并行卡边界不重叠，越界即停）、角色配置（引合同 §5「角色与配置」表的行，表外配置不得使用）、时间预估（工作时间引时间校准表行号 + 机器等待，给北京时间预计交回时点）；派出时把本卡将创建的 worktree / 分支 / 临时目录登记进任务表「资源登记」。
+3. 填「必做项」：按 Step 的动作与可观察产物写，细到能直接开工，不细到逐条命令；写明验证命令、超时口径（按上次实测耗时并写出处，不抄旧值）与完成标准（以退出码判绿）；卡面「现状 / 前提」逐条标来源（实取 / 记忆 / 推断）；写明命名类值的唯一真源文件与依赖卡的等待点；同批并行卡各自独立的测试支撑文件名。
 4. 六条款与附加条款原样保留；审查卡另填「审查派发」小节。
 5. 派出后按下节自挂兜底观察，记下预计时长与到点要查的外部证据。
 6. 可选留痕：派出后在 Trace Issue 评论或任务表引用块留一行含 Step ID 与时刻，供看板取开工时刻（不留则该步骤的开工时刻显示 `?`）。
 
-## 六条款（源自 `METHOD.md` v16 §6.4，现 v22 §四「派发、审核与验证」；第 3 条的项目门禁耗时括注已参数化）
+## 条款正文（唯一权威 = 模板）
 
-1. **一路做到底**：按自己列的顺序做完再报，不逐步向编排者确认；只有需要产品取舍、扩大范围、或不同意编排者裁定时才停下。
-2. **不得派发任何子代理。**
-3. **长命令显式传足够长的超时参数**，不让命令转入后台再裸等通知。
-4. **启动的验证必须等到结束并消化结果后才许收口**，不得「已启动」即停。
-5. **报告格式含逐条处理状态**：已改 / 未改 + 原因——不同意编排者的裁定是允许的，但要给证据（实测 6 例否决 6 例都对）。
-6. 公开可见内容标注与最小披露复核按《协作约定》。
-
-## 实测附加条款（每条一句，带出处）
-
-- 留痕里的评论号 / SHA / 时刻一律由命令输出粘贴、不手写。
-- 修复包每处改动各自证红，不用一次总跑证明多处。
-- 同批并行卡不得追加同一共享测试支撑文件，各建独立 `tests/support/fake_<模块>.py`——两卡只追加同一 fake 文件，合并交错 55 例红（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157）。
-- 命名类值唯一真源 = 卡面指定的登记文件，依赖卡等其首提交；「首提交只含领域类型」接力让依赖链在并行上限内零等待（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625）。
-- 卡面口令「`gh` 读 Issue / PR 不算联网」——实施者曾把「不联网」读成不能读 Issue 原文（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625）。
-- 集成 / 端到端卡写死「正路径必须含真实数据形态行」——测试里过滤掉真实形态绕过了缺口（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625）。
-- 门禁与验证以退出码判绿、不以日志末行；门禁脚本记录每步 exit——只看 tail 把一次红推上了 CI（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157）。
-- 报告「留给编排者的注意事项」固定含下游接口冻结需要的字段表；文档抄源码用 `dataclasses.fields()` 之类实取（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342）。
-
-- 长命令显式传超时（Bash 工具 `timeout` 毫秒，上限 600000）——命令被转入后台后代理裸等通知、改动留在工作区不提交（六条款第 3 条，源自 https://github.com/Moshuiwang/lingxi/issues/203 复盘）。
-- 预计 >2 分钟的命令一律后台或显式超时；等待用 until 循环，禁 sleep 串联（https://github.com/Moshuiwang/lingxi/issues/330）。
-- 每个代理独立 worktree（Agent 工具 `isolation: worktree`），同一工作树同一时刻只允许一个写入者（https://github.com/Moshuiwang/lingxi/issues/203 事故实证）。
-- 临时文件只放私有 scratchpad 子目录，不与其他代理共用文件名——共用目录使一批变异静默跑空（https://github.com/Moshuiwang/lingxi/issues/521）。
-- Python 项目变异实测全程 `python -B` 或逐次清 `__pycache__`，不以 mtime / size 判断源码已还原（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）。
-- 先确认被测模块的 `__file__` 在源码树——非 editable 安装的 venv 改源码不生效，全绿是假绿（https://github.com/Moshuiwang/lingxi/issues/521）。
-- 改完先 commit 再汇报，工作树上不留未提交改动；进等待必须上报（https://github.com/Moshuiwang/lingxi/issues/330）。
-- 报告逐条「已改 / 未改 + 原因」，与卡面裁定不一致处给证据（https://github.com/Moshuiwang/lingxi/issues/203）。
-- 禁令与已裁定取消项逐条写进卡面与接手指令，不依赖中途转达——长回合里的代理读不到队列消息（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5702976511）。
-- 审核者工作树保留到该批次合并，修复包的定向复核需要原上下文（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5708280359）。
-- 一次性运维脚本卡面写死：体量上限、只读探针先行、自带清理子命令、到终态预计时长（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）。
-- 同批并行卡各用独立 worktree 与 scratchpad 子目录、文件边界不重叠；并行实施、串行整合——多张卡完成后先冻结一个整合候选，再跑一次完整门禁与一次审核（`METHOD.md` v22 §四「并行纪律」）。
+六条款（源自 `METHOD.md` v16 §6.4，现 §四「派发、审核与验证」）、实测附加条款与审查派发条款的正文**只在** `${CLAUDE_PLUGIN_ROOT}/templates/派发卡.md` 维护，本 skill 不再复写；每条的事故出处见模板头部出处注释、本 skill 出处行与 `CHANGELOG.md` 对应版本条目。改条款只改模板。
 
 ## 编排者侧
 
 - 每次派发自挂兜底观察：预计时长 + 到点查外部证据（worktree HEAD、进程表、CI API），不信代理的沉默。
-- 收到「在等 X」当场给 X 挂自己的观察（后台 `until <目标达成> || 超时`），到点无动静主动介入；绝不裸等。
+- 收到「在等 X」当场给 X 挂自己的观察（后台 `until <目标达成> || 超时`，判活条件同模板「等待只认自己」），到点无动静主动介入；绝不裸等。
 - 子代理因传输错误中断时，用原任务续跑可零返工恢复（https://github.com/Moshuiwang/lingxi/issues/304）。
-- 多路并行时每路各挂兜底观察；本机完整门禁独占期间不派任何测试类任务；编排者只派发与回收、不亲自实施（`METHOD.md` v22 §四「并行纪律」）。
+- 多路并行时每路各挂兜底观察；本机完整门禁独占期间不派任何测试类任务；编排者只派发与回收、不亲自实施；并行实施、串行整合（`METHOD.md` §四「并行纪律」）。
+- 子代理运行中不发改口径消息（长回合读不到队列消息），要改口径等其收口再续派（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5702976511 ；https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5831198642）。
+- 真实外部写按合同 §2 的执行通路执行、不交实施卡；执行者在会话里敲命令时单独成条、绝对路径，不串联 `cd` / `&&` / 管道 / 变量前缀（复合命令绕过权限白名单被拦）；远端命令落脚本文件执行，参数不带 shell 元字符（https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5770822176 、https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5831198642 、https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5807711659）。
 
-## 审查派发
+## 审查派发（编排者侧；审查卡条款见模板「审查派发」节）
 
-- 一个固定候选只允许一名独立审核者；只读、不修、不参与实现；候选 SHA 改变后旧结论失效（`METHOD.md` §四「派发、审核与验证」）。
 - 编排者先用 grep / git diff 自己坐实机械性与文档类发现（通常占一半以上），只把行为面 / 合同面的发现派对抗验证（https://github.com/Moshuiwang/lingxi/issues/203 期实测省约 85%）。
 - 给外部审查收敛线：按威胁模型裁——会真的废掉产品负责人窗口的必修；需要刻意环境操纵才能触发的明确接受，写进代码或文档「已知边界」并说明为什么接受。
-- 批量审查从关键测试抽 3–5 个独立复做变异实测，在审核者自己的 worktree 内做（https://github.com/Moshuiwang/lingxi/issues/521）。
-- 审查卡固定结构：威胁模型逐项复攻 + 假证据六型 + 独立变异 ≥ N（至少半数与实施者不同）+ 「实施者自报取舍请定级」段——三批共抓出 P0 1 / P1 7，全部由探针实证；审核者把实施者自报的「建议」坐实为 P1 并给最小修法，比编排者预判更准（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625）。
-- 修复卡把审核者探针复制进修复者 scratchpad，修复者复跑作绿证据；定向复核时同一审核者用自己改写版再攻——三方同一攻击面，复核 7–17 分钟收口（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342）。
-- 外审台账先记输入载荷（候选 SHA、读入字节数或文件数）、模型与调用姿势，再记发现；退出码为零、报告非空不算已审（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703195634）。
-- 变异验红与门禁绿都以日志原文的实际运行数为准（Ran N，N > 0）；环境错误导致的零用例红不计验红（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397）。
-- 卡面写死刹车句：只报影响正确性或既定需求的缺口，其余标可选；审核者天生会报问题，追着每条改会过度工程（https://github.com/Moshuiwang/lingxi/issues/162 审核—修复循环预算超标；Claude Code 最佳实践 https://code.claude.com/docs/en/best-practices ）。
+- 修复卡把审核者探针复制进修复者 scratchpad；定向复核由同一审核者用改写版再攻（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342）。

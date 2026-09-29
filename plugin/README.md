@@ -13,7 +13,7 @@
 | `/dispatch-card` | 编排者要派发实施、修复或审查子代理 | 一张派发卡（六条款 + 实测附加条款 + 审查小节） |
 | `/board` | 产品负责人或编排者要看当前 Trace 做到哪 / 堵在哪 / 轮了几轮 / 花了多少分钟；收口要归档一帧快照 | tmux 里的只读 TUI（简易 / 复杂两视图），或 `--dump` 一帧纯文本 |
 
-模板在 `templates/`：`合同.md`（六段式）、`任务表.md`、`验收.md`、`派发卡.md`、`tracking-issue.md`、`board.toml`（看板证据源配置示例）。skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/...` 读取它们。
+模板在 `templates/`：`合同.md`（六段式）、`任务表.md`、`验收.md`、`派发卡.md`、`tracking-issue.md`、`时间校准.md`（项目级时间校准表骨架）、`board.toml`（看板证据源配置示例）。skill 通过 `${CLAUDE_PLUGIN_ROOT}/templates/...` 读取它们。
 
 ## 怎么装
 
@@ -53,5 +53,6 @@ claude plugin install trace-kit@trace-kit
 | `templates/合同.md` | 复盘 #330 P0-5；结构抽取自 [#304](https://github.com/Moshuiwang/lingxi/issues/304) | 七个 Trace 合同均为六段式 |
 | `templates/任务表.md`、`templates/验收.md` | [docs/traces/README.md@caa845d](https://github.com/Moshuiwang/lingxi/blob/caa845d/docs/traces/README.md)（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230) 载体裁定、#330） | #328 / #358 / #373 / #418 / #445 / #469 / #502 / #521 八个 Trace 目录 |
 | `templates/派发卡.md` | 同 `skills/dispatch-card` | 同上 |
+| `templates/时间校准.md` | 产品负责人 2026-09-29 点名；首版样本来自 [dvb-sales-reporting #18 复盘](https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5888591772) | 未验证（v0.7.0 新增） |
 | `templates/tracking-issue.md` | #147 §八「给产品负责人」段（现 #678 v22 §七「可复制的最小结构」）+ docs/traces/README.md 瘦指针 | #328 起 8 个 Trace 的 `[tracking]` Issue |
 | 「记录归属」一节 | 源项目 `docs/README.md` 归属表（[#328 复盘](https://github.com/Moshuiwang/lingxi/issues/328#issuecomment-5447228230)） | 两次纠正后固化 |
