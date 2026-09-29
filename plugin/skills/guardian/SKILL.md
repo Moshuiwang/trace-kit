@@ -3,7 +3,7 @@ name: guardian
 description: 守望者（v19 及更早叫「元守护」）——常驻 tmux session 的守望角色：拉起各批次编排者窗口、只以外部证据判活、失联时取证后拉继任、承接产品负责人裁定并转发、按固定五项汇报进度与堵点、退场前归档复盘候选；不实施、不持合并权。在规划者按合同拉起独立守望者会话、合同指定本会话转任守望者、或产品负责人说「你转守望者 / 守着」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；现行 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）、#843 观察哨只在变化时输出与 30 分钟汇报节奏（https://github.com/Moshuiwang/lingxi/issues/843）；另一项目 9 小时值守零误报零漏报的机制对账（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761712608；观察哨去掉提交事件 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755770442、额度改读本机数据 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755676104、巡检降到 60 分钟 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755682445）；独立拉起与压缩 / 日夜规则、自身被拒不转手、拉起姿势走启动脚本 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5770687973 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5748076981 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.8）；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v22 §一角色表「守望者」+ §四「通用编排纪律」（含汇报固定五项）+ §五「复盘规则」；验证：#328 接力试验、#469 夜间异常由外部守望捕获（https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188）、#521 守望实践、#732 / #754 两类值守机制实测（https://github.com/Moshuiwang/lingxi/issues/678#issuecomment-5631671335）、#812 排期卡预测对账与收口预批（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738）、#843 观察哨只在变化时输出与 30 分钟汇报节奏（https://github.com/Moshuiwang/lingxi/issues/843）；另一项目 9 小时值守零误报零漏报的机制对账（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761712608；观察哨去掉提交事件 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755770442、额度改读本机数据 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755676104、巡检降到 60 分钟 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5755682445）；独立拉起与压缩 / 日夜规则、自身被拒不转手、拉起姿势走启动脚本 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5770687973 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5748076981 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
 
 # 守望者值守程序
 
@@ -34,10 +34,10 @@ description: 守望者（v19 及更早叫「元守护」）——常驻 tmux ses
 ## 失联判定与继任
 
 - 失联 = 窗口死亡 **且** >90 分钟无外部留痕。两条不同时满足只提高查活频率，不拉继任。
-- 不因上下文余量拉继任：编排者的上下文比例只在批次收口点作换人条件（≥ 50% 默认换人，低于可续任），不构成失联。
+- 不因上下文余量拉继任：编排者的上下文比例只在工作单元收口点作换人条件（> 60% 且当前工作单元已收口才换），不构成失联。
 - 命中后固定顺序：①取证留痕（窗口最后输出、合并面 `git log main`、部署面回读若有、未合并 PR）写成一条评论落 Trace Issue；②按最新交接评论拉继任窗口；③继任用 `/takeover` 完成接管登记；④旧窗口留供回翻，不清空。
 
-## 汇报固定五项（`METHOD.md` v22 §四）
+## 汇报固定五项（`METHOD.md` v25 §四）
 
 每次巡检、产品负责人问进度、每次触点前，都按同一张卡汇报（**定时汇报默认每 30 分钟一条**，产品负责人可裁定降一档到 60 分钟、转贴留痕后生效；事件型探针到期时点对齐定时巡检时点，不叠加零散汇报——产品负责人 2026-09-18 裁定）：
 
@@ -51,9 +51,9 @@ description: 守望者（v19 及更早叫「元守护」）——常驻 tmux ses
 
 ## 批次收口序列、换人与退场
 
-- 核编排者退场序列，顺序不能反：收口评论 → 复盘评论（七项，见 `handoff` skill）→ 交接评论 → 释放租约 → 继任接管登记。复盘评论没落地不算退场完成。
-- 换人条件：批次收口点读取当任编排者的上下文百分比，≥ 50% 默认换人，低于可续任（合同 §6 另有约定从合同）；批次中途不因上下文比例交接；最后一批收口即 Trace 关闭时不换人（`METHOD.md` v24 §五）。
-- 退场登记前：写机制对账复盘（失联与误报次数、转贴与触点等待、汇报预测与实际）；把各批次复盘（含夜班 / 例外形态、规划者的合同对账）里的方法候选汇总成**一条归档评论**落到本版修订 Issue，按归属分组（方法正文 / trace-kit 程序 / 仓库文档或工作项 / 本机记忆），每条一句现象 + 出处评论链接；退场登记里给归档评论链接。归档没落地，修订 Issue 关不掉。
+- 核编排者退场序列，顺序不能反：收口评论 → 复盘评论（七项，见 `handoff` skill）→ 交接评论 → 释放租约 → 继任接管登记。复盘评论没落地不算退场完成。批次收口不换人时只到复盘评论为止；批中在工作单元收口点换人时，收口评论写该工作单元的结果与在途。
+- 换人条件：须同时满足当任编排者上下文已用 > 60% 且当前工作单元已收口（工作单元 = 一个 Step 从派发到合并，含审核与修复，且手上没有在跑的子代理），只满足其一就续任（合同 §6 另有约定从合同）；工作单元中途不因上下文比例交接；最后一批收口即 Trace 关闭时不换人（`METHOD.md` v25 §五）。
+- 退场登记前：写机制对账复盘（失联与误报次数、转贴与触点等待、汇报预测与实际）；把各批次复盘（含夜班 / 例外形态、规划者的合同对账）里「方法正文 / trace-kit 程序」两类方法候选汇总成**一条归档评论**落到 trace-kit 本版修订 Issue（公开仓库只写方法层面结论，不写业务数字、群、主机、国家、凭据），按这两类分组，每条一句现象 + 出处评论链接；「仓库文档或工作项」留本项目、「本机记忆」留本机；退场登记里给归档评论链接。归档没落地，修订 Issue 关不掉。
 - 退场前（经产品负责人授权）建好下一个 Trace 的输入 Issue：把收口评论的「未验证清单」原样接入，产品负责人的前置输入与裁定落该 Issue，规划者 kickoff 直接引用。
 
 ## 异常信号：会话模型 / 形态偏离合同
@@ -84,7 +84,7 @@ tmux capture-pane -p -t <session>:<批次代号>   # 验活：看到目标程序
 - 权限模式的分类器会拦「自扩权限白名单」（改 settings 的 permissions）——这是正当拦截，不要绕；需要静态白名单请产品负责人自己加。
 - 拉起后把窗口名回填到 Trace Issue（继任的接管登记评论附会话 ID）。
 
-## 规划者拉起独立守望者（`METHOD.md` v24 §一 / §四）
+## 规划者拉起独立守望者（`METHOD.md` v25 §一 / §四）
 
 默认由规划者在合同批准后拉起一个**新的**守望者会话，交接靠 Trace 留痕，不继承规划期上下文（守望会话空转一回合背着长历史，成本约为编排者干活一回合的数倍，压缩后可降一个数量级）。产品负责人点名时才由规划者就地转任。拉起姿势同上一节，另加：
 

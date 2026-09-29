@@ -2,3 +2,7 @@
 # 合同「合并即批准」要在技术上为真，合同文件路径必须要求代码所有者审查。
 # 配套的 main 分支规则集（要求这些路径经代码所有者审查）由产品负责人在 Settings 操作，本文件不覆盖该项。
 docs/traces/**/合同.md @Moshuiwang
+# 方法正文 v25 起唯一源在本仓：方法发版须经产品负责人以代码所有者审批（迁移方案 D3；CHANGELOG v0.8.0）。
+# 本文件自身也纳入，防止绕过（照 lingxi #620 的写法）。
+/METHOD.md @Moshuiwang
+/.github/CODEOWNERS @Moshuiwang

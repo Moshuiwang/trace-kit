@@ -23,7 +23,8 @@ main() {
     printf '工作树不洁净：先提交或清理再运行，init 之后才能一眼看出它改了什么。\n' >&2
     exit 1
   fi
-  kit_version=$(sed -nE 's/^## \[([0-9]+\.[0-9]+\.[0-9]+)\].*/\1/p' CHANGELOG.md | head -1)
+  # CHANGELOG 标题两种格式都认：v0.4.0 起「## vX.Y.Z — 日期」，更早「## [X.Y.Z] - 日期」；取最上面一条。
+  kit_version=$(sed -nE 's/^## (v([0-9]+\.[0-9]+\.[0-9]+)|\[([0-9]+\.[0-9]+\.[0-9]+)\])([^0-9].*)?$/\2\3/p' CHANGELOG.md | head -1)
   printf 'trace-kit %s：提升 template/ 到仓库根目录\n' "${kit_version:-未知版本}"
 
   # 套件自身的文件：新项目不需要，先删再复制，避免同名目录叠合。

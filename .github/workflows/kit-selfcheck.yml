@@ -1,6 +1,6 @@
 name: kit-selfcheck
 
-# 套件自身的门禁：禁词扫描、链接检查、脚本语法、空项目冒烟（把 template 起成空项目并跑它的全部本机门禁）。
+# 套件自身的门禁：项目中立守卫、版本一致性、链接检查、脚本语法、空项目冒烟（把 template 起成空项目并跑它的全部本机门禁）。
 # 出处：Trace #1 合同 §4「套件自检 CI」。
 on:
   pull_request:
@@ -37,8 +37,11 @@ jobs:
       - name: 安装套件自检依赖（锁定版本的 shellcheck、PyYAML）
         run: python3 -m pip install 'shellcheck-py==0.11.0.1' 'PyYAML==6.0.2'
 
-      - name: 禁词扫描（template / plugin 不含 lingxi 名词、主机名、路径、凭据）
-        run: scripts/kit/check_no_lingxi.sh
+      - name: 项目中立守卫（METHOD.md / template / plugin 不含公开名词表里的项目名词；全仓无主机名、本机路径、凭据形态；私有名词表只在本机加载，CI 不跑）
+        run: scripts/kit/check_project_neutral.sh
+
+      - name: 版本一致性（METHOD.md 标题 / 版本头 / 版本史；plugin.json / marketplace.json / CHANGELOG）
+        run: python3 scripts/kit/check_versions.py
 
       - name: 套件仓库 Markdown 链接检查
         run: python3 scripts/kit/check_links.py
