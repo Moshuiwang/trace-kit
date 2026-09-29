@@ -2,7 +2,7 @@
 # 套件项目中立守卫（v0.8.0 前名 check_no_lingxi.sh）：方法正文 METHOD.md、插件 plugin/、骨架 template/
 # 不得带任何一个采用项目的私货——产品名词、业务名词、主机名、本机路径、凭据形态；
 # 只允许出现在「出处」行里的采用项目 GitHub 链接与 examples/lingxi/ 路径引用。examples/ 不在名词扫描范围（G3 档本就是项目特有）。
-# 私有采用项目的名词表不进公开仓库：从本机不入库文件读取（每行一条扩展正则，# 开头为注释，按不区分大小写匹配），
+# 私有采用项目的名词表不进公开仓库：从本机不入库文件读取（每行一条 Python 正则，# 开头为注释，按不区分大小写匹配），
 # 路径取 TRACE_KIT_PRIVATE_TERMS_FILE，缺省为 ${XDG_CONFIG_HOME:-$HOME/.config}/trace-kit/private-terms.txt；读不到只跑公开表并明示。
 # 出处：Trace #1 合同 §2「显式除外」与分级清单 E 节（铁律 1 / 2）；方法正文迁入本仓后扩为项目中立（CHANGELOG v0.8.0）。
 set -euo pipefail
@@ -45,16 +45,16 @@ try:
 except re.error:
     print("私有名词表正则无效，拒绝判绿（不回显词表）", file=sys.stderr)
     sys.exit(2)
-url = re.compile(r"https?://github\.com/(?:Moshuiwang/lingxi|startimes-bi/)\S*")
-exempt = {os.environ["PRIVATE_EXEMPT"], "scripts/kit/check_project_neutral.sh"}
+url = re.compile(r"https?://github\.com/(?:Moshuiwang/lingxi|startimes-bi/)[A-Za-z0-9._~/?#=&%:@+-]*")
+exempt = {os.environ["PRIVATE_EXEMPT"]}
 files = subprocess.run(["git", "ls-files", "-z", "-co", "--exclude-standard"], check=True, capture_output=True).stdout.decode().split("\0")
 hits = 0
 for path in files:
     if not path or path in exempt or not os.path.isfile(path):
         continue
     try:
-        text = open(path, encoding="utf-8").read()
-    except (UnicodeDecodeError, OSError):
+        text = open(path, encoding="utf-8", errors="replace").read()
+    except OSError:
         continue
     for n, line in enumerate(text.splitlines(), 1):
         if rx.search(url.sub("", line)):
