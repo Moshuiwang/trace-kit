@@ -198,3 +198,4 @@ CI、远端命令、部署和队列必须回读实际对象的终态；处于等
 - **v17 及更早版本：**见 [#147](https://github.com/Moshuiwang/lingxi/issues/147)。
 
 Claude Code 能力以其运行时工具说明与官方文档为准；仓库验证以采用项目自己的验证与门禁文档为准（骨架见本套件 `template/docs/技术设计/验证与门禁.md`）。能力核验与一次性证据留在修订 Issue 评论，不进入模板正文。
+<!-- ruleset test, do not merge -->
