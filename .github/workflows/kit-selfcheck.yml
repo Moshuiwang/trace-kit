@@ -37,7 +37,7 @@ jobs:
       - name: 安装套件自检依赖（锁定版本的 shellcheck、PyYAML）
         run: python3 -m pip install 'shellcheck-py==0.11.0.1' 'PyYAML==6.0.2'
 
-      - name: 项目中立守卫（METHOD.md / template / plugin 不含任一采用项目的名词、主机名、路径、凭据；全仓无私有业务事实）
+      - name: 项目中立守卫（METHOD.md / template / plugin 不含公开名词表里的项目名词；全仓无主机名、本机路径、凭据形态；私有名词表只在本机加载，CI 不跑）
         run: scripts/kit/check_project_neutral.sh
 
       - name: 版本一致性（METHOD.md 标题 / 版本头 / 版本史；plugin.json / marketplace.json / CHANGELOG）

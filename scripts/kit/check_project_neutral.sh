@@ -28,23 +28,51 @@ if [[ -n "${machine_hits}" ]]; then
   exit 1
 fi
 
-# 私有采用项目名词：全仓不得出现（出处链接行除外）。既有命中暂列豁免（v0.8.0 引入时已存在；是否清理待产品负责人决定，未决前不删改）。
+# 私有采用项目名词：全仓（含未跟踪文件，含 examples/）不得出现；先剥掉两个采用项目的 GitHub 链接再匹配（出处链接可留，链接旁的正文不放行）。
+# 既有命中暂列豁免（v0.8.0 引入时已存在；是否清理待产品负责人决定，未决前不删改）。词表正则无效时拒绝判绿，且不回显词表。
 private_file="${TRACE_KIT_PRIVATE_TERMS_FILE:-${XDG_CONFIG_HOME:-${HOME}/.config}/trace-kit/private-terms.txt}"
-private_exempt=(
-  ':!docs/traces/1-trace-kit-v0.1.0/自回灌报告-附录.txt'
-)
+private_exempt='docs/traces/1-trace-kit-v0.1.0/自回灌报告-附录.txt'
 if [[ -r "${private_file}" ]]; then
-  private_pattern=$(grep -vE '^[[:space:]]*(#|$)' "${private_file}" | paste -sd '|' - || true)
-  if [[ -n "${private_pattern}" ]]; then
-    private_hits=$(git grep --untracked -niIE "${private_pattern}" -- . "${private_exempt[@]}" | grep -vE "${allow}" || true)
-    if [[ -n "${private_hits}" ]]; then
+  set +e
+  private_hits=$(PRIVATE_FILE="${private_file}" PRIVATE_EXEMPT="${private_exempt}" python3 - <<'PY'
+import os, re, subprocess, sys
+terms = [t.strip().rstrip("\r") for t in open(os.environ["PRIVATE_FILE"], encoding="utf-8")]
+terms = [t for t in terms if t and not t.startswith("#")]
+if not terms:
+    sys.exit(3)
+try:
+    rx = re.compile("|".join(f"(?:{t})" for t in terms), re.I)
+except re.error:
+    print("私有名词表正则无效，拒绝判绿（不回显词表）", file=sys.stderr)
+    sys.exit(2)
+url = re.compile(r"https?://github\.com/(?:Moshuiwang/lingxi|startimes-bi/)\S*")
+exempt = {os.environ["PRIVATE_EXEMPT"], "scripts/kit/check_project_neutral.sh"}
+files = subprocess.run(["git", "ls-files", "-z", "-co", "--exclude-standard"], check=True, capture_output=True).stdout.decode().split("\0")
+hits = 0
+for path in files:
+    if not path or path in exempt or not os.path.isfile(path):
+        continue
+    try:
+        text = open(path, encoding="utf-8").read()
+    except (UnicodeDecodeError, OSError):
+        continue
+    for n, line in enumerate(text.splitlines(), 1):
+        if rx.search(url.sub("", line)):
+            print(f"{path}:{n}:{line[:200]}")
+            hits += 1
+sys.exit(1 if hits else 0)
+PY
+)
+  private_rc=$?
+  set -e
+  case "${private_rc}" in
+    0) private_note="私有名词表已加载" ;;
+    3) private_note="私有名词表为空" ;;
+    1)
       printf '全仓不得出现私有采用项目的名词 / 业务事实（公开仓库只写方法层面的结论）：\n%s\n' "${private_hits}" >&2
-      exit 1
-    fi
-    private_note="私有名词表已加载"
-  else
-    private_note="私有名词表为空"
-  fi
+      exit 1 ;;
+    *) exit 2 ;;
+  esac
 else
   private_note="私有名词表未加载（本机无 ${private_file##*/}，只跑公开表）"
 fi
