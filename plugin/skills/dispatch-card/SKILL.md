@@ -3,7 +3,7 @@ name: dispatch-card
 description: 从模板生成实施 / 审查子代理的派发卡（六条款 + 实测附加条款 + 编排者侧兜底观察 + 审查派发小节）。在编排者要派发实施、修复或审查子代理时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203；留痕值粘贴与逐处证红出自 #843 复盘 https://github.com/Moshuiwang/lingxi/issues/843）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对；三批实证条款出自另一项目 Trace 的复盘 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342、https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5757824625（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0；v0.7.0 起条款正文只留模板，原本 skill 里逐条附的出处合并于此：https://github.com/Moshuiwang/lingxi/issues/330 、https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188 、https://github.com/Moshuiwang/lingxi/issues/521 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703195634 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5708280359 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738 、https://github.com/Moshuiwang/lingxi/issues/162
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/147（v16 §6.4；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v22 §四「派发、审核与验证」与「并行纪律」；源自 #203 复盘 https://github.com/Moshuiwang/lingxi/issues/203；留痕值粘贴与逐处证红出自 #843 复盘 https://github.com/Moshuiwang/lingxi/issues/843）；验证：#203 / #304 / #328 / #373 / #469 / #521 派发卡沿用，否决裁定 6 例 6 对；三批实证条款出自另一项目 Trace 的复盘 采用方项目 A #1 评论 5761645157、采用方项目 A #1 评论 5756158342、采用方项目 A #1 评论 5757824625（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0；v0.7.0 起条款正文只留模板，原本 skill 里逐条附的出处合并于此：https://github.com/Moshuiwang/lingxi/issues/330 、https://github.com/Moshuiwang/lingxi/issues/469#issuecomment-5474257188 、https://github.com/Moshuiwang/lingxi/issues/521 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703195634 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5703645397 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5708280359 、https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5714640738 、https://github.com/Moshuiwang/lingxi/issues/162
 
 # 派发卡生成
 
@@ -28,11 +28,11 @@ description: 从模板生成实施 / 审查子代理的派发卡（六条款 + �
 - 收到「在等 X」当场给 X 挂自己的观察（后台 `until <目标达成> || 超时`，判活条件同模板「等待只认自己」），到点无动静主动介入；绝不裸等。
 - 子代理因传输错误中断时，用原任务续跑可零返工恢复（https://github.com/Moshuiwang/lingxi/issues/304）。
 - 多路并行时每路各挂兜底观察；本机完整门禁独占期间不派任何测试类任务；编排者只派发与回收、不亲自实施；并行实施、串行整合（`METHOD.md` §四「并行纪律」）。
-- 子代理运行中不发改口径消息（长回合读不到队列消息），要改口径等其收口再续派（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5702976511 ；https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5831198642）。
-- 真实外部写按合同 §2 的执行通路执行、不交实施卡；执行者在会话里敲命令时单独成条、绝对路径，不串联 `cd` / `&&` / 管道 / 变量前缀（复合命令绕过权限白名单被拦）；远端命令落脚本文件执行，参数不带 shell 元字符（https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5770822176 、https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5831198642 、https://github.com/startimes-bi/dvb-sales-reporting/issues/18#issuecomment-5807711659）。
+- 子代理运行中不发改口径消息（长回合读不到队列消息），要改口径等其收口再续派（https://github.com/Moshuiwang/lingxi/issues/812#issuecomment-5702976511 ；采用方项目 A #18 评论 5831198642）。
+- 真实外部写按合同 §2 的执行通路执行、不交实施卡；执行者在会话里敲命令时单独成条、绝对路径，不串联 `cd` / `&&` / 管道 / 变量前缀（复合命令绕过权限白名单被拦）；远端命令落脚本文件执行，参数不带 shell 元字符（采用方项目 A #18 评论 5770822176 、采用方项目 A #18 评论 5831198642 、采用方项目 A #18 评论 5807711659）。
 
 ## 审查派发（编排者侧；审查卡条款见模板「审查派发」节）
 
 - 编排者先用 grep / git diff 自己坐实机械性与文档类发现（通常占一半以上），只把行为面 / 合同面的发现派对抗验证（https://github.com/Moshuiwang/lingxi/issues/203 期实测省约 85%）。
 - 给外部审查收敛线：按威胁模型裁——会真的废掉产品负责人窗口的必修；需要刻意环境操纵才能触发的明确接受，写进代码或文档「已知边界」并说明为什么接受。
-- 修复卡把审核者探针复制进修复者 scratchpad；定向复核由同一审核者用改写版再攻（https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5756158342）。
+- 修复卡把审核者探针复制进修复者 scratchpad；定向复核由同一审核者用改写版再攻（采用方项目 A #1 评论 5756158342）。

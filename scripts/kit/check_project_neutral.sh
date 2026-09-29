@@ -4,6 +4,7 @@
 # 只允许出现在「出处」行里的采用项目 GitHub 链接与 examples/lingxi/ 路径引用。examples/ 不在名词扫描范围（G3 档本就是项目特有）。
 # 私有采用项目的名词表不进公开仓库：从本机不入库文件读取（每行一条 Python 正则，# 开头为注释，按不区分大小写匹配），
 # 路径取 TRACE_KIT_PRIVATE_TERMS_FILE，缺省为 ${XDG_CONFIG_HOME:-$HOME/.config}/trace-kit/private-terms.txt；读不到只跑公开表并明示。
+# 出处规则（v0.8.1）：私有采用项目的出处一律写中立代称 + 评论号（如「采用方项目 A #18 评论 5888591772」），不写仓库名、不写链接；代称与真实链接的对照表只放私有处。
 # 出处：Trace #1 合同 §2「显式除外」与分级清单 E 节（铁律 1 / 2）；方法正文迁入本仓后扩为项目中立（CHANGELOG v0.8.0）。
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.."
@@ -12,7 +13,7 @@ git rev-parse --git-dir >/dev/null 2>&1 || { printf '不在 git 仓库里：全�
 # 公开名词表（main 上既有，已公开）。
 pattern='lingxi|LINGXI|灵犀|飞书|Bot-Test|Bot-Prod|百炼|MCP|Agent SDK|银河|花名册|JumpServer|Supabase|biai|biplus|/home/[^/ ]+/|E-021|oc_[a-z0-9]{6}|cli_[a-z0-9]{6}|ou_[a-z0-9]{6}|ghs_[A-Za-z0-9]|ghp_[A-Za-z0-9]|gho_[A-Za-z0-9]'
 # 出处链接放行（整行放行；「先剥链接再匹配」为下版候选，见修订 Issue）。
-allow='github\.com/Moshuiwang/lingxi|github\.com/startimes-bi/|examples/lingxi/'
+allow='github\.com/Moshuiwang/lingxi|examples/lingxi/'
 targets=(METHOD.md template plugin .claude-plugin)
 hits=$(grep -rnIE "${pattern}" "${targets[@]}" 2>/dev/null | grep -vE "${allow}" || true)
 if [[ -n "${hits}" ]]; then
@@ -29,9 +30,9 @@ if [[ -n "${machine_hits}" ]]; then
 fi
 
 # 私有采用项目名词：全仓（含未跟踪文件，含 examples/）不得出现；先剥掉两个采用项目的 GitHub 链接再匹配（出处链接可留，链接旁的正文不放行）。
-# 既有命中暂列豁免（v0.8.0 引入时已存在；是否清理待产品负责人决定，未决前不删改）。词表正则无效时拒绝判绿，且不回显词表。
+# 豁免清单已清空（v0.8.1 清理了唯一既有命中）。词表正则无效时拒绝判绿，且不回显词表。
 private_file="${TRACE_KIT_PRIVATE_TERMS_FILE:-${XDG_CONFIG_HOME:-${HOME}/.config}/trace-kit/private-terms.txt}"
-private_exempt='docs/traces/1-trace-kit-v0.1.0/自回灌报告-附录.txt'
+private_exempt=''
 if [[ -r "${private_file}" ]]; then
   set +e
   private_hits=$(PRIVATE_FILE="${private_file}" PRIVATE_EXEMPT="${private_exempt}" python3 - <<'PY'
@@ -45,7 +46,7 @@ try:
 except re.error:
     print("私有名词表正则无效，拒绝判绿（不回显词表）", file=sys.stderr)
     sys.exit(2)
-url = re.compile(r"https?://github\.com/(?:Moshuiwang/lingxi|startimes-bi/)[A-Za-z0-9._~/?#=&%:@+-]*")
+url = re.compile(r"https?://github\.com/(?:Moshuiwang/lingxi)[A-Za-z0-9._~/?#=&%:@+-]*")
 exempt = {os.environ["PRIVATE_EXEMPT"]}
 files = subprocess.run(["git", "ls-files", "-z", "-co", "--exclude-standard"], check=True, capture_output=True).stdout.decode().split("\0")
 hits = 0

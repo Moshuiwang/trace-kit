@@ -3,7 +3,7 @@ name: kickoff
 description: 开新 Execution Trace 时起草六段式开工合同与三件套（合同 / 任务表 / 验收）并生成 [tracking] Issue 瘦指针。在规划新 [tracking] Trace、或产品负责人说「开工 / 立项 / 下一个 Trace」时使用。
 ---
 
-> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v24 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 https://github.com/startimes-bi/dvb-sales-reporting/issues/1#issuecomment-5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；触点预列、自动外审实查、生产主机运维记录、守望者独立拉起的出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
+> 出处：lingxi https://github.com/Moshuiwang/lingxi/issues/330（复盘 P0）；迁移前在 https://github.com/Moshuiwang/lingxi/issues/678 v24 §三「里程碑分诊」与 §四「并行纪律」；验证：#358 / #373 / #418 / #445 / #469 / #502 / #521 七个 Trace 的合同均按此起草为六段式；时间窗日期与星期须实取的出处 https://github.com/Moshuiwang/lingxi/issues/843（合同把周六写成周五）；未验证清单接入、整合 Step 独立成卡、真实外部动作分级的出处 采用方项目 A #1 评论 5761645157（归档 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5761705442）；触点预列、自动外审实查、生产主机运维记录、守望者独立拉起的出处 https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5863078436 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5868571693 、https://github.com/Moshuiwang/lingxi/issues/857#issuecomment-5754233068 ；另一项目 Trace #18 复盘与产品负责人 2026-09-29 点名的条款，逐条出处见 `CHANGELOG.md` v0.7.0
 
 # 六段式开工合同起草
 
